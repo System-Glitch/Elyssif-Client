@@ -6,6 +6,14 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
+import fr.elyssif.client.gui.ElyssifClient;
+
+/**
+ * Main class. Sets up error handling and loads config
+ * @author Jérémy LAMBERT
+ * @see Config
+ *
+ */
 public final class Main {
 
 	private static void setup() {
@@ -85,7 +93,7 @@ public final class Main {
 		setup();
 
 		if(checkConfig()) {
-			//TODO
+			ElyssifClient.run(args);
 		}
 	}
 
