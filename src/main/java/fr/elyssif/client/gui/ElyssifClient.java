@@ -18,6 +18,9 @@ import javafx.stage.Stage;
  */
 public final class ElyssifClient extends Application {
 
+	private static final int DEFAULT_WIDTH = 1050;
+	private static final int DEFAULT_HEIGHT = 635;
+	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		try {
@@ -28,13 +31,15 @@ public final class ElyssifClient extends Application {
 										getClass().getResource("/com/jfoenix/assets/css/jfoenix-design.css").toExternalForm(),
 										getClass().getResource("/view/css/application.css").toExternalForm());
 			
+			primaryStage.setScene(scene);
 			primaryStage.setTitle("Elyssif");
-			primaryStage.setMinHeight(635);
-			primaryStage.setMinWidth(1050);
+			primaryStage.setMinHeight(DEFAULT_HEIGHT);
+			primaryStage.setMinWidth(DEFAULT_WIDTH);
+			primaryStage.setHeight(DEFAULT_HEIGHT);
+			primaryStage.setWidth(DEFAULT_WIDTH);
 
 			//setupIcons(primaryStage);
-
-			primaryStage.setScene(scene);
+			
 			primaryStage.show();
 		} catch( Exception e ) {
 			Logger.getGlobal().log(Level.SEVERE, "Error while loading the graphical interface.", e);
