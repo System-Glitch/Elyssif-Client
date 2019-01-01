@@ -4,11 +4,11 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<StackPane fx:id="pane" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.MainController">
    <children>
       <FlowPane alignment="CENTER">
          <children>
-            <JFXButton styleClass="blue-800" text="Click me!" />
+            <JFXButton styleClass="blue-700" text="Click me!" />
          </children>
       </FlowPane>
    </children>

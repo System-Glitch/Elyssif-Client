@@ -38,6 +38,8 @@ public final class Config {
 
 	private Hashtable<String, String> values;
 
+	private Config() {}
+	
 	/**
 	 * Load the config
 	 * @return true on success
