@@ -1,13 +1,25 @@
 package fr.elyssif.client;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Hashtable;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -22,6 +34,7 @@ import org.xml.sax.SAXException;
 public final class Config {
 
 	private static Config instance;
+	private static final String CONFIG_FILE_PATH = "config.xml";
 
 	private Hashtable<String, String> values;
 
@@ -32,14 +45,20 @@ public final class Config {
 	public final synchronized boolean load() {
 		Logger.getGlobal().info("Loading config");
 
+		if(!checkConfigExists()) {
+			Logger.getGlobal().info("Config file not found, export default config...");
+			if(!exportDefaultConfig())
+				return false;
+			else
+				Logger.getGlobal().info("Default config exported");
+		}
+		
 		values = new Hashtable<>();
 		
-		ClassLoader classLoader = Main.class.getClassLoader();
-
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document xml = builder.parse(classLoader.getResourceAsStream("config.xml"));
+			Document xml = builder.parse(new FileInputStream(new File(CONFIG_FILE_PATH)));
 			Element root = xml.getDocumentElement();
 
 			Node node = root.getFirstChild();
@@ -76,6 +95,61 @@ public final class Config {
 	 */
 	public final void set(String key, String value) {
 		values.put(key, value);
+	}
+	
+	/**
+	 * Save the current config into the config file.
+	 * @return true on success
+	 */
+	public final boolean save() {
+
+		Logger.getGlobal().info("Saving config...");
+		try {
+			DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
+			Document document = documentBuilder.newDocument();
+
+			Element root = document.createElement("Config");
+			document.appendChild(root);
+
+			for(Entry<String, String> entry : values.entrySet()) {
+				Logger.getGlobal().info(entry.getKey());
+				Element field = document.createElement(entry.getKey());
+				field.setTextContent(entry.getValue());
+				root.appendChild(field);
+			}
+
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+			DOMSource domSource = new DOMSource(document);
+			StreamResult streamResult = new StreamResult(new File(CONFIG_FILE_PATH));
+			transformer.transform(domSource, streamResult);
+		} catch (ParserConfigurationException | TransformerException e) {
+			Logger.getGlobal().log(Level.SEVERE, "Couldn't save config", e);
+			return false;
+		}
+
+		Logger.getGlobal().info("Config saved.");
+
+		return true;
+	}
+
+	private boolean checkConfigExists() {
+		return new File(CONFIG_FILE_PATH).exists();
+	}
+
+	private boolean exportDefaultConfig() {
+		try {
+			ClassLoader classLoader = Main.class.getClassLoader();
+			InputStream is = classLoader.getResourceAsStream(CONFIG_FILE_PATH);
+			Files.copy(is, Paths.get(CONFIG_FILE_PATH));
+		} catch (IOException e) {
+			Logger.getGlobal().log(Level.SEVERE, "Couldn't export default config", e);
+			return false;
+		}
+		return true;
 	}
 
 	public static final Config getInstance() {
