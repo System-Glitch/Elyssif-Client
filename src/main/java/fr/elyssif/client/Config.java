@@ -37,6 +37,7 @@ public final class Config {
 	private static final String CONFIG_FILE_PATH = "config.xml";
 
 	private Hashtable<String, String> values;
+	private boolean export = true; //Set to false to prevent config export
 
 	private Config() {}
 	
@@ -47,7 +48,7 @@ public final class Config {
 	public final synchronized boolean load() {
 		Logger.getGlobal().info("Loading config");
 
-		if(!checkConfigExists()) {
+		if(export && !checkConfigExists()) {
 			Logger.getGlobal().info("Config file not found, export default config...");
 			if(!exportDefaultConfig())
 				return false;
@@ -60,7 +61,7 @@ public final class Config {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document xml = builder.parse(new FileInputStream(new File(CONFIG_FILE_PATH)));
+			Document xml = builder.parse(export ? new FileInputStream(new File(CONFIG_FILE_PATH)) : Main.class.getClassLoader().getResourceAsStream("config.xml"));
 			Element root = xml.getDocumentElement();
 
 			Node node = root.getFirstChild();
@@ -78,6 +79,14 @@ public final class Config {
 		Logger.getGlobal().info("Current environment: " + get("Environment"));
 		Logger.getGlobal().info("Remote host: " + get("Host"));
 		return true;
+	}
+
+	public final boolean isExport() {
+		return export;
+	}
+	
+	public final void setExport(boolean export) {
+		this.export = export;
 	}
 
 	/**

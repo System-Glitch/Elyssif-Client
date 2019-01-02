@@ -11,11 +11,12 @@ class ConfigTest {
 	@Test
 	void test() {
 		//Load
+		Config.getInstance().setExport(false);
 		assertTrue(Config.getInstance().load());
 		
 		//Check
-		assertEquals(Config.getInstance().get("Environment"), "testing");
-		assertEquals(Config.getInstance().get("Host"), "http://localhost:4567");
+		assertEquals("testing", Config.getInstance().get("Environment"));
+		assertEquals("http://localhost:4567", Config.getInstance().get("Host"));
 	}
 
 
