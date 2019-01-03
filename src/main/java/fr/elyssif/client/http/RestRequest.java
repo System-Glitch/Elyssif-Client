@@ -34,6 +34,7 @@ import javafx.application.Platform;
 public class RestRequest {
 
 	private String url;
+	private String authorizationToken;
 	private boolean urlParam;
 	private Hashtable<String, Object> parameters;
 	private HttpClient client;
@@ -105,6 +106,24 @@ public class RestRequest {
 	public boolean isUrlParam() {
 		return urlParam;
 	}
+	
+	/**
+	 * Get the authorization token for this request
+	 * @return the authorization token
+	 */
+	public final String getAuthorizationToken() {
+		return authorizationToken;
+	}
+
+	/**
+	 * Set the request authorization token
+	 * @param authorizationToken
+	 * @return current instance, used to chain the builder
+	 */
+	public final RestRequest setAuthorizationToken(String authorizationToken) {
+		this.authorizationToken = authorizationToken;
+		return this;
+	}
 
 	/**
 	 * Execute the request asynchronously using the given HttpMethod and executes the given callback when done
@@ -155,6 +174,8 @@ public class RestRequest {
 			//Headers
 			request.addHeader("Accept", "application/json");
 			request.addHeader("Content-type", "application/json; charset=UTF-8");
+			if(authorizationToken != null)
+				request.addHeader("Authorization", "Bearer " + authorizationToken);
 
 			//Parameters
 			if(parameters.size() > 0) {
