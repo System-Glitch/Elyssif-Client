@@ -36,10 +36,10 @@
 
 .card {
 	-fx-background-color: #FFFFFF;
-}
-
-.card-shadow {
-	-fx-effect: dropshadow(three-pass-box, -grey-800, 8, 0, 5, 5);
+	-fx-border-color: -grey-200;
+	-fx-border-style: solid;
+	-fx-border-width: 2px;
+	-fx-border-radius: 5px;
 }
 
 .card .card-title {
@@ -51,8 +51,4 @@
 	-fx-border-style: solid;
 	-fx-border-color: -grey-200;
 	-fx-padding: 20px 80px 20px 80px;
-}
-
-.blue-gradient {
-	-fx-background-color: linear-gradient(-blue-900 0%, -blue-700 100%);
 }

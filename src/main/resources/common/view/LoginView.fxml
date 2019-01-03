@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 
-<FlowPane alignment="CENTER" columnHalignment="CENTER" prefHeight="635.0" prefWidth="1030.0" styleClass="blue-gradient" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<FlowPane alignment="CENTER" columnHalignment="CENTER" prefHeight="635.0" prefWidth="1030.0" styleClass="white" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox alignment="TOP_CENTER" layoutX="413.0" layoutY="190.0">
          <styleClass>
@@ -26,7 +26,11 @@
                         <Insets />
                      </VBox.margin>
                   </JFXPasswordField>
-                  <JFXButton styleClass="blue-700" text="Log in" />
+                  <FlowPane alignment="CENTER_RIGHT" prefWidth="0.0">
+                     <children>
+                        <JFXButton styleClass="blue-700" text="Log in" />
+                     </children>
+                  </FlowPane>
                </children>
                <opaqueInsets>
                   <Insets />
