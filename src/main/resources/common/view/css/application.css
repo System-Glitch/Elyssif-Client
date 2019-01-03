@@ -28,3 +28,31 @@
 	-fx-font-weight: bold;
 	-fx-background-color: -blue-700;
 }
+
+.jfx-text-field, .jfx-password-field {
+	-jfx-focus-color: -blue-700;
+	-jfx-unfocus-color: -blue-grey-400;
+}
+
+.card {
+	-fx-background-color: #FFFFFF;
+}
+
+.card-shadow {
+	-fx-effect: dropshadow(three-pass-box, -grey-800, 8, 0, 5, 5);
+}
+
+.card .card-title {
+	-fx-font-family: 'Roboto Light';
+	-fx-text-alignment: center;
+	-fx-text-fill: -blue-grey-900;
+	-fx-font-size: 18px;
+	-fx-border-width: 0 0 2px 0;
+	-fx-border-style: solid;
+	-fx-border-color: -grey-200;
+	-fx-padding: 20px 80px 20px 80px;
+}
+
+.blue-gradient {
+	-fx-background-color: linear-gradient(-blue-900 0%, -blue-700 100%);
+}

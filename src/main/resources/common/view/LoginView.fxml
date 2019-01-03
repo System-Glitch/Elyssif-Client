@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXPasswordField?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.VBox?>
+
+<FlowPane alignment="CENTER" columnHalignment="CENTER" prefHeight="635.0" prefWidth="1030.0" styleClass="blue-gradient" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox alignment="TOP_CENTER" layoutX="413.0" layoutY="190.0">
+         <styleClass>
+            <String fx:value="card" />
+            <String fx:value="card-shadow" />
+         </styleClass>
+         <children>
+            <Label alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="card-title" text="Login" />
+            <VBox alignment="TOP_CENTER" spacing="40.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <JFXTextField promptText="Email" />
+                  <JFXPasswordField promptText="Password">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </JFXPasswordField>
+                  <JFXButton styleClass="blue-700" text="Log in" />
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <padding>
+                  <Insets bottom="40.0" left="80.0" right="80.0" top="60.0" />
+               </padding>
+            </VBox>
+         </children>
+      </VBox>
+   </children>
+</FlowPane>
