@@ -34,6 +34,30 @@
 	-jfx-unfocus-color: -blue-grey-400;
 }
 
+.jfx-tool-bar {
+	-fx-font-size: 20;
+    -fx-font-weight: BOLD;
+    -fx-background-color: -blue-700;
+    -fx-pref-width: 100%;
+}
+
+.jfx-tool-bar .jfx-button {
+	-fx-text-fill: -light-blue-50;
+}
+
+.jfx-decorator {
+    -fx-decorator-color: -blue-800;
+}
+
+.jfx-decorator .jfx-decorator-buttons-container {
+    -fx-background-color: -fx-decorator-color;
+}
+
+.jfx-decorator .resize-border {
+    -fx-border-color: -fx-decorator-color;
+    -fx-border-width: 0 4 4 4;
+}
+
 .card {
 	-fx-background-color: #FFFFFF;
 	-fx-border-color: -grey-200;

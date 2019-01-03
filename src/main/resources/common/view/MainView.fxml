@@ -6,10 +6,6 @@
 
 <StackPane fx:id="pane" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.MainController">
    <children>
-      <FlowPane alignment="CENTER">
-         <children>
-            <JFXButton styleClass="blue-700" text="Click me!" />
-         </children>
-      </FlowPane>
+      <fx:include fx:id="home" source="HomeView.fxml" />
    </children>
 </StackPane>

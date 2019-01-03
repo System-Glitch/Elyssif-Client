@@ -20,15 +20,15 @@
             <Label alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="card-title" text="Login" />
             <VBox alignment="TOP_CENTER" spacing="40.0" VBox.vgrow="ALWAYS">
                <children>
-                  <JFXTextField promptText="Email" />
-                  <JFXPasswordField promptText="Password">
+                  <JFXTextField prefWidth="180.0" promptText="Email" />
+                  <JFXPasswordField prefWidth="180.0" promptText="Password">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
                   </JFXPasswordField>
                   <FlowPane alignment="CENTER_RIGHT" prefWidth="0.0">
                      <children>
-                        <JFXButton styleClass="blue-700" text="Log in" />
+                        <JFXButton buttonType="RAISED" styleClass="blue-700" text="Log in" />
                      </children>
                   </FlowPane>
                </children>
