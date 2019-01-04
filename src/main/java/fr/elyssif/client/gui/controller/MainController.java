@@ -6,16 +6,19 @@ import com.jfoenix.controls.JFXSnackbar;
 
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import javafx.fxml.FXML;
-import javafx.scene.layout.StackPane;
 
-public class MainController {
-
-	@FXML private StackPane pane;
+/**
+ * Controller for the Main view
+ * @author Jérémy LAMBERT
+ *
+ */
+public class MainController extends Controller {
 	
 	@FXML
-	private void initialize() {
+	protected void initialize() {
+		super.initialize();
 		Logger.getGlobal().info("Loading main controller.");
-		SnackbarController.getInstance().setSnackbar(new JFXSnackbar(pane));
+		SnackbarController.getInstance().setSnackbar(new JFXSnackbar(getPane()));
 		SnackbarController.getInstance().message("This is a success!", SnackbarMessageType.SUCCESS);
 		SnackbarController.getInstance().message("This is an error", SnackbarMessageType.ERROR);
 		SnackbarController.getInstance().message("This is some info.", SnackbarMessageType.INFO);
