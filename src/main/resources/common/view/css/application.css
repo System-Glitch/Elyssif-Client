@@ -76,3 +76,12 @@
 	-fx-border-color: -grey-200;
 	-fx-padding: 20px 80px 20px 80px;
 }
+
+.scroll-pane-full {
+	-fx-background-insets: 0;
+	-fx-padding: 0;
+}
+
+.shadow {
+	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 90, 0, 0, 0);
+}

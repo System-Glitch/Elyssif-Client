@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 
-<FlowPane alignment="CENTER" columnHalignment="CENTER" prefHeight="635.0" prefWidth="1030.0" styleClass="white" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<FlowPane fx:id="pane" alignment="CENTER" columnHalignment="CENTER" prefHeight="635.0" prefWidth="1030.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.LoginController">
    <children>
       <VBox alignment="TOP_CENTER" layoutX="413.0" layoutY="190.0">
          <styleClass>
@@ -28,7 +28,7 @@
                   </JFXPasswordField>
                   <FlowPane alignment="CENTER_RIGHT" prefWidth="0.0">
                      <children>
-                        <JFXButton buttonType="RAISED" styleClass="blue-700" text="Log in" />
+                        <JFXButton buttonType="RAISED" onAction="#clickLogin" styleClass="blue-700" text="Log in" />
                      </children>
                   </FlowPane>
                </children>
@@ -42,4 +42,8 @@
          </children>
       </VBox>
    </children>
+   <styleClass>
+      <String fx:value="white" />
+      <String fx:value="shadow" />
+   </styleClass>
 </FlowPane>

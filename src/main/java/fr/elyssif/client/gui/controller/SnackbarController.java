@@ -49,6 +49,13 @@ public final class SnackbarController {
 			bar.enqueue(new SnackbarEvent(new Label(message), Duration.millis(duration), PseudoClass.getPseudoClass(type.getType())));
 	}
 	
+	/**
+	 * Bring back the snackbar to front. Useful when switching pane in StackPane while a message is visible
+	 */
+	public final void updateZOrder() {
+		bar.toFront();
+	}
+	
 	public static final SnackbarController getInstance() {
 		if(instance == null) 
 			instance = new SnackbarController();

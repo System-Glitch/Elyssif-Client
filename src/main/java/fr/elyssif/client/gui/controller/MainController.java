@@ -1,5 +1,6 @@
 package fr.elyssif.client.gui.controller;
 
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXSnackbar;
@@ -12,16 +13,58 @@ import javafx.fxml.FXML;
  * @author Jérémy LAMBERT
  *
  */
-public class MainController extends Controller {
+public final class MainController extends Controller {
+	
+	private static MainController instance;
+	
+	private HashMap<String, Controller> controllers;
+	
+	@FXML private HomeController homeController;
+	@FXML private LoginController loginController;
 	
 	@FXML
 	protected void initialize() {
-		super.initialize();
 		Logger.getGlobal().info("Loading main controller.");
+		super.initialize();
+		instance = this;
+		registerControllers();
+		
 		SnackbarController.getInstance().setSnackbar(new JFXSnackbar(getPane()));
 		SnackbarController.getInstance().message("This is a success!", SnackbarMessageType.SUCCESS);
 		SnackbarController.getInstance().message("This is an error", SnackbarMessageType.ERROR);
 		SnackbarController.getInstance().message("This is some info.", SnackbarMessageType.INFO);
+	}
+	
+	/**
+	 * Register controllers in a HashMap for future use.
+	 */
+	private void registerControllers() {
+		controllers = new HashMap<>();
+		registerController("home", homeController);
+		registerController("login", loginController);
+	}
+	
+	/**
+	 * Get a controller by its name
+	 * @param key - the name of the controller
+	 * @return controller
+	 * @see Controller
+	 */
+	protected Controller getController(String key) {
+		return controllers.get(key);
+	}
+	
+	/**
+	 * Register a controller
+	 * @param key - the name of the controller
+	 * @param controller
+	 */
+	protected void registerController(String key, Controller controller) {
+		controllers.put(key, controller);
+	}
+	
+	protected static MainController getInstance() {
+		return instance;
 	}
  	
 }

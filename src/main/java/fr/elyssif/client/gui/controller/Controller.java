@@ -14,6 +14,8 @@ import javafx.util.Duration;
  */
 abstract class Controller {
 
+	private static final double SLIDING_DURATION = 500;
+	
 	private Controller backController;
 	private SlideDirection slideDirection = SlideDirection.NONE;
 	private TranslateTransition openTransition;
@@ -23,11 +25,11 @@ abstract class Controller {
 	
 	@FXML
 	protected void initialize() {
-		openTransition = new TranslateTransition(new Duration(200), pane);
+		openTransition = new TranslateTransition(new Duration(SLIDING_DURATION), pane);
 		openTransition.setToX(0);
 		openTransition.setInterpolator(Interpolator.EASE_OUT);
 		
-		closeTransition = new TranslateTransition(new Duration(200), pane);
+		closeTransition = new TranslateTransition(new Duration(SLIDING_DURATION), pane);
 		closeTransition.setInterpolator(Interpolator.EASE_IN);
 		closeTransition.setFromX(0);
 		closeTransition.setOnFinished((e) -> backController.show(false));
@@ -38,7 +40,19 @@ abstract class Controller {
 	 * @param transition - plays transition if true, simply puts pane to front if false
 	 */
 	protected void show(boolean transition) {
+		show(transition, null);
+		SnackbarController.getInstance().updateZOrder();
+	}
+	
+	/**
+	 * Show the according view. Plays the transition if slide direction is not "none" and transition is true.
+	 * @param transition - plays transition if true, simply puts pane to front if false
+	 * @param backController - the controller which should be called when the back button is clicked
+	 */
+	protected void show(boolean transition, Controller backController) {
+		setBackController(backController);
 		pane.toFront();
+		SnackbarController.getInstance().updateZOrder();
 		if(transition && !slideDirection.equals(SlideDirection.NONE)) {
 			if(slideDirection == SlideDirection.VERTICAL)
 				openTransition.setFromY(-pane.getHeight()-40);
@@ -56,6 +70,7 @@ abstract class Controller {
 			closeTransition.setToY(-pane.getHeight()-40);
 		else if(slideDirection == SlideDirection.HORIZONTAL)
 			closeTransition.setToX(-pane.getWidth()-40);
+		closeTransition.play();
 	}
 
 	/**
