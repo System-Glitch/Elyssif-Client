@@ -36,14 +36,17 @@ public final class ElyssifClient extends Application {
 			
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Elyssif");
-			primaryStage.setMinHeight(DEFAULT_HEIGHT);
-			primaryStage.setMinWidth(DEFAULT_WIDTH);
-			primaryStage.setHeight(DEFAULT_HEIGHT);
-			primaryStage.setWidth(DEFAULT_WIDTH);
 
 			//setupIcons(primaryStage);
 			
 			primaryStage.show();
+			
+			primaryStage.setMinHeight(DEFAULT_HEIGHT);
+			primaryStage.setMinWidth(DEFAULT_WIDTH);
+			primaryStage.setHeight(DEFAULT_HEIGHT);
+			primaryStage.setWidth(DEFAULT_WIDTH);
+			
+			primaryStage.centerOnScreen();
 			
 		} catch( Exception e ) {
 			Logger.getGlobal().log(Level.SEVERE, "Error while loading the graphical interface.", e);
