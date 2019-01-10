@@ -2,4 +2,5 @@
 <Config>
 	<Environment>testing</Environment>
 	<Host>http://localhost:4567</Host>
+	<Token></Token>
 </Config>
