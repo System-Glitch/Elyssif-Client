@@ -11,24 +11,20 @@
 
 <FlowPane fx:id="pane" alignment="CENTER" columnHalignment="CENTER" prefHeight="635.0" prefWidth="1030.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.LoginController">
    <children>
-      <VBox alignment="TOP_CENTER" layoutX="413.0" layoutY="190.0">
-         <styleClass>
-            <String fx:value="card" />
-            <String fx:value="card-shadow" />
-         </styleClass>
+      <VBox alignment="TOP_CENTER" layoutX="413.0" layoutY="190.0" styleClass="card">
          <children>
-            <Label alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="card-title" text="Login" />
+            <Label alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="card-title" text="%login" />
             <VBox alignment="TOP_CENTER" spacing="40.0" VBox.vgrow="ALWAYS">
                <children>
-                  <JFXTextField prefWidth="180.0" promptText="Email" />
-                  <JFXPasswordField prefWidth="180.0" promptText="Password">
+                  <JFXTextField prefWidth="180.0" promptText="%email" />
+                  <JFXPasswordField prefWidth="180.0" promptText="%password">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
                   </JFXPasswordField>
                   <FlowPane alignment="CENTER_RIGHT" prefWidth="0.0">
                      <children>
-                        <JFXButton buttonType="RAISED" onAction="#clickLogin" styleClass="blue-700" text="Log in" />
+                        <JFXButton buttonType="RAISED" onAction="#clickLogin" styleClass="blue-700" text="%log-in" />
                      </children>
                   </FlowPane>
                </children>

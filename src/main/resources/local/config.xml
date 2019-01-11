@@ -2,5 +2,6 @@
 <Config>
 	<Environment>local</Environment>
 	<Host>http://localhost:4567</Host>
+	<Locale>en</Locale>
 	<Token></Token>
 </Config>

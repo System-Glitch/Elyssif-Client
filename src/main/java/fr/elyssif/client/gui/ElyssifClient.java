@@ -1,10 +1,13 @@
 package fr.elyssif.client.gui;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXDecorator;
 
+import fr.elyssif.client.Config;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -27,6 +30,7 @@ public final class ElyssifClient extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainView.fxml"));
+			setupLanguage(loader);
 			StackPane rootLayout = (StackPane) loader.load();
 			JFXDecorator decorator = new JFXDecorator(primaryStage, rootLayout, false, true, true);
 			Scene scene = new Scene(decorator);
@@ -58,6 +62,30 @@ public final class ElyssifClient extends Application {
 		primaryStage.getIcons().add(new Image(getClass().getResource("/view/logo16.png").toExternalForm()));
 		primaryStage.getIcons().add(new Image(getClass().getResource("/view/logo32.png").toExternalForm()));
 		primaryStage.getIcons().add(new Image(getClass().getResource("/view/logo64.png").toExternalForm()));
+	}
+	
+	private void setupLanguage(FXMLLoader loader) {
+		Locale locale = getLocale();
+		Logger.getGlobal().info("Language: " + locale.getLanguage());
+		
+		loader.setResources(ResourceBundle.getBundle("bundles.lang", locale));
+	}
+	
+	private Locale getLocale() {
+		String loc = Config.getInstance().get("Locale");
+		if(loc == null) return Locale.ENGLISH;
+		
+		for(Locale locale : Locale.getAvailableLocales()) {
+			if(locale.getLanguage().equals(loc)) {
+				if(getClass().getResource("/bundles/lang_" + locale.getLanguage() + ".properties") != null) {
+					return locale;
+				} else {
+					Logger.getGlobal().warning("Selected language \"" + locale.getLanguage() + "\" is not supported.");
+					return Locale.ENGLISH;
+				}
+			}				
+		}
+		return Locale.ENGLISH;
 	}
 	
 	public static void run(String[] args) {

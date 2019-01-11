@@ -1,5 +1,7 @@
 package fr.elyssif.client.gui.controller;
 
+import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import javafx.fxml.FXML;
@@ -11,10 +13,9 @@ import javafx.fxml.FXML;
  */
 public final class HomeController extends Controller {
 
-	@FXML
-	protected void initialize() {
+	public void initialize(URL location, ResourceBundle resources) {
 		Logger.getGlobal().info("Loading home controller.");
-		super.initialize();
+		super.initialize(location, resources);
 	}
 	
 	@FXML

@@ -1,9 +1,13 @@
 package fr.elyssif.client.gui.controller;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import fr.elyssif.client.gui.view.SlideDirection;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
@@ -12,7 +16,7 @@ import javafx.util.Duration;
  * @author Jérémy LAMBERT
  *
  */
-abstract class Controller {
+abstract class Controller implements Initializable {
 
 	private static final double SLIDING_DURATION = 500;
 	
@@ -20,11 +24,14 @@ abstract class Controller {
 	private SlideDirection slideDirection = SlideDirection.NONE;
 	private TranslateTransition openTransition;
 	private TranslateTransition closeTransition;
+	private ResourceBundle bundle;
+	private URL location;
 	
 	@FXML private Pane pane;
 	
-	@FXML
-	protected void initialize() {
+	public void initialize(URL location, ResourceBundle resources) {
+		this.bundle    = resources;
+		this.location  = location;
 		openTransition = new TranslateTransition(new Duration(SLIDING_DURATION), pane);
 		openTransition.setToX(0);
 		openTransition.setInterpolator(Interpolator.EASE_OUT);
@@ -129,6 +136,23 @@ abstract class Controller {
 	 */
 	protected final void setBackController(Controller backController) {
 		this.backController = backController;
+	}
+
+	/**
+	 * Get the ResourceBundle for this controller.
+	 * @return bundle
+	 * @see ResourceBundle
+	 */
+	protected final ResourceBundle getBundle() {
+		return bundle;
+	}
+
+	/**
+	 * Get the location used to resolve relative paths for the root object, or null if the location is not known.
+	 * @return location 
+	 */
+	protected final URL getLocation() {
+		return location;
 	}
 	
 }

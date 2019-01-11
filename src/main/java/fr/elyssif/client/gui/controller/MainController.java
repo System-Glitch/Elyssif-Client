@@ -1,6 +1,8 @@
 package fr.elyssif.client.gui.controller;
 
+import java.net.URL;
 import java.util.HashMap;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXSnackbar;
@@ -22,10 +24,9 @@ public final class MainController extends Controller {
 	@FXML private HomeController homeController;
 	@FXML private LoginController loginController;
 	
-	@FXML
-	protected void initialize() {
+	public void initialize(URL location, ResourceBundle resources) {
 		Logger.getGlobal().info("Loading main controller.");
-		super.initialize();
+		super.initialize(location, resources);
 		instance = this;
 		registerControllers();
 		
