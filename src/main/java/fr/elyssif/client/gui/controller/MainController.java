@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXSnackbar;
 
+import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import javafx.fxml.FXML;
 
@@ -25,7 +26,8 @@ public final class MainController extends Controller {
 	@FXML private LoginController loginController;
 	
 	public void initialize(URL location, ResourceBundle resources) {
-		Logger.getGlobal().info("Loading main controller.");
+		if(Config.getInstance().get("Verbose").equals("true"))
+			Logger.getGlobal().info("Loading main controller.");
 		super.initialize(location, resources);
 		instance = this;
 		registerControllers();

@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
+import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.view.SlideDirection;
 import javafx.fxml.FXML;
 
@@ -15,7 +16,8 @@ import javafx.fxml.FXML;
 public final class LoginController extends Controller {
 
 	public void initialize(URL location, ResourceBundle resources) {
-		Logger.getGlobal().info("Loading login controller.");
+		if(Config.getInstance().get("Verbose").equals("true"))
+			Logger.getGlobal().info("Loading login controller.");
 		super.initialize(location, resources);
 		setSlideDirection(SlideDirection.VERTICAL);
 	}
