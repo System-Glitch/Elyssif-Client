@@ -15,7 +15,7 @@ import javafx.fxml.FXML;
 public final class HomeController extends Controller {
 
 	public void initialize(URL location, ResourceBundle resources) {
-		if(Config.getInstance().get("Verbose").equals("true"))
+		if(Config.getInstance().isVerbose())
 			Logger.getGlobal().info("Loading home controller.");
 		super.initialize(location, resources);
 	}

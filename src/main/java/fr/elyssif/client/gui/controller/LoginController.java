@@ -16,7 +16,7 @@ import javafx.fxml.FXML;
 public final class LoginController extends Controller {
 
 	public void initialize(URL location, ResourceBundle resources) {
-		if(Config.getInstance().get("Verbose").equals("true"))
+		if(Config.getInstance().isVerbose())
 			Logger.getGlobal().info("Loading login controller.");
 		super.initialize(location, resources);
 		setSlideDirection(SlideDirection.VERTICAL);

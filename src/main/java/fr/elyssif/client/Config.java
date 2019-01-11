@@ -38,6 +38,7 @@ public final class Config {
 
 	private Hashtable<String, String> values;
 	private boolean export = true; //Set to false to prevent config export
+	private boolean verbose = false;
 
 	private Config() {}
 
@@ -80,7 +81,7 @@ public final class Config {
 		Logger.getGlobal().info("Loaded config");
 		Logger.getGlobal().info("Current environment: " + get("Environment"));
 		Logger.getGlobal().info("Remote host: " + get("Host"));
-		Logger.getGlobal().info("Verbose: " + get("Verbose"));
+		Logger.getGlobal().info("Verbose: " + isVerbose());
 		return true;
 	}
 
@@ -95,15 +96,48 @@ public final class Config {
 	}
 
 	private void setDefaults() {
-		setDefault("Verbose", "false");
+		// Set default config here
+		// Required values that can be omitted in the config file
+
+
+		setVerbose(values.containsKey("Verbose") ? get("Verbose").equals("true") : false);
+		values.remove("Verbose");
 	}
 
+	/**
+	 * Get if the config file should be exported.<br>
+	 * If true, config file is exported if not exists and is read from external file.<br>
+	 * If false, config is loaded from default one from resources inside the jar.
+	 * @return export
+	 */
 	public final boolean isExport() {
 		return export;
 	}
 
+	/**
+	 * Set if the config file should be exported or not.<br>
+	 * If true, config file is exported if not exists and is read from external file.<br>
+	 * If false, config is loaded from default one from resources inside the jar.
+	 * @param export
+	 */
 	public final void setExport(boolean export) {
 		this.export = export;
+	}
+
+	/**
+	 * Get if extra information should be displayed in the logs.
+	 * @return verbose
+	 */
+	public final boolean isVerbose() {
+		return verbose;
+	}
+
+	/**
+	 * Set if extra information should be displayed in the logs.
+	 * @param verbose
+	 */
+	public final void setVerbose(boolean verbose) {
+		this.verbose = verbose;
 	}
 
 	/**

@@ -26,7 +26,7 @@ public final class MainController extends Controller {
 	@FXML private LoginController loginController;
 	
 	public void initialize(URL location, ResourceBundle resources) {
-		if(Config.getInstance().get("Verbose").equals("true"))
+		if(Config.getInstance().isVerbose())
 			Logger.getGlobal().info("Loading main controller.");
 		super.initialize(location, resources);
 		instance = this;

@@ -143,11 +143,11 @@ public class RestRequest {
 				HttpRequestBase request = prepareRequest(method);
 
 				if(request != null) {
-					if(Config.getInstance().get("Verbose").equals("true"))
+					if(Config.getInstance().isVerbose())
 						Logger.getGlobal().info("Send request:\n" + requestToString(request));
 					HttpResponse response = client.execute(request);
 					result = new RestResponse(response);
-					if(Config.getInstance().get("Verbose").equals("true"))
+					if(Config.getInstance().isVerbose())
 						Logger.getGlobal().info("Response received:\n" + result.toString());
 				}
 
