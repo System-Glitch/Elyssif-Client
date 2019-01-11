@@ -3,5 +3,6 @@
 	<Environment>production</Environment>
 	<Host>https://elyssif.fr</Host>
 	<Locale>en</Locale>
+	<Verbose>false</Verbose>
 	<Token></Token>
 </Config>

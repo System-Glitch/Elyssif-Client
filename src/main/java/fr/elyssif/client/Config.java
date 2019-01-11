@@ -40,7 +40,7 @@ public final class Config {
 	private boolean export = true; //Set to false to prevent config export
 
 	private Config() {}
-	
+
 	/**
 	 * Load the config
 	 * @return true on success
@@ -55,9 +55,9 @@ public final class Config {
 			else
 				Logger.getGlobal().info("Default config exported");
 		}
-		
+
 		values = new Hashtable<>();
-		
+
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
@@ -75,16 +75,33 @@ public final class Config {
 			return false;
 		}
 
+		setDefaults();
+
 		Logger.getGlobal().info("Loaded config");
 		Logger.getGlobal().info("Current environment: " + get("Environment"));
 		Logger.getGlobal().info("Remote host: " + get("Host"));
+		Logger.getGlobal().info("Verbose: " + get("Verbose"));
 		return true;
+	}
+
+	/**
+	 * Set a default value if key doesn't exist.
+	 * @param key
+	 * @param value
+	 */
+	private void setDefault(String key, String value) {
+		if(!values.containsKey(key))
+			set(key, value);
+	}
+
+	private void setDefaults() {
+		setDefault("Verbose", "false");
 	}
 
 	public final boolean isExport() {
 		return export;
 	}
-	
+
 	public final void setExport(boolean export) {
 		this.export = export;
 	}
@@ -107,7 +124,7 @@ public final class Config {
 	public final void set(String key, String value) {
 		values.put(key, value);
 	}
-	
+
 	/**
 	 * Save the current config into the config file.
 	 * @return true on success

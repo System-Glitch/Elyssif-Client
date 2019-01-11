@@ -3,5 +3,6 @@
 	<Environment>local</Environment>
 	<Host>http://localhost:4567</Host>
 	<Locale>en</Locale>
+	<Verbose>false</Verbose>
 	<Token></Token>
 </Config>
