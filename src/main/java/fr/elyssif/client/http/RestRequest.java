@@ -13,14 +13,18 @@ import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
 
 import com.google.gson.Gson;
 
+import fr.elyssif.client.Config;
 import javafx.application.Platform;
 
 /**
@@ -35,8 +39,8 @@ public class RestRequest {
 
 	private String url;
 	private String authorizationToken;
-	private boolean urlParam;
 	private Hashtable<String, Object> parameters;
+	private Hashtable<String, Object> urlParameters;
 	private HttpClient client;
 
 	/**
@@ -47,8 +51,8 @@ public class RestRequest {
 	public RestRequest(HttpClient client, String url) {
 		this.client = client;
 		this.url = url;
-		this.urlParam = false;
 		this.parameters = new Hashtable<>();
+		this.urlParameters = new Hashtable<>();
 	}
 
 	/**
@@ -90,23 +94,17 @@ public class RestRequest {
 	}
 
 	/**
-	 * Define if the request's parameters should be URL parameters or in the body content.
-	 * @param urlParam
+	 * Puts a URL parameter to the request. Overrides if a value with the given name already exists
+	 * @param name - the name of the parameter
+	 * @param value - the value associated with the given name, should implement Serializable
 	 * @return current instance, used to chain the builder
+	 * @see Serializable
 	 */
-	public RestRequest setUrlParam(boolean urlParam) {
-		this.urlParam = urlParam;
+	public RestRequest urlParam(String name, Object value) {
+		urlParameters.put(name, value);
 		return this;
 	}
 
-	/**
-	 * Get if the request's parameters should be URL parameters or in the body content.
-	 * @return urlParam
-	 */
-	public boolean isUrlParam() {
-		return urlParam;
-	}
-	
 	/**
 	 * Get the authorization token for this request
 	 * @return the authorization token
@@ -145,8 +143,12 @@ public class RestRequest {
 				HttpRequestBase request = prepareRequest(method);
 
 				if(request != null) {
+					if(Config.getInstance().get("Verbose").equals("true"))
+						Logger.getGlobal().info("Send request:\n" + requestToString(request));
 					HttpResponse response = client.execute(request);
 					result = new RestResponse(response);
+					if(Config.getInstance().get("Verbose").equals("true"))
+						Logger.getGlobal().info("Response received:\n" + result.toString());
 				}
 
 			} catch (IOException e) {
@@ -179,10 +181,11 @@ public class RestRequest {
 
 			//Parameters
 			if(parameters.size() > 0) {
-				if(isUrlParam())
-					request.setURI(new URI(url + urlEncodeParameters()));
-				else
+				request.setURI(new URI(url + urlEncodeParameters()));
+				if(!method.equals(HttpMethod.GET))
 					((HttpEntityEnclosingRequestBase) request).setEntity(serializeParameters());
+				else if(parameters.size() > 0)
+					Logger.getGlobal().warning("GET request has " + parameters.size() + " non-URL parameters.");
 			}
 
 			return request;
@@ -214,10 +217,34 @@ public class RestRequest {
 	 */
 	private String urlEncodeParameters() throws UnsupportedEncodingException {
 		StringJoiner builder = new StringJoiner("&");
-		for(Entry<String, Object> entry : parameters.entrySet()) {
+		for(Entry<String, Object> entry : urlParameters.entrySet()) {
 			builder.add(entry.getKey() + "=" + URLEncoder.encode(String.valueOf(entry.getValue()), "UTF-8"));
 		}
 		return "?" + builder.toString();
+	}
+
+	/**
+	 * Convert an HTTP request to String.
+	 * @param request
+	 * @return requestString
+	 */
+	private String requestToString(HttpRequestBase request) {
+		try {
+			String full = request.toString();
+
+			for (Header header : request.getAllHeaders()) {
+				full += "\n" + header.getName() + ": " + header.getValue();
+			}
+			if(!request.getMethod().equals(HttpMethod.GET.name())) {
+				full += "\n\n";
+				full += EntityUtils.toString(((HttpEntityEnclosingRequestBase) request).getEntity());
+			}
+			return full;
+		} catch (ParseException | IOException e) {
+			Logger.getGlobal().log(Level.SEVERE, "Error while converting HTTP request to string", e);
+		}
+
+		return null;
 	}
 
 }
