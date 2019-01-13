@@ -165,35 +165,37 @@ public final class Config {
 	 */
 	public final boolean save() {
 
-		Logger.getGlobal().info("Saving config...");
-		try {
-			DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
-			Document document = documentBuilder.newDocument();
+		if(isExport()) {
+			Logger.getGlobal().info("Saving config...");
+			try {
+				DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
+				Document document = documentBuilder.newDocument();
 
-			Element root = document.createElement("Config");
-			document.appendChild(root);
+				Element root = document.createElement("Config");
+				document.appendChild(root);
 
-			for(Entry<String, String> entry : values.entrySet()) {
-				Logger.getGlobal().info(entry.getKey());
-				Element field = document.createElement(entry.getKey());
-				field.setTextContent(entry.getValue());
-				root.appendChild(field);
+				for(Entry<String, String> entry : values.entrySet()) {
+					Logger.getGlobal().info(entry.getKey());
+					Element field = document.createElement(entry.getKey());
+					field.setTextContent(entry.getValue());
+					root.appendChild(field);
+				}
+
+				TransformerFactory transformerFactory = TransformerFactory.newInstance();
+				Transformer transformer = transformerFactory.newTransformer();
+				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+				transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+				DOMSource domSource = new DOMSource(document);
+				StreamResult streamResult = new StreamResult(new File(CONFIG_FILE_PATH));
+				transformer.transform(domSource, streamResult);
+			} catch (ParserConfigurationException | TransformerException e) {
+				Logger.getGlobal().log(Level.SEVERE, "Couldn't save config", e);
+				return false;
 			}
 
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-			DOMSource domSource = new DOMSource(document);
-			StreamResult streamResult = new StreamResult(new File(CONFIG_FILE_PATH));
-			transformer.transform(domSource, streamResult);
-		} catch (ParserConfigurationException | TransformerException e) {
-			Logger.getGlobal().log(Level.SEVERE, "Couldn't save config", e);
-			return false;
+			Logger.getGlobal().info("Config saved.");
 		}
-
-		Logger.getGlobal().info("Config saved.");
 
 		return true;
 	}
