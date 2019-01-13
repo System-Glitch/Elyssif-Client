@@ -34,7 +34,9 @@ import org.xml.sax.SAXException;
 public final class Config {
 
 	private static Config instance;
-	private static final String CONFIG_FILE_PATH = "config.xml";
+	private static final String CONFIG_FILE_NAME = "config.xml";
+	private static final String PROGRAM_DIRECTORY_PATH = System.getProperty("user.home") + File.separator + ".elyssif";
+	private static final String CONFIG_FILE_PATH = PROGRAM_DIRECTORY_PATH + File.separator + CONFIG_FILE_NAME;
 
 	private Hashtable<String, String> values;
 	private boolean export = true; //Set to false to prevent config export
@@ -50,7 +52,7 @@ public final class Config {
 		Logger.getGlobal().info("Loading config");
 
 		if(export && !checkConfigExists()) {
-			Logger.getGlobal().info("Config file not found, export default config...");
+			Logger.getGlobal().info("Config file not found, export default config to \"" + CONFIG_FILE_PATH + "\"");
 			if(!exportDefaultConfig())
 				return false;
 			else
@@ -62,7 +64,7 @@ public final class Config {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document xml = builder.parse(export ? new FileInputStream(new File(CONFIG_FILE_PATH)) : Main.class.getClassLoader().getResourceAsStream("config.xml"));
+			Document xml = builder.parse(export ? new FileInputStream(new File(CONFIG_FILE_PATH)) : Main.class.getClassLoader().getResourceAsStream(CONFIG_FILE_NAME));
 			Element root = xml.getDocumentElement();
 
 			Node node = root.getFirstChild();
@@ -166,8 +168,10 @@ public final class Config {
 	public final boolean save() {
 
 		if(isExport()) {
+			if(!checkDirectory()) return false;
 			Logger.getGlobal().info("Saving config...");
 			try {
+				//Build XML
 				DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
 				Document document = documentBuilder.newDocument();
@@ -200,14 +204,34 @@ public final class Config {
 		return true;
 	}
 
+	/**
+	 * Check if the config file exists.
+	 * @return true if the config file exists in the program's directory
+	 */
 	private boolean checkConfigExists() {
 		return new File(CONFIG_FILE_PATH).exists();
 	}
 
+	/**
+	 * Create program's directory if needed.
+	 * @return boolean false on error
+	 */
+	private boolean checkDirectory() {
+		File file = new File(PROGRAM_DIRECTORY_PATH);
+		if(!file.mkdir()) {
+			Logger.getGlobal().log(Level.SEVERE, "Couldn't create directory: " + file.getAbsolutePath());
+			return false;
+		}
+		return true;
+	}
+
 	private boolean exportDefaultConfig() {
+
+		if(!checkDirectory()) return false;
+
 		try {
 			ClassLoader classLoader = Main.class.getClassLoader();
-			InputStream is = classLoader.getResourceAsStream(CONFIG_FILE_PATH);
+			InputStream is = classLoader.getResourceAsStream(CONFIG_FILE_NAME);
 			Files.copy(is, Paths.get(CONFIG_FILE_PATH));
 		} catch (IOException e) {
 			Logger.getGlobal().log(Level.SEVERE, "Couldn't export default config", e);
