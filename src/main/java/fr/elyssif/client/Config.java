@@ -168,7 +168,7 @@ public final class Config {
 	public final boolean save() {
 
 		if(isExport()) {
-			if(!checkDirectory()) return false;
+			if(!checkDirectory() || !checkPermissions()) return false;
 			Logger.getGlobal().info("Saving config...");
 			try {
 				//Build XML
@@ -224,10 +224,30 @@ public final class Config {
 		}
 		return true;
 	}
+	
+	/**
+	 * Check if has read and write permission on exported config file.
+	 * @return boolean true if has needed permissions
+	 */
+	private boolean checkPermissions() {
+		File file = new File(CONFIG_FILE_PATH);
+		boolean ok = true;
+		if(!file.canRead()) {
+			Logger.getGlobal().log(Level.SEVERE, "Missing read permission on config file: \"" + CONFIG_FILE_PATH + "\"");
+			ok = false;
+		}
+		
+		if(!file.canWrite()) {
+			Logger.getGlobal().log(Level.SEVERE, "Missing write permission on config file: \"" + CONFIG_FILE_PATH + "\"");
+			ok = false;
+		}
+
+		return ok;
+	}
 
 	private boolean exportDefaultConfig() {
 
-		if(!checkDirectory()) return false;
+		if(!checkDirectory() || !checkPermissions()) return false;
 
 		try {
 			ClassLoader classLoader = Main.class.getClassLoader();
