@@ -224,7 +224,7 @@ public final class Config {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Check if has read and write permission on exported config file.
 	 * @return boolean true if has needed permissions
@@ -236,7 +236,7 @@ public final class Config {
 			Logger.getGlobal().log(Level.SEVERE, "Missing read permission on config file: \"" + CONFIG_FILE_PATH + "\"");
 			ok = false;
 		}
-		
+
 		if(!file.canWrite()) {
 			Logger.getGlobal().log(Level.SEVERE, "Missing write permission on config file: \"" + CONFIG_FILE_PATH + "\"");
 			ok = false;
