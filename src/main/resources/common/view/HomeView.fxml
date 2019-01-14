@@ -54,7 +54,7 @@
          <center>
 				<FlowPane alignment="CENTER" styleClass="white" BorderPane.alignment="CENTER">
 					<children>
-						<JFXButton onAction="#clicked" styleClass="blue-700" text="Click me!" />
+						<JFXButton styleClass="blue-700" text="Click me!" />
 					</children>
 				</FlowPane>
          </center>

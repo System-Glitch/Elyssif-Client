@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml/1">
+	<fx:include fx:id="login" source="LoginView.fxml" />
+	<fx:include fx:id="register" source="RegisterView.fxml" />
+	<fx:include fx:id="welcome" source="WelcomeView.fxml" />
+</StackPane>
+

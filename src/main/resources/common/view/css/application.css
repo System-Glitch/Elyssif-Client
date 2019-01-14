@@ -67,14 +67,22 @@
 }
 
 .card .card-title {
-	-fx-font-family: 'Roboto Light';
-	-fx-text-alignment: center;
-	-fx-text-fill: -blue-grey-900;
-	-fx-font-size: 18px;
 	-fx-border-width: 0 0 2px 0;
 	-fx-border-style: solid;
 	-fx-border-color: -grey-200;
 	-fx-padding: 20px 80px 20px 80px;
+}
+
+.title {
+	-fx-font-family: 'Roboto Light';
+	-fx-text-alignment: center;
+	-fx-text-fill: -blue-grey-900;
+	-fx-font-size: 18px;
+}
+
+.welcome-btn {
+	-fx-font-size: 18px !important;
+	-fx-padding: 8px 15px 8px 15px;
 }
 
 .scroll-pane-full {

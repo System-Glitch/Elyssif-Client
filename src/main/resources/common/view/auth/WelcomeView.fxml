@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import java.lang.String?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<FlowPane fx:id="pane" styleClass="white" alignment="CENTER" columnHalignment="CENTER" prefHeight="635.0" prefWidth="1030.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.auth.WelcomeController">
+   <children>
+      <VBox alignment="TOP_CENTER" spacing="60.0">
+         <children>
+            <Label style="-fx-font-size: 24px;" styleClass="title" text="%welcome" textAlignment="CENTER" />
+            <HBox spacing="50.0">
+               <children>
+                  <JFXButton buttonType="RAISED" prefWidth="125.0" text="%login">
+                     <styleClass>
+                        <String fx:value="blue-700" />
+                        <String fx:value="welcome-btn" />
+                     </styleClass>
+                  </JFXButton>
+                  <JFXButton buttonType="RAISED" layoutX="10.0" layoutY="10.0" prefWidth="125.0" text="%register">
+                     <styleClass>
+                        <String fx:value="blue-700" />
+                        <String fx:value="welcome-btn" />
+                     </styleClass>
+                  </JFXButton>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</FlowPane>
