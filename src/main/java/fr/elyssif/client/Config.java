@@ -218,7 +218,7 @@ public final class Config {
 	 */
 	private boolean checkDirectory() {
 		File file = new File(PROGRAM_DIRECTORY_PATH);
-		if(!file.mkdir()) {
+		if(!file.exists() && !file.mkdir()) {
 			Logger.getGlobal().log(Level.SEVERE, "Couldn't create directory: " + file.getAbsolutePath());
 			return false;
 		}
@@ -232,6 +232,10 @@ public final class Config {
 	private boolean checkPermissions() {
 		File file = new File(CONFIG_FILE_PATH);
 		boolean ok = true;
+		
+		if(!file.exists())
+			file = new File(PROGRAM_DIRECTORY_PATH);
+		
 		if(!file.canRead()) {
 			Logger.getGlobal().log(Level.SEVERE, "Missing read permission on config file: \"" + CONFIG_FILE_PATH + "\"");
 			ok = false;
