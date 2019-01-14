@@ -1,8 +1,11 @@
 package fr.elyssif.client.gui.controller;
 
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import fr.elyssif.client.gui.view.SlideDirection;
 import javafx.animation.Interpolator;
@@ -13,7 +16,7 @@ import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
 /**
- * SUper-class for controllers. Handles sliding transitions and back buttons.
+ * Super-class for controllers. Handles sliding transitions and back buttons.
  * @author Jérémy LAMBERT
  *
  */
@@ -28,14 +31,16 @@ public abstract class Controller implements Initializable {
 	private ResourceBundle bundle;
 	private URL location;
 
-	private HashMap<String, Controller> controllers;
+	private HashMap<String, Controller> controllers; //Contains child controllers
 
 	@FXML private Pane pane;
 
 	public void initialize(URL location, ResourceBundle resources) {
 		this.bundle    = resources;
 		this.location  = location;
-		this.controllers = new HashMap<>();
+
+		registerControllers();
+
 		openTransition = new TranslateTransition(new Duration(SLIDING_DURATION), pane);
 		openTransition.setToX(0);
 		openTransition.setInterpolator(Interpolator.EASE_OUT);
@@ -161,22 +166,43 @@ public abstract class Controller implements Initializable {
 
 
 	/**
-	 * Get a child controller by its name
+	 * Get a child controller by its name.
 	 * @param key - the name of the controller
 	 * @return controller
 	 * @see Controller
 	 */
-	public Controller getController(String key) {
+	protected Controller getController(String key) {
 		return controllers.get(key);
 	}
 
 	/**
-	 * Register a child controller
+	 * Register a child controller.
 	 * @param key - the name of the controller
 	 * @param controller
 	 */
-	public void registerController(String key, Controller controller) {
+	private void registerController(String key, Controller controller) {
 		controllers.put(key, controller);
+	}
+
+	/**
+	 * Detect and register child controllers.
+	 */
+	private void registerControllers() {
+
+		controllers = new HashMap<>();
+
+		for(Field field  : getClass().getDeclaredFields()) {
+			if (field.isAnnotationPresent(FXML.class) && Controller.class.isAssignableFrom(field.getType())) {
+				try {
+					String name = field.getName().substring(0, field.getName().lastIndexOf("Controller"));
+					field.setAccessible(true);
+					registerController(name, (Controller) field.get(this));
+					field.setAccessible(false);
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+					Logger.getGlobal().log(Level.SEVERE, "Error while registering child controllers.", e);
+				}
+			}
+		}
 	}
 
 }

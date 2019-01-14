@@ -25,16 +25,6 @@ public final class AuthController extends Controller {
 			Logger.getGlobal().info("Loading auth controller.");
 		super.initialize(location, resources);
 		setSlideDirection(SlideDirection.NONE);
-		registerControllers();
-	}
-
-	/**
-	 * Register controllers in a HashMap for future use.
-	 */
-	private void registerControllers() {
-		registerController("login", loginController);
-		registerController("register", registerController);
-		registerController("welcome", welcomeController);
 	}
 
 	/**

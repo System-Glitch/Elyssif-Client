@@ -9,7 +9,6 @@ import com.jfoenix.controls.JFXSnackbar;
 import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.controller.auth.AuthController;
-import fr.elyssif.client.gui.controller.auth.LoginController;
 import javafx.fxml.FXML;
 
 /**
@@ -22,7 +21,6 @@ public final class MainController extends Controller {
 	private static MainController instance;
 
 	@FXML private HomeController homeController;
-	@FXML private LoginController loginController;
 	@FXML private AuthController authController;
 
 	public void initialize(URL location, ResourceBundle resources) {
@@ -30,20 +28,11 @@ public final class MainController extends Controller {
 			Logger.getGlobal().info("Loading main controller.");
 		super.initialize(location, resources);
 		instance = this;
-		registerControllers();
 
 		SnackbarController.getInstance().setSnackbar(new JFXSnackbar(getPane()));
 		SnackbarController.getInstance().message("This is a success!", SnackbarMessageType.SUCCESS);
 		SnackbarController.getInstance().message("This is an error", SnackbarMessageType.ERROR);
 		SnackbarController.getInstance().message("This is some info.", SnackbarMessageType.INFO);
-	}
-
-	/**
-	 * Register controllers in a HashMap for future use.
-	 */
-	private void registerControllers() {
-		registerController("home", homeController);
-		registerController("auth", authController);
 	}
 
 	protected static MainController getInstance() {
