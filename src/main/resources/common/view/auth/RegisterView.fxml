@@ -35,10 +35,10 @@
                   </JFXPasswordField>
                   <BorderPane>
                      <left>
-                        <JFXButton onAction="#clickBack" styleClass="grey-200" text="%back" BorderPane.alignment="CENTER" />
+                        <JFXButton fx:id="backButton" onAction="#clickBack" styleClass="grey-200" text="%back" BorderPane.alignment="CENTER" />
                      </left>
                      <right>
-                        <JFXButton buttonType="RAISED" defaultButton="true" onAction="#submit" styleClass="blue-700" text="%register-btn" BorderPane.alignment="CENTER" />
+                        <JFXButton fx:id="submitButton" buttonType="RAISED" defaultButton="true" onAction="#submit" styleClass="blue-700" text="%register-btn" BorderPane.alignment="CENTER" />
                      </right>
                   </BorderPane>
                </children>
