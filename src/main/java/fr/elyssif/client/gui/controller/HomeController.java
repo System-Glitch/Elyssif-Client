@@ -11,7 +11,7 @@ import fr.elyssif.client.Config;
  * @author Jérémy LAMBERT
  *
  */
-public final class HomeController extends Controller {
+public final class HomeController extends FadeController {
 
 	public void initialize(URL location, ResourceBundle resources) {
 		if(Config.getInstance().isVerbose())

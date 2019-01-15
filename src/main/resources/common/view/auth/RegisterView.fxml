@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 
-<FlowPane fx:id="pane" styleClass="white" alignment="CENTER" columnHalignment="CENTER" prefHeight="635.0" prefWidth="1030.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.auth.RegisterController">
+<FlowPane fx:id="pane" alignment="CENTER" columnHalignment="CENTER" prefHeight="635.0" prefWidth="1030.0" styleClass="white" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.auth.RegisterController">
    <children>
       <VBox fx:id="fadePane" alignment="TOP_CENTER" layoutX="413.0" layoutY="190.0" styleClass="card">
          <children>
@@ -21,14 +21,14 @@
                </styleClass></Label>
             <VBox alignment="TOP_CENTER" spacing="30.0" VBox.vgrow="ALWAYS">
                <children>
-                  <JFXTextField labelFloat="true" prefWidth="180.0" promptText="%email" />
-                  <JFXTextField labelFloat="true" prefWidth="180.0" promptText="%name" />
-                  <JFXPasswordField labelFloat="true" prefWidth="180.0" promptText="%password">
+                  <JFXTextField fx:id="emailField" labelFloat="true" prefWidth="180.0" promptText="%email" />
+                  <JFXTextField fx:id="nameField" labelFloat="true" prefWidth="180.0" promptText="%name" />
+                  <JFXPasswordField fx:id="passwordField" labelFloat="true" prefWidth="180.0" promptText="%password">
                   	 <VBox.margin>
                         <Insets />
                      </VBox.margin>
                   </JFXPasswordField>
-                  <JFXPasswordField labelFloat="true" prefWidth="180.0" promptText="%password-confirmation">
+                  <JFXPasswordField fx:id="passwordConfirmationField" labelFloat="true" prefWidth="180.0" promptText="%password-confirmation">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
@@ -38,7 +38,7 @@
                         <JFXButton onAction="#clickBack" styleClass="grey-200" text="%back" BorderPane.alignment="CENTER" />
                      </left>
                      <right>
-                        <JFXButton buttonType="RAISED" styleClass="blue-700" text="%register-btn" BorderPane.alignment="CENTER" />
+                        <JFXButton buttonType="RAISED" onAction="#submit" styleClass="blue-700" text="%register-btn" BorderPane.alignment="CENTER" />
                      </right>
                   </BorderPane>
                </children>

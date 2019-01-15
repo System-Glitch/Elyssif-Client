@@ -8,56 +8,61 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="pane" prefHeight="635.0" prefWidth="1050.0" styleClass="white" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.HomeController">
-	<children>
-		<JFXToolbar styleClass="blue-700">
-			<rightItems>
-				<JFXButton alignment="CENTER" maxHeight="1.7976931348623157E308" ripplerFill="WHITE">
-					<graphic>
-						<ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-							<image>
-								<Image url="@img/send.png" />
-							</image>
-						</ImageView>
-					</graphic>
-				</JFXButton>
-				<JFXButton alignment="CENTER" maxHeight="1.7976931348623157E308" ripplerFill="WHITE">
-					<graphic>
-						<ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-							<image>
-								<Image url="@img/receive.png" />
-							</image>
-						</ImageView>
-					</graphic>
-				</JFXButton>
-				<JFXButton alignment="CENTER" maxHeight="1.7976931348623157E308" ripplerFill="WHITE">
-					<graphic>
-						<ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-							<image>
-								<Image url="@img/contacts.png" />
-							</image>
-						</ImageView>
-					</graphic>
-				</JFXButton>
-				<JFXButton alignment="CENTER" maxHeight="1.7976931348623157E308" ripplerFill="WHITE">
-					<graphic>
-						<ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-							<image>
-								<Image url="@img/refresh.png" />
-							</image>
-						</ImageView>
-					</graphic>
-				</JFXButton>
-			</rightItems>
-		</JFXToolbar>
-		<BorderPane maxHeight="1.7976931348623157E308" VBox.vgrow="ALWAYS">
-         <center>
-				<FlowPane alignment="CENTER" styleClass="white" BorderPane.alignment="CENTER">
-					<children>
-						<JFXButton styleClass="blue-700" text="Click me!" />
-					</children>
-				</FlowPane>
-         </center>
-		</BorderPane>
-	</children>
-</VBox>
+
+<BorderPane fx:id="pane" styleClass="white" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.HomeController">
+   <center>
+      <VBox fx:id="fadePane" prefHeight="635.0" prefWidth="1050.0" styleClass="white">
+      	<children>
+      		<JFXToolbar styleClass="blue-700">
+      			<rightItems>
+      				<JFXButton alignment="CENTER" maxHeight="1.7976931348623157E308" ripplerFill="WHITE">
+      					<graphic>
+      						<ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+      							<image>
+      								<Image url="@img/send.png" />
+      							</image>
+      						</ImageView>
+      					</graphic>
+      				</JFXButton>
+      				<JFXButton alignment="CENTER" maxHeight="1.7976931348623157E308" ripplerFill="WHITE">
+      					<graphic>
+      						<ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+      							<image>
+      								<Image url="@img/receive.png" />
+      							</image>
+      						</ImageView>
+      					</graphic>
+      				</JFXButton>
+      				<JFXButton alignment="CENTER" maxHeight="1.7976931348623157E308" ripplerFill="WHITE">
+      					<graphic>
+      						<ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+      							<image>
+      								<Image url="@img/contacts.png" />
+      							</image>
+      						</ImageView>
+      					</graphic>
+      				</JFXButton>
+      				<JFXButton alignment="CENTER" maxHeight="1.7976931348623157E308" ripplerFill="WHITE">
+      					<graphic>
+      						<ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+      							<image>
+      								<Image url="@img/refresh.png" />
+      							</image>
+      						</ImageView>
+      					</graphic>
+      				</JFXButton>
+      			</rightItems>
+      		</JFXToolbar>
+      		<BorderPane maxHeight="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+               <center>
+      				<FlowPane alignment="CENTER" styleClass="white" BorderPane.alignment="CENTER">
+      					<children>
+      						<JFXButton styleClass="blue-700" text="Click me!" />
+      					</children>
+      				</FlowPane>
+               </center>
+      		</BorderPane>
+      	</children>
+      </VBox>
+   </center>
+</BorderPane>

@@ -114,7 +114,7 @@ public abstract class Controller implements Initializable {
 	 * @param controller - the controller of the next view to show
 	 * @param transition
 	 */
-	protected void showNext(Controller controller, boolean transition) {
+	public void showNext(Controller controller, boolean transition) {
 		setNextController(controller);
 		nextController.show(transition, this);
 	}

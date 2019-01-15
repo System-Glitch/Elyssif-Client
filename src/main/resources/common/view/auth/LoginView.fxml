@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 
-<FlowPane fx:id="pane" styleClass="white" alignment="CENTER" columnHalignment="CENTER" prefHeight="635.0" prefWidth="1030.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.auth.LoginController">
+<FlowPane fx:id="pane" alignment="CENTER" columnHalignment="CENTER" prefHeight="635.0" prefWidth="1030.0" styleClass="white" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.auth.LoginController">
    <children>
       <VBox fx:id="fadePane" alignment="TOP_CENTER" layoutX="413.0" layoutY="190.0" styleClass="card">
          <children>
@@ -21,8 +21,8 @@
                </styleClass></Label>
             <VBox alignment="TOP_CENTER" spacing="40.0" VBox.vgrow="ALWAYS">
                <children>
-                  <JFXTextField labelFloat="true" prefWidth="180.0" promptText="%email" />
-                  <JFXPasswordField labelFloat="true" prefWidth="180.0" promptText="%password">
+                  <JFXTextField fx:id="emailField" labelFloat="true" prefWidth="180.0" promptText="%email" />
+                  <JFXPasswordField fx:id="passwordField" labelFloat="true" prefWidth="180.0" promptText="%password">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
@@ -32,7 +32,7 @@
                         <JFXButton onAction="#clickBack" styleClass="grey-200" text="%back" BorderPane.alignment="CENTER" />
                      </left>
                      <right>
-                        <JFXButton buttonType="RAISED" styleClass="blue-700" text="%log-in" BorderPane.alignment="CENTER" />
+                        <JFXButton buttonType="RAISED" onAction="#submit" styleClass="blue-700" text="%log-in" BorderPane.alignment="CENTER" />
                      </right>
                   </BorderPane>
                </children>
