@@ -42,7 +42,7 @@ public final class ElyssifClient extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Elyssif");
 
-			//setupIcons(primaryStage);
+			setupIcons(primaryStage);
 			
 			primaryStage.show();
 			
@@ -62,9 +62,12 @@ public final class ElyssifClient extends Application {
 	}
 
 	private void setupIcons(Stage primaryStage) {
-		primaryStage.getIcons().add(new Image(getClass().getResource("/view/logo16.png").toExternalForm()));
-		primaryStage.getIcons().add(new Image(getClass().getResource("/view/logo32.png").toExternalForm()));
-		primaryStage.getIcons().add(new Image(getClass().getResource("/view/logo64.png").toExternalForm()));
+		primaryStage.getIcons().add(new Image(getClass().getResource("/view/img/logo/logo16.png").toExternalForm()));
+		primaryStage.getIcons().add(new Image(getClass().getResource("/view/img/logo/logo32.png").toExternalForm()));
+		primaryStage.getIcons().add(new Image(getClass().getResource("/view/img/logo/logo48.png").toExternalForm()));
+		primaryStage.getIcons().add(new Image(getClass().getResource("/view/img/logo/logo64.png").toExternalForm()));
+		primaryStage.getIcons().add(new Image(getClass().getResource("/view/img/logo/logo128.png").toExternalForm()));
+		primaryStage.getIcons().add(new Image(getClass().getResource("/view/img/logo/logo256.png").toExternalForm()));
 	}
 	
 	private void setupLanguage(FXMLLoader loader) {

@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 
-<FlowPane fx:id="pane" alignment="CENTER" columnHalignment="CENTER" prefHeight="635.0" prefWidth="1030.0" styleClass="white" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.auth.LoginController">
+<FlowPane fx:id="pane" alignment="CENTER" columnHalignment="CENTER" prefHeight="635.0" prefWidth="1030.0" styleClass="gradient" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.auth.LoginController">
    <children>
       <VBox fx:id="fadePane" alignment="TOP_CENTER" layoutX="413.0" layoutY="190.0" styleClass="card">
          <children>
@@ -46,8 +46,4 @@
          </children>
       </VBox>
    </children>
-   <styleClass>
-      <String fx:value="white" />
-      <String fx:value="shadow" />
-   </styleClass>
 </FlowPane>

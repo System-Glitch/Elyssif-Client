@@ -48,7 +48,7 @@
 	-fx-padding: 8px;
 	-fx-font-size: 10px;
 	-fx-font-fill: white;
-	-fx-background-color: #6d6d6d;
+	-fx-background-color: #6D6D6D;
 	-fx-border-radius: 4px;
 }
 
@@ -85,7 +85,8 @@
 	-fx-border-color: -grey-200;
 	-fx-border-style: solid;
 	-fx-border-width: 2px;
-	-fx-border-radius: 5px;
+	-fx-border-radius: 8px;
+	-fx-background-radius: 8px;
 }
 
 .card .card-title {
@@ -102,9 +103,18 @@
 	-fx-font-size: 18px;
 }
 
+.main-title {
+	-fx-font-family: 'Roboto Light';
+	-fx-text-alignment: center;
+	-fx-text-fill: -blue-grey-50;
+	-fx-font-size: 50px;
+}
+
 .welcome-btn {
+	-fx-font-weight: bold;
 	-fx-font-size: 18px !important;
 	-fx-padding: 8px 15px 8px 15px;
+	-fx-background-color: -green-A700;
 }
 
 .scroll-pane-full {
@@ -114,4 +124,8 @@
 
 .shadow {
 	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 90, 0, 0, 0);
+}
+
+.gradient {
+	-fx-background-color: linear-gradient(to top right, #59B1F7, #6666E2);
 }
