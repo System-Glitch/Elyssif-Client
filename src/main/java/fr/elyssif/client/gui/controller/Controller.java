@@ -194,10 +194,13 @@ public abstract class Controller implements Initializable {
 		for(Field field  : getClass().getDeclaredFields()) {
 			if (field.isAnnotationPresent(FXML.class) && Controller.class.isAssignableFrom(field.getType())) {
 				try {
-					String name = field.getName().substring(0, field.getName().lastIndexOf("Controller"));
-					field.setAccessible(true);
-					registerController(name, (Controller) field.get(this));
-					field.setAccessible(false);
+					int index = field.getName().lastIndexOf("Controller");
+					if(index != -1 && index != 0) { //Exists and doesn't start with
+						String name = field.getName().substring(0, index);
+						field.setAccessible(true);
+						registerController(name, (Controller) field.get(this));
+						field.setAccessible(false);
+					}
 				} catch (IllegalArgumentException | IllegalAccessException e) {
 					Logger.getGlobal().log(Level.SEVERE, "Error while registering child controllers.", e);
 				}
