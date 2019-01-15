@@ -5,8 +5,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import fr.elyssif.client.Config;
-import fr.elyssif.client.gui.controller.Controller;
-import fr.elyssif.client.gui.view.SlideDirection;
+import fr.elyssif.client.gui.controller.FadeController;
 import javafx.fxml.FXML;
 
 /**
@@ -14,18 +13,17 @@ import javafx.fxml.FXML;
  * @author Jérémy LAMBERT
  *
  */
-public final class RegisterController extends Controller {
+public final class RegisterController extends FadeController {
 
 	public void initialize(URL location, ResourceBundle resources) {
 		if(Config.getInstance().isVerbose())
 			Logger.getGlobal().info("Loading register controller.");
 		super.initialize(location, resources);
-		setSlideDirection(SlideDirection.NONE);
 	}
-	
+
 	@FXML
 	private void clickBack() {
 		back();
 	}
-	
+
 }

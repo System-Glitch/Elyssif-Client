@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 
 import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.controller.Controller;
-import fr.elyssif.client.gui.view.SlideDirection;
 import javafx.fxml.FXML;
 
 /**
@@ -24,7 +23,6 @@ public final class AuthController extends Controller {
 		if(Config.getInstance().isVerbose())
 			Logger.getGlobal().info("Loading auth controller.");
 		super.initialize(location, resources);
-		setSlideDirection(SlideDirection.NONE);
 	}
 
 	/**

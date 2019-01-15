@@ -35,8 +35,15 @@ public final class MainController extends Controller {
 		SnackbarController.getInstance().message("This is some info.", SnackbarMessageType.INFO);
 	}
 
-	protected static MainController getInstance() {
+	public static MainController getInstance() {
 		return instance;
+	}
+
+	/**
+	 * Callback when GUI is ready and shown on screen.
+	 */
+	public void ready() {
+		authController.getController("welcome").show(true);
 	}
 
 }

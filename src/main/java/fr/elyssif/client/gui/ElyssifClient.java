@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import com.jfoenix.controls.JFXDecorator;
 
 import fr.elyssif.client.Config;
+import fr.elyssif.client.gui.controller.MainController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -52,6 +53,8 @@ public final class ElyssifClient extends Application {
 			
 			primaryStage.centerOnScreen();
 			
+			MainController.getInstance().ready();
+
 		} catch( Exception e ) {
 			Logger.getGlobal().log(Level.SEVERE, "Error while loading the graphical interface.", e);
 			Platform.exit();

@@ -7,13 +7,9 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.elyssif.client.gui.view.SlideDirection;
-import javafx.animation.Interpolator;
-import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.Pane;
-import javafx.util.Duration;
 
 /**
  * Super-class for controllers. Handles sliding transitions and back buttons.
@@ -22,12 +18,9 @@ import javafx.util.Duration;
  */
 public abstract class Controller implements Initializable {
 
-	private static final double SLIDING_DURATION = 500;
-
 	private Controller backController;
-	private SlideDirection slideDirection = SlideDirection.NONE;
-	private TranslateTransition openTransition;
-	private TranslateTransition closeTransition;
+	private Controller nextController;
+	private Controller parentController;
 	private ResourceBundle bundle;
 	private URL location;
 
@@ -40,15 +33,6 @@ public abstract class Controller implements Initializable {
 		this.location  = location;
 
 		registerControllers();
-
-		openTransition = new TranslateTransition(new Duration(SLIDING_DURATION), pane);
-		openTransition.setToX(0);
-		openTransition.setInterpolator(Interpolator.EASE_OUT);
-
-		closeTransition = new TranslateTransition(new Duration(SLIDING_DURATION), pane);
-		closeTransition.setInterpolator(Interpolator.EASE_IN);
-		closeTransition.setFromX(0);
-		closeTransition.setOnFinished((e) -> backController.show(false));
 	}
 
 	/**
@@ -57,7 +41,6 @@ public abstract class Controller implements Initializable {
 	 */
 	public void show(boolean transition) {
 		show(transition, null);
-		SnackbarController.getInstance().updateZOrder();
 	}
 
 	/**
@@ -65,62 +48,17 @@ public abstract class Controller implements Initializable {
 	 * @param transition - plays transition if true, simply puts pane to front if false
 	 * @param backController - the controller which should be called when the back button is clicked
 	 */
-	public void show(boolean transition, Controller backController) {
+	protected void show(boolean transition, Controller backController) {
 		setBackController(backController);
 		pane.toFront();
 		SnackbarController.getInstance().updateZOrder();
-		if(transition && !slideDirection.equals(SlideDirection.NONE)) {
-			if(slideDirection == SlideDirection.VERTICAL)
-				openTransition.setFromY(-pane.getHeight()-40);
-			else if(slideDirection == SlideDirection.HORIZONTAL)
-				openTransition.setFromX(-pane.getWidth()-40);
-			openTransition.play();
-		}
 	}
 
 	/**
 	 * Show the previous view. Plays the transition backwards.
 	 */
 	protected void back() {
-		if(slideDirection == SlideDirection.VERTICAL)
-			closeTransition.setToY(-pane.getHeight()-40);
-		else if(slideDirection == SlideDirection.HORIZONTAL)
-			closeTransition.setToX(-pane.getWidth()-40);
-		closeTransition.play();
-	}
-
-	/**
-	 * Get the slide transition direction.
-	 * @return slideDirection
-	 * @see SlideDirection
-	 */
-	protected final SlideDirection getSlideDirection() {
-		return slideDirection;
-	}
-
-	/**
-	 * Set the slide transition direction
-	 * @param slideDirection
-	 */
-	protected final void setSlideDirection(SlideDirection slideDirection) {
-		this.slideDirection = slideDirection;
-		if(slideDirection == SlideDirection.VERTICAL) {
-			openTransition.setToY(0);
-			openTransition.setToX(0);
-			openTransition.setFromX(0);
-
-			closeTransition.setFromY(0);
-			closeTransition.setToX(0);
-			closeTransition.setFromX(0);
-		} else if(slideDirection == SlideDirection.HORIZONTAL) {
-			openTransition.setToX(0);
-			openTransition.setToY(0);
-			openTransition.setFromY(0);
-
-			closeTransition.setFromX(0);
-			closeTransition.setToY(0);
-			closeTransition.setFromY(0);
-		}
+		backController.show(false);
 	}
 
 	/**
@@ -129,6 +67,14 @@ public abstract class Controller implements Initializable {
 	 */
 	protected final Pane getPane() {
 		return pane;
+	}
+
+	/**
+	 * Get the the parent controller of this controller. Can be null.
+	 * @return parentController
+	 */
+	protected final Controller getParentController() {
+		return parentController;
 	}
 
 	/**
@@ -141,10 +87,36 @@ public abstract class Controller implements Initializable {
 
 	/**
 	 * Set the controller which should be called when the back button is clicked.
-	 * @return backController
 	 */
 	protected final void setBackController(Controller backController) {
 		this.backController = backController;
+	}
+
+	/**
+	 * Get the next controller to show.<br>
+	 * Used when a transition should be played before the next controller is shown.
+	 * @return nextController
+	 */
+	protected final Controller getNextController() {
+		return nextController;
+	}
+
+	/**
+	 * Set the next controller to show.<br>
+	 * Used when a transition should be played before the next controller is shown.
+	 */
+	protected final void setNextController(Controller nextController) {
+		this.nextController = nextController;
+	}
+
+	/**
+	 * Set the next controller and show it.
+	 * @param controller - the controller of the next view to show
+	 * @param transition
+	 */
+	protected void showNext(Controller controller, boolean transition) {
+		setNextController(controller);
+		nextController.show(transition, this);
 	}
 
 	/**
@@ -171,7 +143,7 @@ public abstract class Controller implements Initializable {
 	 * @return controller
 	 * @see Controller
 	 */
-	protected Controller getController(String key) {
+	public Controller getController(String key) {
 		return controllers.get(key);
 	}
 
@@ -182,6 +154,7 @@ public abstract class Controller implements Initializable {
 	 */
 	private void registerController(String key, Controller controller) {
 		controllers.put(key, controller);
+		controller.parentController = this;
 	}
 
 	/**
