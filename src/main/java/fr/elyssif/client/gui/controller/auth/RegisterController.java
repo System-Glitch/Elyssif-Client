@@ -17,6 +17,7 @@ import fr.elyssif.client.gui.controller.Validatable;
 import fr.elyssif.client.gui.controller.ValidationUtils;
 import fr.elyssif.client.gui.validation.StringMaxLengthValidator;
 import fr.elyssif.client.gui.validation.StringMinLengthValidator;
+import fr.elyssif.client.gui.validation.TextMatchValidator;
 import fr.elyssif.client.http.Authenticator;
 import fr.elyssif.client.http.FormCallback;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -96,6 +97,7 @@ public final class RegisterController extends FadeController implements Lockable
 		RequiredFieldValidator requiredValidator = new RequiredFieldValidator(getBundle().getString("required"));
 		StringMaxLengthValidator maxLengthValidator = new StringMaxLengthValidator(getBundle().getString("max-length").replace("%LENGTH%", "255"), 255);
 		StringMinLengthValidator minLengthValidator = new StringMinLengthValidator(getBundle().getString("min-length").replace("%LENGTH%", "6"), 6);
+		TextMatchValidator textMatchValidation = new TextMatchValidator(getBundle().getString("password-match"), passwordField);
 
 		emailField.getValidators().add(requiredValidator);
 		emailField.getValidators().add(maxLengthValidator);
@@ -107,7 +109,7 @@ public final class RegisterController extends FadeController implements Lockable
 		passwordConfirmationField.getValidators().add(requiredValidator);
 		passwordConfirmationField.getValidators().add(maxLengthValidator);
 		passwordConfirmationField.getValidators().add(minLengthValidator);
-		//TODO password must match validation
+		passwordConfirmationField.getValidators().add(textMatchValidation);
 		ValidationUtils.setValidationListener(emailField);
 		ValidationUtils.setValidationListener(nameField);
 		ValidationUtils.setValidationListener(passwordField);
