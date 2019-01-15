@@ -34,6 +34,28 @@
 	-jfx-unfocus-color: -blue-grey-400;
 }
 
+.jfx-text-field:error, .jfx-password-field:error {
+	-jfx-focus-color: -red-700;
+}
+
+.jfx-text-field:error .label, .jfx-password-field:error .label {
+	-fx-font-weight: BOLD;
+	-fx-font-fill: -red-700;
+}
+
+.tooltip {
+	-fx-font-family: 'Roboto Medium';
+	-fx-padding: 8px;
+	-fx-font-size: 10px;
+	-fx-font-fill: white;
+	-fx-background-color: #6d6d6d;
+	-fx-border-radius: 4px;
+}
+
+.page-corner {
+    -fx-shape: " ";
+}
+
 .jfx-tool-bar {
 	-fx-font-size: 20;
     -fx-font-weight: BOLD;
