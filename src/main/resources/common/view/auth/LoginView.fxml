@@ -32,7 +32,7 @@
                         <JFXButton onAction="#clickBack" styleClass="grey-200" text="%back" BorderPane.alignment="CENTER" />
                      </left>
                      <right>
-                        <JFXButton buttonType="RAISED" onAction="#submit" styleClass="blue-700" text="%log-in" BorderPane.alignment="CENTER" />
+                        <JFXButton buttonType="RAISED" defaultButton="true" onAction="#submit" styleClass="blue-700" text="%log-in" BorderPane.alignment="CENTER" />
                      </right>
                   </BorderPane>
                </children>
