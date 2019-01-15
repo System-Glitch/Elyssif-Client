@@ -13,6 +13,7 @@ import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.controller.auth.AuthController;
 import fr.elyssif.client.http.Authenticator;
+import fr.elyssif.client.http.RequestCallback;
 import javafx.fxml.FXML;
 
 /**
@@ -56,10 +57,18 @@ public final class MainController extends Controller {
 	 * Callback when GUI is ready and shown on screen.
 	 */
 	public void ready() {
-		//TODO check auth by getting user info (/api/user)
-		if(authenticator.getToken() != null)
-			homeController.show(true);
-		else
+		if(authenticator.getToken() != null) {
+			authenticator.requestUserInfo(new RequestCallback() {
+
+				public void run() {
+					if(getResponse().getStatus() == 200 && authenticator.getUser() != null)
+						homeController.show(true);
+					else
+						authController.getController("welcome").show(true);
+				}
+
+			});
+		} else
 			authController.getController("welcome").show(true);
 	}
 
