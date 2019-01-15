@@ -7,11 +7,15 @@ import java.util.logging.Logger;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.validation.RequiredFieldValidator;
 
 import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.controller.FadeController;
 import fr.elyssif.client.gui.controller.Lockable;
 import fr.elyssif.client.gui.controller.MainController;
+import fr.elyssif.client.gui.controller.Validatable;
+import fr.elyssif.client.gui.controller.ValidationUtils;
+import fr.elyssif.client.gui.validation.StringMaxLengthValidator;
 import fr.elyssif.client.http.Authenticator;
 import fr.elyssif.client.http.FormCallback;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -22,7 +26,7 @@ import javafx.fxml.FXML;
  * @author Jérémy LAMBERT
  *
  */
-public final class LoginController extends FadeController implements Lockable {
+public final class LoginController extends FadeController implements Lockable, Validatable {
 
 	@FXML JFXTextField emailField;
 	@FXML JFXPasswordField passwordField;
@@ -39,29 +43,34 @@ public final class LoginController extends FadeController implements Lockable {
 
 		disableProperty = new SimpleBooleanProperty(false);
 		bindControls();
+		setupValidators();
 	}
 
 	@FXML
 	private void submit() {
-		setLocked(true);
-		Authenticator authenticator = MainController.getInstance().getAuthenticator();
-		authenticator.login(emailField.getText(), passwordField.getText(), new FormCallback() {
 
-			public void run() {
-				if(getResponse().getStatus() == 200) {
-					Config.getInstance().set("Token", authenticator.getToken());
-					Config.getInstance().save();
-					showNext(MainController.getInstance().getController("home"), true);
+		if(validateAll()) {
+			setLocked(true);
+			Authenticator authenticator = MainController.getInstance().getAuthenticator();
+			authenticator.login(emailField.getText(), passwordField.getText(), new FormCallback() {
+
+				public void run() {
+					if(getResponse().getStatus() == 200) {
+						Config.getInstance().set("Token", authenticator.getToken());
+						Config.getInstance().save();
+						showNext(MainController.getInstance().getController("home"), true);
+					}
+					//TODO handle auth fail
+					setLocked(false);
 				}
-				//TODO handle auth fail
-				setLocked(false);
-			}
 
-		});
+			});
+		}
 	}
 
 	@FXML
 	private void clickBack() {
+		resetValidation();
 		back();
 	}
 
@@ -74,6 +83,29 @@ public final class LoginController extends FadeController implements Lockable {
 
 	public void setLocked(boolean locked) {
 		disableProperty.set(locked);
+	}
+
+	public void setupValidators() {
+		RequiredFieldValidator requiredValidator = new RequiredFieldValidator(getBundle().getString("required"));
+		StringMaxLengthValidator maxLengthValidator = new StringMaxLengthValidator(getBundle().getString("max-length").replace("%LENGTH%", "255"), 255);
+
+		emailField.getValidators().add(requiredValidator);
+		emailField.getValidators().add(maxLengthValidator);
+		passwordField.getValidators().add(requiredValidator);
+		passwordField.getValidators().add(maxLengthValidator);
+		ValidationUtils.setValidationListener(emailField);
+		ValidationUtils.setValidationListener(passwordField);
+	}
+
+	public boolean validateAll() {
+		boolean ok = emailField.validate();
+		ok = passwordField.validate() && ok;
+		return ok;
+	}
+
+	public void resetValidation() {
+		emailField.resetValidation();
+		passwordField.resetValidation();
 	}
 
 }

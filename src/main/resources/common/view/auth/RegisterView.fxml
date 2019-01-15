@@ -19,7 +19,7 @@
                   <String fx:value="card-title" />
                   <String fx:value="title" />
                </styleClass></Label>
-            <VBox alignment="TOP_CENTER" spacing="30.0" VBox.vgrow="ALWAYS">
+            <VBox alignment="TOP_CENTER" spacing="32.0" VBox.vgrow="ALWAYS">
                <children>
                   <JFXTextField fx:id="emailField" labelFloat="true" prefWidth="180.0" promptText="%email" />
                   <JFXTextField fx:id="nameField" labelFloat="true" prefWidth="180.0" promptText="%name" />

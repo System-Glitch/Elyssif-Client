@@ -1,7 +1,7 @@
 package fr.elyssif.client.gui.controller;
 
 /**
- * Functional interface for controllers that need to be locked (such as forms)<br>
+ * Interface for controllers that need to be locked (such as forms)<br>
  * All controllers implementing this interface should have a SimpleBooleanProperty which defines
  * if the view is locked or not and bind it to the controls through <code>bindControls()</code>.
  * @author Jérémy LAMBERT
