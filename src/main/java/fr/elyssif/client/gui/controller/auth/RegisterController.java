@@ -13,8 +13,10 @@ import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.controller.FadeController;
 import fr.elyssif.client.gui.controller.Lockable;
 import fr.elyssif.client.gui.controller.MainController;
+import fr.elyssif.client.gui.controller.SnackbarController;
 import fr.elyssif.client.gui.controller.Validatable;
 import fr.elyssif.client.gui.controller.ValidationUtils;
+import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.validation.StringMaxLengthValidator;
 import fr.elyssif.client.gui.validation.StringMinLengthValidator;
 import fr.elyssif.client.gui.validation.TextMatchValidator;
@@ -60,11 +62,13 @@ public final class RegisterController extends FadeController implements Lockable
 					new FormCallback() {
 
 				public void run() {
-					if(getResponse().getStatus() == 200) {
+					int status = getResponse().getStatus();
+					if(status == 200) {
 						Config.getInstance().set("Token", authenticator.getToken());
 						Config.getInstance().save();
 						showNext(MainController.getInstance().getController("home"), true);
-					}
+					} else if(status == -1)
+						SnackbarController.getInstance().message(getBundle().getString("error") + getResponse().getRawBody(), SnackbarMessageType.ERROR, 4000);
 					//TODO handle errors
 					setLocked(false);
 				}

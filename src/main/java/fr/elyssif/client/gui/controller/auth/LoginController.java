@@ -13,8 +13,10 @@ import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.controller.FadeController;
 import fr.elyssif.client.gui.controller.Lockable;
 import fr.elyssif.client.gui.controller.MainController;
+import fr.elyssif.client.gui.controller.SnackbarController;
 import fr.elyssif.client.gui.controller.Validatable;
 import fr.elyssif.client.gui.controller.ValidationUtils;
+import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.validation.StringMaxLengthValidator;
 import fr.elyssif.client.http.Authenticator;
 import fr.elyssif.client.http.FormCallback;
@@ -55,11 +57,13 @@ public final class LoginController extends FadeController implements Lockable, V
 			authenticator.login(emailField.getText(), passwordField.getText(), new FormCallback() {
 
 				public void run() {
-					if(getResponse().getStatus() == 200) {
+					int status = getResponse().getStatus();
+					if(status == 200) {
 						Config.getInstance().set("Token", authenticator.getToken());
 						Config.getInstance().save();
 						showNext(MainController.getInstance().getController("home"), true);
-					}
+					} else if(status == -1)
+						SnackbarController.getInstance().message(getBundle().getString("error") + getResponse().getRawBody(), SnackbarMessageType.ERROR, 4000);
 					//TODO handle auth fail
 					setLocked(false);
 				}

@@ -37,6 +37,15 @@ public class RestResponse {
 		status = -1;
 		raw = "Request failed.";
 	}
+	
+	/**
+	 * Use this constructor if an exception was thrown when executing the request.
+	 * @param message
+	 */
+	protected RestResponse(String message) {
+		status = -1;
+		raw = message;
+	}
 
 	protected RestResponse(HttpResponse response) {
 		this.response = response;

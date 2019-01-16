@@ -153,7 +153,7 @@ public class RestRequest {
 
 			} catch (IOException e) {
 				Logger.getGlobal().log(Level.SEVERE, "Unable to execute Rest " + method.name() + " request", e);
-				result = new RestResponse(); //Create a response with status code -1 and message "Request failed".
+				result = new RestResponse(e.getMessage()); //Create a response with status code -1 and exception message.
 			}
 
 			callback.setResponse(result);

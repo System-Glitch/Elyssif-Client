@@ -158,7 +158,8 @@ public final class Config {
 	 * @see {@link #save() save}
 	 */
 	public final void set(String key, String value) {
-		values.put(key, value);
+		if(value == null) values.remove(key);
+		else values.put(key, value);
 	}
 
 	/**

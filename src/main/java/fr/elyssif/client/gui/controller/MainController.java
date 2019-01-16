@@ -61,10 +61,13 @@ public final class MainController extends Controller {
 			authenticator.requestUserInfo(new RequestCallback() {
 
 				public void run() {
-					if(getResponse().getStatus() == 200 && authenticator.getUser() != null)
+					int status = getResponse().getStatus();
+					if(status == 200 && authenticator.getUser() != null)
 						homeController.show(true);
-					else
+					else if(status == 401)
 						authController.getController("welcome").show(true);
+					else if(status == -1)
+						SnackbarController.getInstance().message(getBundle().getString("error") + getResponse().getRawBody(), SnackbarMessageType.ERROR, 4000);
 				}
 
 			});

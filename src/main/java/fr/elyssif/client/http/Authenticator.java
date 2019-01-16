@@ -6,6 +6,7 @@ import org.apache.http.client.HttpClient;
 
 import com.google.gson.JsonObject;
 
+import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.model.User;
 
 /**
@@ -148,6 +149,11 @@ public final class Authenticator {
 					user.setEmail(obj.get("email").getAsString());
 					user.setName(obj.get("name").getAsString());
 					Logger.getGlobal().info("Authenticated user: " + user.getEmail().get() + " (" + user.getName().get() + ")");
+				} else if(response.getStatus() == 401) {
+					Config.getInstance().set("Token", null);
+					Config.getInstance().save();
+					user = null;
+					Logger.getGlobal().warning("Invalid authentication token, deleting.");
 				} else
 					Logger.getGlobal().warning("User info request failed with state " + response.getStatus());
 
