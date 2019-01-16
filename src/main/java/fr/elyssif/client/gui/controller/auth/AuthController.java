@@ -18,6 +18,7 @@ public final class AuthController extends Controller {
 	@FXML private LoginController loginController;
 	@FXML private RegisterController registerController;
 	@FXML private WelcomeController welcomeController;
+	@FXML private LoaderController loaderController;
 
 	public void initialize(URL location, ResourceBundle resources) {
 		if(Config.getInstance().isVerbose())

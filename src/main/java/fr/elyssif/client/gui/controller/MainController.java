@@ -60,21 +60,22 @@ public final class MainController extends Controller {
 	 */
 	public void ready() {
 		if(authenticator.getToken() != null) {
+			authController.getController("loader").show(true);
 			authenticator.requestUserInfo(new RequestCallback() {
 
 				public void run() {
 					int status = getResponse().getStatus();
-					if(status == 200 && authenticator.getUser() != null)
-						homeController.show(true);
-					else if(status == 401)
-						authController.getController("welcome").show(true);
+					if(status == 200 && authenticator.getUser() != null) {
+						authController.getController("loader").showNext(homeController, true);
+					} else if(status == 401)
+						authController.getController("loader").showNext(authController.getController("welcome"), true);
 					else if(status == -1)
 						SnackbarController.getInstance().message(getBundle().getString("error") + getResponse().getRawBody(), SnackbarMessageType.ERROR, 4000);
 				}
 
 			});
 		} else
-			authController.getController("welcome").show(true);
+			authController.getController("loader").showNext(authController.getController("welcome"), true);
 	}
 
 }
