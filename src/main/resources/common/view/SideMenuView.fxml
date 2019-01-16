@@ -14,6 +14,7 @@
 	<BorderPane>
 		<center>
 			<JFXListView fx:id="sideList">
+				<Label text="%home" />
 				<Label text="%profile" />
 				<Label text="%settings" />
 			</JFXListView>

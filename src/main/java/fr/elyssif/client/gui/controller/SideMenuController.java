@@ -42,7 +42,7 @@ public final class SideMenuController extends Controller {
 					SnackbarController.getInstance().message(getBundle().getString("error") + getResponse().getRawBody(), SnackbarMessageType.ERROR, 4000);
 				((Lockable) getParentController()).setLocked(false);				
 			}
-			
+
 		});
 	}
 }
