@@ -115,9 +115,10 @@ public class RestResponse {
 		for (Header header : response.getAllHeaders()) {
 			full += "\n" + header.getName() + ": " + header.getValue();
 		}
-
-		full += "\n\n";
-		full += raw;
+		if(raw != null) {
+			full += "\n\n";
+			full += raw;
+		}
 		return full;
 	}
 }

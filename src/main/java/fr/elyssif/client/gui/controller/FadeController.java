@@ -22,7 +22,7 @@ public abstract class FadeController extends Controller {
 	private FadeTransition closeTransition;
 	private FadeTransition nextTransition;
 
-	@FXML Pane fadePane;
+	@FXML private Pane fadePane;
 
 	public void initialize(URL location, ResourceBundle resources) {
 		super.initialize(location, resources);

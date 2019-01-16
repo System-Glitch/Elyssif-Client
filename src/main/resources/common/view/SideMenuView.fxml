@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane fx:id="pane" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1"  fx:controller="fr.elyssif.client.gui.controller.SideMenuController">
+	<BorderPane>
+		<center>
+			<JFXListView>
+				<Label text="%profile" />
+				<Label text="%settings" />
+			</JFXListView>
+		</center>
+		<top>
+			<ImageView fitHeight="128.0" fitWidth="128.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+				<image>
+					<Image url="@img/logo/logo128.png" />
+				</image>
+				<BorderPane.margin>
+					<Insets bottom="15.0" />
+				</BorderPane.margin>
+			</ImageView>
+		</top>
+		<padding>
+			<Insets bottom="20.0" top="20.0" />
+		</padding>
+		<opaqueInsets>
+			<Insets />
+		</opaqueInsets>
+		<bottom>
+			<JFXButton onAction="#logoutClicked" styleClass="red-A400" text="%logout" BorderPane.alignment="CENTER">
+				<BorderPane.margin>
+					<Insets top="15.0" />
+				</BorderPane.margin>
+			</JFXButton>
+		</bottom>
+	</BorderPane>
+</StackPane>

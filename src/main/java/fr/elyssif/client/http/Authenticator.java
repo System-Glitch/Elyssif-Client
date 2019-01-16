@@ -99,7 +99,7 @@ public final class Authenticator {
 
 			public void run() {
 				RestResponse response = getResponse();
-				if(response.getStatus() == 204) {
+				if(response.getStatus() == 204 || response.getStatus() == 401) {
 					token = null;
 					user = null;
 				} else

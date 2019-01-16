@@ -235,7 +235,7 @@ public class RestRequest {
 			for (Header header : request.getAllHeaders()) {
 				full += "\n" + header.getName() + ": " + header.getValue();
 			}
-			if(!request.getMethod().equals(HttpMethod.GET.name())) {
+			if(!request.getMethod().equals(HttpMethod.GET.name()) && !request.getMethod().equals(HttpMethod.DELETE.name())) {
 				full += "\n\n";
 				full += EntityUtils.toString(((HttpEntityEnclosingRequestBase) request).getEntity());
 			}

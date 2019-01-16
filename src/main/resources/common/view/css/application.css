@@ -63,8 +63,28 @@
     -fx-pref-width: 100%;
 }
 
+.jfx-button {
+	-fx-cursor: hand;
+}
+
 .jfx-tool-bar .jfx-button {
 	-fx-text-fill: -light-blue-50;
+}
+
+.jfx-tool-bar .label {
+	-fx-text-fill: -light-blue-50;
+}
+
+.jfx-hamburger {
+    -fx-spacing: 5;
+    -fx-cursor: hand;
+}
+
+.jfx-hamburger StackPane {
+    -fx-pref-width: 40px;
+    -fx-pref-height: 7px;
+    -fx-background-color: -light-blue-50;
+    -fx-background-radius: 5px;
 }
 
 .jfx-decorator {
@@ -128,4 +148,38 @@
 
 .gradient {
 	-fx-background-color: linear-gradient(to top right, #59B1F7, #6666E2);
+}
+
+.jfx-list-cell {
+    -fx-background-insets: 0.0;
+    -fx-text-fill: BLACK;
+    -fx-padding: 15px;
+    -fx-font-size: 15px;
+}
+
+.jfx-list-cell:odd,
+.jfx-list-cell:even {
+    -fx-background-color: WHITE;
+}
+
+.jfx-list-cell:filled:hover,
+.jfx-list-cell:selected .label {
+    -fx-text-fill: -blue-grey-900;
+}
+
+.jfx-list-cell .jfx-rippler {
+    -jfx-rippler-fill: #59B1F7;
+}
+
+.jfx-list-cell:odd:selected > .jfx-rippler > StackPane,
+.jfx-list-cell:even:selected > .jfx-rippler > StackPane {
+    -fx-background-color: -grey-200;
+}
+
+.jfx-list-view {
+    -fx-background-insets: 0.0;
+    -jfx-cell-horizontal-margin: 0.0;
+    -jfx-cell-vertical-margin: 5.0;
+    -jfx-vertical-gap: 10.0;
+    -jfx-expanded: false;
 }
