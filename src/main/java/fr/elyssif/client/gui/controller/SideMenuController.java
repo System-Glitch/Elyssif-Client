@@ -4,10 +4,13 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
+import com.jfoenix.controls.JFXListView;
+
 import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.http.RequestCallback;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 
 /**
  * Controller for the side menu view.
@@ -16,6 +19,7 @@ import javafx.fxml.FXML;
  */
 public final class SideMenuController extends Controller {
 
+	@FXML private JFXListView<Label> sideList;
 
 	public void initialize(URL location, ResourceBundle resources) {
 		if(Config.getInstance().isVerbose())

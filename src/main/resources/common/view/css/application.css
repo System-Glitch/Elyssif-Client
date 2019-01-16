@@ -155,11 +155,16 @@
     -fx-text-fill: BLACK;
     -fx-padding: 15px;
     -fx-font-size: 15px;
+    -fx-cursor: hand;
 }
 
 .jfx-list-cell:odd,
 .jfx-list-cell:even {
     -fx-background-color: WHITE;
+}
+
+.jfx-list-cell:hover {
+	-fx-background-color: -grey-100;
 }
 
 .jfx-list-cell:filled:hover,
@@ -182,4 +187,10 @@
     -jfx-cell-vertical-margin: 5.0;
     -jfx-vertical-gap: 10.0;
     -jfx-expanded: false;
+}
+
+.logout-btn {
+	-fx-padding: 10px 20px 10px 20px;
+	-fx-font-size: 15px;
+	-fx-font-family: 'Roboto Medium';
 }
