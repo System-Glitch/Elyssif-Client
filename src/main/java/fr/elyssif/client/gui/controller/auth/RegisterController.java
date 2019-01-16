@@ -24,6 +24,8 @@ import fr.elyssif.client.http.Authenticator;
 import fr.elyssif.client.http.FormCallback;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 /**
  * Controller for the register view
@@ -83,6 +85,12 @@ public final class RegisterController extends FadeController implements Lockable
 		back();
 	}
 
+	@FXML
+	private void onKeyPressed(KeyEvent event) {
+		if(event.getCode().equals(KeyCode.ENTER))
+			submit();
+	}
+
 	public void bindControls() {
 		emailField.disableProperty().bind(disableProperty);
 		nameField.disableProperty().bind(disableProperty);
@@ -90,6 +98,10 @@ public final class RegisterController extends FadeController implements Lockable
 		passwordConfirmationField.disableProperty().bind(disableProperty);
 		submitButton.disableProperty().bind(disableProperty);
 		backButton.disableProperty().bind(disableProperty);
+
+		//Disable cancel and default if pane is not visible
+		backButton.cancelButtonProperty().bind(getPane().disabledProperty().not());
+		submitButton.defaultButtonProperty().bind(getPane().disabledProperty().not());
 	}
 
 	public void setLocked(boolean locked) {

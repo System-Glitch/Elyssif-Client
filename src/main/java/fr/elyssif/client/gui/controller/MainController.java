@@ -43,6 +43,8 @@ public final class MainController extends Controller {
 		SnackbarController.getInstance().message("This is a success!", SnackbarMessageType.SUCCESS);
 		SnackbarController.getInstance().message("This is an error", SnackbarMessageType.ERROR);
 		SnackbarController.getInstance().message("This is some info.", SnackbarMessageType.INFO);
+		
+		authController.show(false);
 	}
 
 	public static MainController getInstance() {

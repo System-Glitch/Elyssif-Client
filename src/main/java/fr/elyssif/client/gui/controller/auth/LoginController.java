@@ -14,9 +14,9 @@ import fr.elyssif.client.gui.controller.FadeController;
 import fr.elyssif.client.gui.controller.Lockable;
 import fr.elyssif.client.gui.controller.MainController;
 import fr.elyssif.client.gui.controller.SnackbarController;
+import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.controller.Validatable;
 import fr.elyssif.client.gui.controller.ValidationUtils;
-import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.validation.StringMaxLengthValidator;
 import fr.elyssif.client.http.Authenticator;
 import fr.elyssif.client.http.FormCallback;
@@ -83,6 +83,10 @@ public final class LoginController extends FadeController implements Lockable, V
 		passwordField.disableProperty().bind(disableProperty);
 		submitButton.disableProperty().bind(disableProperty);
 		backButton.disableProperty().bind(disableProperty);
+		
+		//Disable cancel and default if pane is not visible
+		backButton.cancelButtonProperty().bind(getPane().disabledProperty().not());
+		submitButton.defaultButtonProperty().bind(getPane().disabledProperty().not());
 	}
 
 	public void setLocked(boolean locked) {
