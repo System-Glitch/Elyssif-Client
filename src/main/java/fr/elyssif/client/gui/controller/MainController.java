@@ -39,11 +39,9 @@ public final class MainController extends Controller {
 		authenticator = new Authenticator(client, Config.getInstance().get("Host"), Config.getInstance().get("Token"));
 		instance = this;
 
+		getPane().setDisable(false);
 		SnackbarController.getInstance().setSnackbar(new JFXSnackbar(getPane()));
-		SnackbarController.getInstance().message("This is a success!", SnackbarMessageType.SUCCESS);
-		SnackbarController.getInstance().message("This is an error", SnackbarMessageType.ERROR);
-		SnackbarController.getInstance().message("This is some info.", SnackbarMessageType.INFO);
-		
+
 		authController.show(false);
 	}
 
@@ -67,15 +65,19 @@ public final class MainController extends Controller {
 					int status = getResponse().getStatus();
 					if(status == 200 && authenticator.getUser() != null) {
 						authController.getController("loader").showNext(homeController, true);
-					} else if(status == 401)
+					} else if(status == 401) {
+						Config.getInstance().set("Token", null);
+						Config.getInstance().save();
 						authController.getController("loader").showNext(authController.getController("welcome"), true);
-					else if(status == -1)
+					} else if(status == -1) {
 						SnackbarController.getInstance().message(getBundle().getString("error") + getResponse().getRawBody(), SnackbarMessageType.ERROR, 4000);
+						authController.getController("loader").showNext(authController.getController("welcome"), true);
+					}
 				}
 
 			});
 		} else
-			authController.getController("loader").showNext(authController.getController("welcome"), true);
+			authController.getController("welcome").show(true);
 	}
 
 }
