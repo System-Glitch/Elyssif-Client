@@ -32,6 +32,15 @@
 						</ImageView>
 					</graphic>
 				</Label>
+				<Label text="%contacts">
+					<graphic>
+						<ImageView fitWidth="32" preserveRatio="true" smooth="true">
+							<image>
+								<Image url="@img/contacts.png"/>
+							</image>
+						</ImageView>
+					</graphic>
+				</Label>
 				<Label text="%settings">
 					<graphic>
 						<ImageView fitWidth="32" preserveRatio="true" smooth="true">
