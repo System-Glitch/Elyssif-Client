@@ -130,6 +130,15 @@ public abstract class Controller implements Initializable {
 	}
 
 	/**
+	 * Show the next controller if it's set.
+	 * @param transition
+	 */
+	public void showNext(boolean transition) {
+		if(nextController != null)
+			nextController.show(transition, this);
+	}
+
+	/**
 	 * Get the ResourceBundle for this controller.
 	 * @return bundle
 	 * @see ResourceBundle
