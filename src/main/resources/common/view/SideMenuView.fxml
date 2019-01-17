@@ -14,9 +14,33 @@
 	<BorderPane>
 		<center>
 			<JFXListView fx:id="sideList">
-				<Label text="%home" />
-				<Label text="%profile" />
-				<Label text="%settings" />
+				<Label text="%home">
+					<graphic>
+						<ImageView fitWidth="32" preserveRatio="true" smooth="true">
+							<image>
+								<Image url="@img/home.png"/>
+							</image>
+						</ImageView>
+					</graphic>
+				</Label>
+				<Label text="%profile">
+					<graphic>
+						<ImageView fitWidth="32" preserveRatio="true" smooth="true">
+							<image>
+								<Image url="@img/account.png"/>
+							</image>
+						</ImageView>
+					</graphic>
+				</Label>
+				<Label text="%settings">
+					<graphic>
+						<ImageView fitWidth="32" preserveRatio="true" smooth="true">
+							<image>
+								<Image url="@img/settings.png"/>
+							</image>
+						</ImageView>
+					</graphic>
+				</Label>
 			</JFXListView>
 		</center>
 		<top>
