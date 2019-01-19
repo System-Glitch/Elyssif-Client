@@ -30,11 +30,11 @@ import javafx.fxml.FXML;
  */
 public final class LoginController extends FadeController implements Lockable, Validatable {
 
-	@FXML JFXTextField emailField;
-	@FXML JFXPasswordField passwordField;
+	@FXML private JFXTextField emailField;
+	@FXML private JFXPasswordField passwordField;
 
-	@FXML JFXButton submitButton;
-	@FXML JFXButton backButton;
+	@FXML private JFXButton submitButton;
+	@FXML private JFXButton backButton;
 
 	private SimpleBooleanProperty disableProperty;
 
@@ -83,7 +83,7 @@ public final class LoginController extends FadeController implements Lockable, V
 		passwordField.disableProperty().bind(disableProperty);
 		submitButton.disableProperty().bind(disableProperty);
 		backButton.disableProperty().bind(disableProperty);
-		
+
 		//Disable cancel and default if pane is not visible
 		backButton.cancelButtonProperty().bind(getPane().disabledProperty().not());
 		submitButton.defaultButtonProperty().bind(getPane().disabledProperty().not());

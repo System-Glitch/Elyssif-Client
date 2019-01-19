@@ -34,13 +34,13 @@ import javafx.scene.input.KeyEvent;
  */
 public final class RegisterController extends FadeController implements Lockable, Validatable {
 
-	@FXML JFXTextField emailField;
-	@FXML JFXTextField nameField;
-	@FXML JFXPasswordField passwordField;
-	@FXML JFXPasswordField passwordConfirmationField;
+	@FXML private JFXTextField emailField;
+	@FXML private JFXTextField nameField;
+	@FXML private JFXPasswordField passwordField;
+	@FXML private JFXPasswordField passwordConfirmationField;
 
-	@FXML JFXButton submitButton;
-	@FXML JFXButton backButton;
+	@FXML private JFXButton submitButton;
+	@FXML private JFXButton backButton;
 
 	private SimpleBooleanProperty disableProperty;
 
