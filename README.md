@@ -10,6 +10,7 @@ Elyssif is a user-friendly app that allows you to send sensitive or important fi
 - [Git](https://git-scm.com)
 - [Java SDK 11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html)
 - [Maven 2](https://maven.apache.org/)
+- [JavaFX Scene Builder](https://gluonhq.com/products/scene-builder/) (Optional)
 
 Build the project and run unit testing using maven: `mvn install`.  
 
