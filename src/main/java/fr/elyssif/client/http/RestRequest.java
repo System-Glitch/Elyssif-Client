@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.StringJoiner;
 import java.util.logging.Level;
@@ -37,11 +38,32 @@ import javafx.application.Platform;
  */
 public class RestRequest {
 
+	//Used to automate localization
+	private static Locale globalLocale = null;
+
 	private String url;
 	private String authorizationToken;
+	private Locale locale;
 	private Hashtable<String, Object> parameters;
 	private Hashtable<String, Object> urlParameters;
 	private HttpClient client;
+
+	/**
+	 * Set locale to use by default for every request.<br>
+	 * Locale can still be changed on a request basis using <code>locale()</code>.
+	 * @param locale
+	 */
+	public static final void setGlobalLocale(Locale locale) {
+		globalLocale = locale;
+	}
+
+	/**
+	 * Get the locale used by default for every request.
+	 * @return globalLocale
+	 */
+	public static final Locale getGlobalLocale() {
+		return globalLocale;
+	}
 
 	/**
 	 * Create a new RestRequest instance
@@ -77,7 +99,7 @@ public class RestRequest {
 	 * Get the request URL
 	 * @return the request URL
 	 */
-	public String getUrl() {
+	public final String getUrl() {
 		return url;
 	}
 
@@ -88,9 +110,17 @@ public class RestRequest {
 	 * @return current instance, used to chain the builder
 	 * @see Serializable
 	 */
-	public RestRequest param(String name, Object value) {
+	public final RestRequest param(String name, Object value) {
 		parameters.put(name, value);
 		return this;
+	}
+
+	/**
+	 * Get a read-only Hashtable of the parameters of the request.
+	 * @return parameters
+	 */
+	public final Hashtable<? extends String, ? extends Object> getParameters() {
+		return parameters;
 	}
 
 	/**
@@ -100,9 +130,37 @@ public class RestRequest {
 	 * @return current instance, used to chain the builder
 	 * @see Serializable
 	 */
-	public RestRequest urlParam(String name, Object value) {
+	public final RestRequest urlParam(String name, Object value) {
 		urlParameters.put(name, value);
 		return this;
+	}
+
+	/**
+	 * Get a read-only Hashtable of the URL parameters of the request.
+	 * @return urlParameters
+	 */
+	public final Hashtable<? extends String, ? extends Object> getUrlParameters() {
+		return urlParameters;
+	}
+
+	/**
+	 * Set the Locale used for this request.<br>
+	 * If not set to null, this will add a "Accept-Language" header to the request.
+	 * @param locale
+	 * @return current instance, used to chain the builder
+	 */
+	public final RestRequest locale(Locale locale) {
+		this.locale = locale;
+		return this;
+	}
+
+	/**
+	 * Get the currently used Locale.
+	 * @return locale
+	 * @see Locale
+	 */
+	public final Locale getLocale() {
+		return locale;
 	}
 
 	/**
@@ -176,6 +234,12 @@ public class RestRequest {
 			//Headers
 			request.addHeader("Accept", "application/json");
 			request.addHeader("Content-type", "application/json; charset=UTF-8");
+
+			if(locale != null)
+				request.addHeader("Accept-Language", locale.getLanguage());
+			else if(globalLocale != null)
+				request.addHeader("Accept-Language", globalLocale.getLanguage());
+
 			if(authorizationToken != null)
 				request.addHeader("Authorization", "Bearer " + authorizationToken);
 
@@ -215,7 +279,7 @@ public class RestRequest {
 	 * @return the URL encoded string representing parameters
 	 * @throws UnsupportedEncodingException 
 	 */
-	private String urlEncodeParameters() throws UnsupportedEncodingException {
+	private final String urlEncodeParameters() throws UnsupportedEncodingException {
 		StringJoiner builder = new StringJoiner("&");
 		for(Entry<String, Object> entry : urlParameters.entrySet()) {
 			builder.add(entry.getKey() + "=" + URLEncoder.encode(String.valueOf(entry.getValue()), "UTF-8"));

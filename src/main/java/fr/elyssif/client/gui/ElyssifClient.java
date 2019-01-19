@@ -9,6 +9,7 @@ import com.jfoenix.controls.JFXDecorator;
 
 import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.controller.MainController;
+import fr.elyssif.client.http.RestRequest;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -75,6 +76,7 @@ public final class ElyssifClient extends Application {
 		Logger.getGlobal().info("Language: " + locale.getLanguage());
 		
 		loader.setResources(ResourceBundle.getBundle("bundles.lang", locale));
+		RestRequest.setGlobalLocale(locale);
 	}
 	
 	private Locale getLocale() {
