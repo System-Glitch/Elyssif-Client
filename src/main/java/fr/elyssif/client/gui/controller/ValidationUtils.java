@@ -1,7 +1,8 @@
 package fr.elyssif.client.gui.controller;
 
-import com.jfoenix.controls.JFXPasswordField;
-import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.base.IFXValidatableControl;
+
+import javafx.scene.control.Control;
 
 /**
  * Helper class for registering validation-related events.
@@ -10,18 +11,10 @@ import com.jfoenix.controls.JFXTextField;
  */
 public abstract class ValidationUtils {
 
-	public static void setValidationListener(JFXTextField input) {
+	public static void setValidationListener(Control input) {
 		input.focusedProperty().addListener((o, oldVal, newVal) -> {
 			if (!newVal) {
-				input.validate();
-			}
-		});
-	}
-
-	public static void setValidationListener(JFXPasswordField input) {
-		input.focusedProperty().addListener((o, oldVal, newVal) -> {
-			if (!newVal) {
-				input.validate();
+				((IFXValidatableControl) input).validate();
 			}
 		});
 	}

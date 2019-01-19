@@ -1,12 +1,16 @@
 package fr.elyssif.client.gui.controller.auth;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.base.IFXValidatableControl;
 import com.jfoenix.validation.RequiredFieldValidator;
 
 import fr.elyssif.client.Config;
@@ -14,9 +18,10 @@ import fr.elyssif.client.gui.controller.FadeController;
 import fr.elyssif.client.gui.controller.Lockable;
 import fr.elyssif.client.gui.controller.MainController;
 import fr.elyssif.client.gui.controller.SnackbarController;
+import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.controller.Validatable;
 import fr.elyssif.client.gui.controller.ValidationUtils;
-import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
+import fr.elyssif.client.gui.validation.ServerValidator;
 import fr.elyssif.client.gui.validation.StringMaxLengthValidator;
 import fr.elyssif.client.gui.validation.StringMinLengthValidator;
 import fr.elyssif.client.gui.validation.TextMatchValidator;
@@ -42,6 +47,7 @@ public final class RegisterController extends FadeController implements Lockable
 	@FXML private JFXButton submitButton;
 	@FXML private JFXButton backButton;
 
+	private HashMap<String, ServerValidator> serverValidators;
 	private SimpleBooleanProperty disableProperty;
 
 	public void initialize(URL location, ResourceBundle resources) {
@@ -50,6 +56,7 @@ public final class RegisterController extends FadeController implements Lockable
 		super.initialize(location, resources);
 
 		disableProperty = new SimpleBooleanProperty(false);
+		serverValidators = new HashMap<String, ServerValidator>();
 		bindControls();
 		setupValidators();
 	}
@@ -69,9 +76,10 @@ public final class RegisterController extends FadeController implements Lockable
 						Config.getInstance().set("Token", authenticator.getToken());
 						Config.getInstance().save();
 						showNext(MainController.getInstance().getController("home"), true);
+					} else if(status == 422) { //Validation errors
+						handleValidationErrors(getValidationErrors());
 					} else if(status == -1)
 						SnackbarController.getInstance().message(getBundle().getString("error") + getResponse().getRawBody(), SnackbarMessageType.ERROR, 4000);
-					//TODO handle errors
 					setLocked(false);
 				}
 
@@ -105,7 +113,6 @@ public final class RegisterController extends FadeController implements Lockable
 	}
 
 	public void setLocked(boolean locked) {
-		emailField.resetValidation();
 		disableProperty.set(locked);
 	}
 
@@ -130,6 +137,21 @@ public final class RegisterController extends FadeController implements Lockable
 		ValidationUtils.setValidationListener(nameField);
 		ValidationUtils.setValidationListener(passwordField);
 		ValidationUtils.setValidationListener(passwordConfirmationField);
+
+		setupServerValidators();
+	}
+
+	public void setupServerValidators() {
+		emailField.getValidators().add(createServerValidator("email"));
+		nameField.getValidators().add(createServerValidator("name"));
+		passwordField.getValidators().add(createServerValidator("password"));
+		passwordConfirmationField.getValidators().add(createServerValidator("password_confirmation"));
+	}
+
+	private ServerValidator createServerValidator(String inputName) {
+		var validator = new ServerValidator();
+		serverValidators.put(inputName, validator);
+		return validator;
 	}
 
 	public boolean validateAll() {
@@ -145,6 +167,16 @@ public final class RegisterController extends FadeController implements Lockable
 		nameField.resetValidation();
 		passwordField.resetValidation();
 		passwordConfirmationField.resetValidation();
+	}
+
+	public void handleValidationErrors(HashMap<String, ArrayList<String>> errors) {
+		for(Entry<String, ArrayList<String>> entry : errors.entrySet()) {
+			if(serverValidators.containsKey(entry.getKey())) {
+				ServerValidator validator = serverValidators.get(entry.getKey());
+				validator.setMessages(entry.getValue());
+				((IFXValidatableControl) validator.getSrcControl()).validate();
+			}
+		}
 	}
 
 }

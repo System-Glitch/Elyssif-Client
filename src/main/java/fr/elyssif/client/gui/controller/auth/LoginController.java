@@ -1,12 +1,16 @@
 package fr.elyssif.client.gui.controller.auth;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.base.IFXValidatableControl;
 import com.jfoenix.validation.RequiredFieldValidator;
 
 import fr.elyssif.client.Config;
@@ -17,6 +21,7 @@ import fr.elyssif.client.gui.controller.SnackbarController;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.controller.Validatable;
 import fr.elyssif.client.gui.controller.ValidationUtils;
+import fr.elyssif.client.gui.validation.ServerValidator;
 import fr.elyssif.client.gui.validation.StringMaxLengthValidator;
 import fr.elyssif.client.http.Authenticator;
 import fr.elyssif.client.http.FormCallback;
@@ -36,6 +41,7 @@ public final class LoginController extends FadeController implements Lockable, V
 	@FXML private JFXButton submitButton;
 	@FXML private JFXButton backButton;
 
+	private HashMap<String, ServerValidator> serverValidators;
 	private SimpleBooleanProperty disableProperty;
 
 	public void initialize(URL location, ResourceBundle resources) {
@@ -44,6 +50,7 @@ public final class LoginController extends FadeController implements Lockable, V
 		super.initialize(location, resources);
 
 		disableProperty = new SimpleBooleanProperty(false);
+		serverValidators = new HashMap<String, ServerValidator>();
 		bindControls();
 		setupValidators();
 	}
@@ -62,9 +69,10 @@ public final class LoginController extends FadeController implements Lockable, V
 						Config.getInstance().set("Token", authenticator.getToken());
 						Config.getInstance().save();
 						showNext(MainController.getInstance().getController("home"), true);
+					} else if(status == 422) { //Validation errors
+						handleValidationErrors(getValidationErrors());
 					} else if(status == -1)
 						SnackbarController.getInstance().message(getBundle().getString("error") + getResponse().getRawBody(), SnackbarMessageType.ERROR, 4000);
-					//TODO handle auth fail
 					setLocked(false);
 				}
 
@@ -103,6 +111,19 @@ public final class LoginController extends FadeController implements Lockable, V
 		passwordField.getValidators().add(maxLengthValidator);
 		ValidationUtils.setValidationListener(emailField);
 		ValidationUtils.setValidationListener(passwordField);
+
+		setupServerValidators();
+	}
+
+	public void setupServerValidators() {
+		emailField.getValidators().add(createServerValidator("email"));
+		passwordField.getValidators().add(createServerValidator("password"));
+	}
+
+	private ServerValidator createServerValidator(String inputName) {
+		var validator = new ServerValidator();
+		serverValidators.put(inputName, validator);
+		return validator;
 	}
 
 	public boolean validateAll() {
@@ -114,6 +135,16 @@ public final class LoginController extends FadeController implements Lockable, V
 	public void resetValidation() {
 		emailField.resetValidation();
 		passwordField.resetValidation();
+	}
+
+	public void handleValidationErrors(HashMap<String, ArrayList<String>> errors) {
+		for(Entry<String, ArrayList<String>> entry : errors.entrySet()) {
+			if(serverValidators.containsKey(entry.getKey())) {
+				ServerValidator validator = serverValidators.get(entry.getKey());
+				validator.setMessages(entry.getValue());
+				((IFXValidatableControl) validator.getSrcControl()).validate();
+			}
+		}
 	}
 
 }
