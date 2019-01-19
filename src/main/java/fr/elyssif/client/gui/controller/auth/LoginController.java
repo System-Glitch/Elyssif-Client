@@ -1,16 +1,13 @@
 package fr.elyssif.client.gui.controller.auth;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
-import com.jfoenix.controls.base.IFXValidatableControl;
 import com.jfoenix.validation.RequiredFieldValidator;
 
 import fr.elyssif.client.Config;
@@ -120,12 +117,6 @@ public final class LoginController extends FadeController implements Lockable, V
 		passwordField.getValidators().add(createServerValidator("password"));
 	}
 
-	private ServerValidator createServerValidator(String inputName) {
-		var validator = new ServerValidator();
-		serverValidators.put(inputName, validator);
-		return validator;
-	}
-
 	public boolean validateAll() {
 		boolean ok = emailField.validate();
 		ok = passwordField.validate() && ok;
@@ -137,14 +128,8 @@ public final class LoginController extends FadeController implements Lockable, V
 		passwordField.resetValidation();
 	}
 
-	public void handleValidationErrors(HashMap<String, ArrayList<String>> errors) {
-		for(Entry<String, ArrayList<String>> entry : errors.entrySet()) {
-			if(serverValidators.containsKey(entry.getKey())) {
-				ServerValidator validator = serverValidators.get(entry.getKey());
-				validator.setMessages(entry.getValue());
-				((IFXValidatableControl) validator.getSrcControl()).validate();
-			}
-		}
+	public HashMap<String, ServerValidator> getServerValidators() {
+		return serverValidators;
 	}
 
 }
