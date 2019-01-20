@@ -21,6 +21,35 @@ Build the project and run unit testing using maven: `mvn install`.
 - `testing`: Used for unit-testing, not available for building.
 
 
+### Eclipse
+
+The repository includes an Eclipse project that can be easily imported.  
+
+1. File -> Import -> Maven -> Existing Maven Projects
+2. Select the project's root.
+3. Select all and click "Finish"
+
+### JavaFX Scene Builder
+
+Check that your Scene Builder version is **at least 10.0.0**.  
+Before opening any FXML file in the project, you need to import JFoenix to Scene Builder:  
+
+1. Click the little cog next to the search bar in the top left corner of the window.
+2. Click "JAR/FXML Manager"
+3. Click "Add Library/FXML from file system"
+4. Add the jfoenix jar which should be located into your maven local repository (`.m2/repository/com/jfoenix/jfoenix/9.0.8/jfoenix-9.0.8.jar`). Your maven local repository is located into your home directory by default.
+5. Open the jfoenix jar using an archive manager.
+6. Extract `jfoenix-design.css` and `jfoenix-fonts.css` from `com/jfoenix/assets/css`. (The location where you extract those files doesn't matter)
+
+When opening a FXML view from the project in Scene Builder, you'll notice that it doesn't render properly. You need to add the needed resources for preview.
+
+1. Add CSS resources: "Preview -> Scene Style Sheets -> Add a style sheet..."
+2. Select both previously extracted css files and `src/main/resources/common/view/css/application.css` from the project.
+3. Add language bundle: "Preview -> Internationalization -> Set resource..."
+4. Select `src/main/resources/common/bundles/lang_en.properties`
+
+*Note: You have to do this for every FXML file individually.*
+
 ## Usage
 
 TODO
