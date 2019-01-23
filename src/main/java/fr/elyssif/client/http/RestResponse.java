@@ -27,6 +27,8 @@ public class RestResponse {
 	private HttpResponse response;
 	private String raw;
 	private JsonObject jsonObject;
+	
+	//TODO errors
 
 	/**
 	 * Use this constructor if the HttpRequest failed. Will instantiate a fail result
@@ -34,6 +36,15 @@ public class RestResponse {
 	protected RestResponse() {
 		status = -1;
 		raw = "Request failed.";
+	}
+	
+	/**
+	 * Use this constructor if an exception was thrown when executing the request.
+	 * @param message
+	 */
+	protected RestResponse(String message) {
+		status = -1;
+		raw = message;
 	}
 
 	protected RestResponse(HttpResponse response) {
@@ -104,9 +115,10 @@ public class RestResponse {
 		for (Header header : response.getAllHeaders()) {
 			full += "\n" + header.getName() + ": " + header.getValue();
 		}
-
-		full += "\n\n";
-		full += raw;
+		if(raw != null) {
+			full += "\n\n";
+			full += raw;
+		}
 		return full;
 	}
 }

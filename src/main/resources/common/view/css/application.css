@@ -34,6 +34,28 @@
 	-jfx-unfocus-color: -blue-grey-400;
 }
 
+.jfx-text-field:error, .jfx-password-field:error {
+	-jfx-focus-color: -red-700;
+}
+
+.jfx-text-field:error .label, .jfx-password-field:error .label {
+	-fx-font-weight: BOLD;
+	-fx-font-fill: -red-700;
+}
+
+.tooltip {
+	-fx-font-family: 'Roboto Medium';
+	-fx-padding: 8px;
+	-fx-font-size: 10px;
+	-fx-font-fill: white;
+	-fx-background-color: #6D6D6D;
+	-fx-border-radius: 4px;
+}
+
+.page-corner {
+    -fx-shape: " ";
+}
+
 .jfx-tool-bar {
 	-fx-font-size: 20;
     -fx-font-weight: BOLD;
@@ -41,8 +63,28 @@
     -fx-pref-width: 100%;
 }
 
+.jfx-button {
+	-fx-cursor: hand;
+}
+
 .jfx-tool-bar .jfx-button {
 	-fx-text-fill: -light-blue-50;
+}
+
+.jfx-tool-bar .label {
+	-fx-text-fill: -light-blue-50;
+}
+
+.jfx-hamburger {
+    -fx-spacing: 5;
+    -fx-cursor: hand;
+}
+
+.jfx-hamburger StackPane {
+    -fx-pref-width: 40px;
+    -fx-pref-height: 7px;
+    -fx-background-color: -light-blue-50;
+    -fx-background-radius: 5px;
 }
 
 .jfx-decorator {
@@ -63,18 +105,36 @@
 	-fx-border-color: -grey-200;
 	-fx-border-style: solid;
 	-fx-border-width: 2px;
-	-fx-border-radius: 5px;
+	-fx-border-radius: 8px;
+	-fx-background-radius: 8px;
 }
 
 .card .card-title {
-	-fx-font-family: 'Roboto Light';
-	-fx-text-alignment: center;
-	-fx-text-fill: -blue-grey-900;
-	-fx-font-size: 18px;
 	-fx-border-width: 0 0 2px 0;
 	-fx-border-style: solid;
 	-fx-border-color: -grey-200;
 	-fx-padding: 20px 80px 20px 80px;
+}
+
+.title {
+	-fx-font-family: 'Roboto Light';
+	-fx-text-alignment: center;
+	-fx-text-fill: -blue-grey-900;
+	-fx-font-size: 18px;
+}
+
+.main-title {
+	-fx-font-family: 'Roboto Light';
+	-fx-text-alignment: center;
+	-fx-text-fill: -blue-grey-50;
+	-fx-font-size: 50px;
+}
+
+.welcome-btn {
+	-fx-font-weight: bold;
+	-fx-font-size: 18px !important;
+	-fx-padding: 8px 15px 8px 15px;
+	-fx-background-color: -green-A700;
 }
 
 .scroll-pane-full {
@@ -84,4 +144,53 @@
 
 .shadow {
 	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 90, 0, 0, 0);
+}
+
+.gradient {
+	-fx-background-color: linear-gradient(to top right, #59B1F7, #6666E2);
+}
+
+.jfx-list-cell {
+    -fx-background-insets: 0.0;
+    -fx-text-fill: BLACK;
+    -fx-padding: 15px;
+    -fx-font-size: 15px;
+    -fx-cursor: hand;
+}
+
+.jfx-list-cell:odd,
+.jfx-list-cell:even {
+    -fx-background-color: WHITE;
+}
+
+.jfx-list-cell:hover {
+	-fx-background-color: -grey-200;
+}
+
+.jfx-list-cell:filled:hover,
+.jfx-list-cell:selected .label {
+    -fx-text-fill: -blue-grey-900;
+}
+
+.jfx-list-cell .jfx-rippler {
+    -jfx-rippler-fill: #59B1F7;
+}
+
+.jfx-list-cell:odd:selected > .jfx-rippler > StackPane,
+.jfx-list-cell:even:selected > .jfx-rippler > StackPane {
+    -fx-background-color: -grey-300;
+}
+
+.jfx-list-view {
+    -fx-background-insets: 0.0;
+    -jfx-cell-horizontal-margin: 0.0;
+    -jfx-cell-vertical-margin: 5.0;
+    -jfx-vertical-gap: 10.0;
+    -jfx-expanded: false;
+}
+
+.logout-btn {
+	-fx-padding: 10px 20px 10px 20px;
+	-fx-font-size: 15px;
+	-fx-font-family: 'Roboto Medium';
 }

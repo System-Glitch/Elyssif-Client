@@ -8,6 +8,8 @@ import java.util.logging.Logger;
 import com.jfoenix.controls.JFXDecorator;
 
 import fr.elyssif.client.Config;
+import fr.elyssif.client.gui.controller.MainController;
+import fr.elyssif.client.http.RestRequest;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -41,7 +43,7 @@ public final class ElyssifClient extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Elyssif");
 
-			//setupIcons(primaryStage);
+			setupIcons(primaryStage);
 			
 			primaryStage.show();
 			
@@ -52,6 +54,8 @@ public final class ElyssifClient extends Application {
 			
 			primaryStage.centerOnScreen();
 			
+			MainController.getInstance().ready();
+
 		} catch( Exception e ) {
 			Logger.getGlobal().log(Level.SEVERE, "Error while loading the graphical interface.", e);
 			Platform.exit();
@@ -59,9 +63,12 @@ public final class ElyssifClient extends Application {
 	}
 
 	private void setupIcons(Stage primaryStage) {
-		primaryStage.getIcons().add(new Image(getClass().getResource("/view/logo16.png").toExternalForm()));
-		primaryStage.getIcons().add(new Image(getClass().getResource("/view/logo32.png").toExternalForm()));
-		primaryStage.getIcons().add(new Image(getClass().getResource("/view/logo64.png").toExternalForm()));
+		primaryStage.getIcons().add(new Image(getClass().getResource("/view/img/logo/logo16.png").toExternalForm()));
+		primaryStage.getIcons().add(new Image(getClass().getResource("/view/img/logo/logo32.png").toExternalForm()));
+		primaryStage.getIcons().add(new Image(getClass().getResource("/view/img/logo/logo48.png").toExternalForm()));
+		primaryStage.getIcons().add(new Image(getClass().getResource("/view/img/logo/logo64.png").toExternalForm()));
+		primaryStage.getIcons().add(new Image(getClass().getResource("/view/img/logo/logo128.png").toExternalForm()));
+		primaryStage.getIcons().add(new Image(getClass().getResource("/view/img/logo/logo256.png").toExternalForm()));
 	}
 	
 	private void setupLanguage(FXMLLoader loader) {
@@ -69,6 +76,7 @@ public final class ElyssifClient extends Application {
 		Logger.getGlobal().info("Language: " + locale.getLanguage());
 		
 		loader.setResources(ResourceBundle.getBundle("bundles.lang", locale));
+		RestRequest.setGlobalLocale(locale);
 	}
 	
 	private Locale getLocale() {

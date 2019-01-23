@@ -69,7 +69,7 @@ public final class Config {
 
 			Node node = root.getFirstChild();
 			while(node != null) {
-				if(node.getNodeName() != "#text")
+				if(node.getNodeName() != "#text" && node.getTextContent() != null && node.getTextContent().length() > 0)
 					values.put(node.getNodeName(), node.getTextContent());
 				node = node.getNextSibling();
 			}
@@ -158,7 +158,8 @@ public final class Config {
 	 * @see {@link #save() save}
 	 */
 	public final void set(String key, String value) {
-		values.put(key, value);
+		if(value == null) values.remove(key);
+		else values.put(key, value);
 	}
 
 	/**
@@ -179,12 +180,13 @@ public final class Config {
 				Element root = document.createElement("Config");
 				document.appendChild(root);
 
+				values.put("Verbose", String.valueOf(isVerbose()));
 				for(Entry<String, String> entry : values.entrySet()) {
-					Logger.getGlobal().info(entry.getKey());
 					Element field = document.createElement(entry.getKey());
 					field.setTextContent(entry.getValue());
 					root.appendChild(field);
 				}
+				values.remove("Verbose");
 
 				TransformerFactory transformerFactory = TransformerFactory.newInstance();
 				Transformer transformer = transformerFactory.newTransformer();
@@ -232,10 +234,10 @@ public final class Config {
 	private boolean checkPermissions() {
 		File file = new File(CONFIG_FILE_PATH);
 		boolean ok = true;
-		
+
 		if(!file.exists())
 			file = new File(PROGRAM_DIRECTORY_PATH);
-		
+
 		if(!file.canRead()) {
 			Logger.getGlobal().log(Level.SEVERE, "Missing read permission on config file: \"" + CONFIG_FILE_PATH + "\"");
 			ok = false;

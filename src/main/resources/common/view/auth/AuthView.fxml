@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane fx:id="pane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/10.0.1" fx:controller="fr.elyssif.client.gui.controller.auth.AuthController">
+	<fx:include fx:id="login" source="LoginView.fxml" />
+	<fx:include fx:id="register" source="RegisterView.fxml" />
+	<fx:include fx:id="loader" source="LoaderView.fxml" />
+	<fx:include fx:id="welcome" source="WelcomeView.fxml" />
+</StackPane>

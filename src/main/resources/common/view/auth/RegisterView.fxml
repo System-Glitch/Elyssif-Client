@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXPasswordField?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.VBox?>
+
+<FlowPane fx:id="pane" alignment="CENTER" columnHalignment="CENTER" prefHeight="635.0" prefWidth="1030.0" styleClass="gradient" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.auth.RegisterController">
+   <children>
+      <VBox fx:id="fadePane" alignment="TOP_CENTER" layoutX="413.0" layoutY="190.0" styleClass="card">
+         <children>
+            <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="%register">
+               <styleClass>
+                  <String fx:value="card-title" />
+                  <String fx:value="title" />
+               </styleClass></Label>
+            <VBox alignment="TOP_CENTER" spacing="32.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <JFXTextField fx:id="emailField" labelFloat="true" prefWidth="180.0" promptText="%email" />
+                  <JFXTextField fx:id="nameField" labelFloat="true" prefWidth="180.0" promptText="%name" />
+                  <JFXPasswordField fx:id="passwordField" labelFloat="true" prefWidth="180.0" promptText="%password">
+                  	 <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </JFXPasswordField>
+                  <JFXPasswordField fx:id="passwordConfirmationField" labelFloat="true" prefWidth="180.0" promptText="%password-confirmation">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </JFXPasswordField>
+                  <BorderPane>
+                     <left>
+                        <JFXButton fx:id="backButton" cancelButton="true" onAction="#clickBack" styleClass="grey-200" text="%back" BorderPane.alignment="CENTER" />
+                     </left>
+                     <right>
+                        <JFXButton fx:id="submitButton" buttonType="RAISED" defaultButton="true" onAction="#submit" styleClass="blue-700" text="%register-btn" BorderPane.alignment="CENTER" />
+                     </right>
+                  </BorderPane>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <padding>
+                  <Insets bottom="40.0" left="80.0" right="80.0" top="60.0" />
+               </padding>
+            </VBox>
+         </children>
+      </VBox>
+   </children>
+</FlowPane>

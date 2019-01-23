@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane fx:id="pane" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.SideMenuController">
+	<BorderPane>
+		<center>
+			<JFXListView fx:id="sideList">
+				<Label text="%home">
+					<graphic>
+						<ImageView fitWidth="32" preserveRatio="true" smooth="true">
+							<image>
+								<Image url="@img/home.png"/>
+							</image>
+						</ImageView>
+					</graphic>
+				</Label>
+				<Label text="%profile">
+					<graphic>
+						<ImageView fitWidth="32" preserveRatio="true" smooth="true">
+							<image>
+								<Image url="@img/account.png"/>
+							</image>
+						</ImageView>
+					</graphic>
+				</Label>
+				<Label text="%contacts">
+					<graphic>
+						<ImageView fitWidth="32" preserveRatio="true" smooth="true">
+							<image>
+								<Image url="@img/contacts.png"/>
+							</image>
+						</ImageView>
+					</graphic>
+				</Label>
+				<Label text="%settings">
+					<graphic>
+						<ImageView fitWidth="32" preserveRatio="true" smooth="true">
+							<image>
+								<Image url="@img/settings.png"/>
+							</image>
+						</ImageView>
+					</graphic>
+				</Label>
+			</JFXListView>
+		</center>
+		<top>
+			<ImageView fitHeight="128.0" fitWidth="128.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+				<image>
+					<Image url="@img/logo/logo128.png" />
+				</image>
+				<BorderPane.margin>
+					<Insets bottom="15.0" />
+				</BorderPane.margin>
+			</ImageView>
+		</top>
+		<padding>
+			<Insets bottom="20.0" top="20.0" />
+		</padding>
+		<opaqueInsets>
+			<Insets />
+		</opaqueInsets>
+		<bottom>
+			<JFXButton onAction="#logoutClicked" text="%logout" BorderPane.alignment="CENTER">
+				<BorderPane.margin>
+					<Insets top="15.0" />
+				</BorderPane.margin>
+            <styleClass>
+               <String fx:value="red-A400" />
+               <String fx:value="logout-btn" />
+            </styleClass>
+			</JFXButton>
+		</bottom>
+	</BorderPane>
+</StackPane>
