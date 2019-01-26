@@ -86,7 +86,9 @@ public final class Main {
 	}
 
 	private static boolean checkConfig() {
-		return checkConfigField("Environment") && checkConfigField("Host");
+		boolean ok = checkConfigField("Environment");
+		ok = checkConfigField("Host") && ok;
+		return ok;
 	}
 
 	public static void main(String[] args) throws Exception {

@@ -24,6 +24,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -69,8 +70,13 @@ public final class Config {
 
 			Node node = root.getFirstChild();
 			while(node != null) {
-				if(node.getNodeName() != "#text" && node.getTextContent() != null && node.getTextContent().length() > 0)
-					values.put(node.getNodeName(), node.getTextContent());
+				if(node.getNodeName() != "#text" && node.getTextContent() != null && node.getTextContent().length() > 0) {
+					if(countChildNodes(node) == 0) {
+						values.put(node.getNodeName(), node.getTextContent());
+					} else {
+						Logger.getGlobal().warning("Config entry \"" + node.getNodeName() + "\" contains child node(s). This entry will be ignored.");
+					}
+				}
 				node = node.getNextSibling();
 			}
 		} catch (ParserConfigurationException | SAXException | IOException e) {
@@ -84,7 +90,28 @@ public final class Config {
 		Logger.getGlobal().info("Current environment: " + get("Environment"));
 		Logger.getGlobal().info("Remote host: " + get("Host"));
 		Logger.getGlobal().info("Verbose: " + isVerbose());
+		
+		for(Entry<String, String> entry : values.entrySet())
+			Logger.getGlobal().info(entry.getKey() + ": " + entry.getValue());
 		return true;
+	}
+	
+	/**
+	 * Count the amount of child nodes (except "#text") inside the given node.
+	 * @param node
+	 * @return count
+	 */
+	private int countChildNodes(Node node) {
+		int count = 0;
+		NodeList list = node.getChildNodes();
+		Node child = null;
+		
+		for(int i = 0 ; i < list.getLength() ; i++) {
+			child = list.item(i);
+			if(child.getNodeName() != "#text")
+				count++;
+		}
+		return count;
 	}
 
 	/**
