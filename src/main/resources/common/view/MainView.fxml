@@ -6,7 +6,7 @@
 
 <StackPane fx:id="pane" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.MainController">
 	<children>
-		<fx:include fx:id="home" source="HomeView.fxml" />
+		<fx:include fx:id="app" source="AppView.fxml" />
 		<fx:include fx:id="auth" source="auth/AuthView.fxml" />
 	</children>
 </StackPane>

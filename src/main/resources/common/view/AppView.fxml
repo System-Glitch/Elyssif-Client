@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import java.lang.String?>
 
-<BorderPane fx:id="pane" styleClass="white" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.HomeController">
+<BorderPane fx:id="pane" styleClass="white" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.AppController">
 	<center>
 		<BorderPane fx:id="fadePane" prefHeight="635.0" prefWidth="1050.0" styleClass="white">
 			<top>
@@ -69,6 +69,13 @@
 					<sidePane>
 						<fx:include fx:id="sideMenu" source="SideMenuView.fxml" />
 					</sidePane>
+					<content>
+						<StackPane>
+							<children>
+								<fx:include fx:id="container" source="AppContainer.fxml" />
+							</children>
+						</StackPane>
+					</content>
 				</JFXDrawer>
 			</center>
 		</BorderPane>

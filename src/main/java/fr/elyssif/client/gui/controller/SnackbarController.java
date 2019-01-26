@@ -53,7 +53,8 @@ public final class SnackbarController {
 	 * Bring back the snackbar to front. Useful when switching pane in StackPane while a message is visible
 	 */
 	public final void updateZOrder() {
-		bar.toFront();
+		if(bar != null)
+			bar.toFront();
 	}
 	
 	public static final SnackbarController getInstance() {

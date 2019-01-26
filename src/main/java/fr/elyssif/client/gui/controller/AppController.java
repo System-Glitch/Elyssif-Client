@@ -15,15 +15,17 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
 
 /**
- * Controller for the home view.
+ * Controller for the main app view.
  * @author Jérémy LAMBERT
  *
  */
-public final class HomeController extends FadeController implements Lockable {
+public final class AppController extends FadeController implements Lockable {
 
 	@FXML private StackPane titleBurgerContainer;
 	@FXML private JFXHamburger titleBurger;
 	@FXML private JFXDrawer drawer;
+
+	@FXML private AppContainerController containerController;
 
 	@FXML private SideMenuController sideMenuController;
 
@@ -31,7 +33,7 @@ public final class HomeController extends FadeController implements Lockable {
 
 	public void initialize(URL location, ResourceBundle resources) {
 		if(Config.getInstance().isVerbose())
-			Logger.getGlobal().info("Loading home controller.");
+			Logger.getGlobal().info("Loading app controller.");
 		super.initialize(location, resources);
 		disableProperty = new SimpleBooleanProperty(false);
 		bindControls();
@@ -68,6 +70,9 @@ public final class HomeController extends FadeController implements Lockable {
 				drawer.close();
 			}
 		});
+
+		// TODO bind menus
+		// sideMenuController.bind(0, containerController.getController("test"));
 	}
 
 	public void bindControls() {

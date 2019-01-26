@@ -28,7 +28,7 @@ public final class MainController extends Controller {
 	private HttpClient client;
 	private Authenticator authenticator;
 
-	@FXML private HomeController homeController;
+	@FXML private AppController appController;
 	@FXML private AuthController authController;
 
 	public void initialize(URL location, ResourceBundle resources) {
@@ -64,7 +64,7 @@ public final class MainController extends Controller {
 				public void run() {
 					int status = getResponse().getStatus();
 					if(status == 200 && authenticator.getUser() != null) {
-						authController.getController("loader").showNext(homeController, true);
+						authController.getController("loader").showNext(appController, true);
 					} else if(status == 401) {
 						Config.getInstance().set("Token", null);
 						Config.getInstance().save();

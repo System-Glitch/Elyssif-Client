@@ -64,6 +64,8 @@ public abstract class FadeController extends Controller {
 		super.show(transition, backController);
 		if(transition)
 			openTransition.play();
+		else
+			fadePane.opacityProperty().set(1);
 	}
 
 	/**

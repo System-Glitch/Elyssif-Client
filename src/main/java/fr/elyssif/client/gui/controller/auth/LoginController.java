@@ -65,7 +65,7 @@ public final class LoginController extends FadeController implements Lockable, V
 					if(status == 200) {
 						Config.getInstance().set("Token", authenticator.getToken());
 						Config.getInstance().save();
-						showNext(MainController.getInstance().getController("home"), true);
+						showNext(MainController.getInstance().getController("app"), true);
 					} else if(status == 422) { //Validation errors
 						handleValidationErrors(getValidationErrors());
 					} else if(status == -1)
