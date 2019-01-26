@@ -1,0 +1,26 @@
+.jfx-snackbar-content {
+    -fx-background-color: #323232;
+    -fx-padding: 20 40 20 40;
+	-fx-spacing: 10;
+	-fx-text-fill: #FFFFFF;
+	-fx-font-size: 16px;
+}
+
+.jfx-snackbar-content .label {
+	-fx-text-fill: #FFFFFF;
+}
+
+.jfx-snackbar-content:error {
+	-fx-font-weight: bold;
+	-fx-background-color: -red-700;
+}
+
+.jfx-snackbar-content:success {
+	-fx-font-weight: bold;
+	-fx-background-color: -green-700;
+}
+
+.jfx-snackbar-content:info {
+	-fx-font-weight: bold;
+	-fx-background-color: -blue-700;
+}

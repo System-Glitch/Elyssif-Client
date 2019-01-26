@@ -1,0 +1,38 @@
+.jfx-list-cell {
+    -fx-background-insets: 0.0;
+    -fx-text-fill: BLACK;
+    -fx-padding: 15px;
+    -fx-font-size: 15px;
+    -fx-cursor: hand;
+}
+
+.jfx-list-cell:odd,
+.jfx-list-cell:even {
+    -fx-background-color: WHITE;
+}
+
+.jfx-list-cell:hover {
+	-fx-background-color: -light-blue-50;
+}
+
+.jfx-list-cell:filled:hover,
+.jfx-list-cell:selected .label {
+    -fx-text-fill: -blue-grey-900;
+}
+
+.jfx-list-cell .jfx-rippler {
+    -jfx-rippler-fill: -light-blue-400;
+}
+
+.jfx-list-cell:odd:selected > .jfx-rippler > StackPane,
+.jfx-list-cell:even:selected > .jfx-rippler > StackPane {
+    -fx-background-color: -light-blue-100;
+}
+
+.jfx-list-view {
+    -fx-background-insets: 0.0;
+    -jfx-cell-horizontal-margin: 0.0;
+    -jfx-cell-vertical-margin: 5.0;
+    -jfx-vertical-gap: 10.0;
+    -jfx-expanded: false;
+}
