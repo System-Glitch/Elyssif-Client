@@ -100,9 +100,9 @@ public final class Config {
 	private void setDefaults() {
 		// Set default config here
 		// Required values that can be omitted in the config file
-
-
-		setVerbose(values.containsKey("Verbose") ? get("Verbose").equals("true") : false);
+		setDefault("Verbose", "false");
+		
+		setVerbose(get("Verbose").equals("true"));
 		values.remove("Verbose");
 	}
 
