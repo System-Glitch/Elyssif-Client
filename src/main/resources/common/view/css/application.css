@@ -164,7 +164,7 @@
 }
 
 .jfx-list-cell:hover {
-	-fx-background-color: -grey-200;
+	-fx-background-color: -light-blue-50;
 }
 
 .jfx-list-cell:filled:hover,
@@ -173,12 +173,12 @@
 }
 
 .jfx-list-cell .jfx-rippler {
-    -jfx-rippler-fill: #59B1F7;
+    -jfx-rippler-fill: -light-blue-400;
 }
 
 .jfx-list-cell:odd:selected > .jfx-rippler > StackPane,
 .jfx-list-cell:even:selected > .jfx-rippler > StackPane {
-    -fx-background-color: -grey-300;
+    -fx-background-color: -light-blue-100;
 }
 
 .jfx-list-view {
