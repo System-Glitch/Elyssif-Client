@@ -27,8 +27,6 @@ public class RestResponse {
 	private HttpResponse response;
 	private String raw;
 	private JsonObject jsonObject;
-	
-	//TODO errors
 
 	/**
 	 * Use this constructor if the HttpRequest failed. Will instantiate a fail result
@@ -37,7 +35,7 @@ public class RestResponse {
 		status = -1;
 		raw = "Request failed.";
 	}
-	
+
 	/**
 	 * Use this constructor if an exception was thrown when executing the request.
 	 * @param message
