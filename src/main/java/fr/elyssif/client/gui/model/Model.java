@@ -24,8 +24,22 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	 * @param id - the ID of the resource
 	 */
 	public Model(int id) {
-		this.id = new SimpleIntegerProperty(id);
+		this(id, null, null);
 	}
+	
+	/**
+	 * Create a new instance of a model.
+	 * @param id
+	 * @param createdAt
+	 * @param updatedAt
+	 */
+	public Model(int id, Date createdAt, Date updatedAt) {
+		this.id = new SimpleIntegerProperty(id);
+		this.createdAt = new SimpleObjectProperty<Date>(createdAt);
+		this.updatedAt = new SimpleObjectProperty<Date>(updatedAt);
+	}
+
+
 
 	/**
 	 * Get the ID of the resource.
