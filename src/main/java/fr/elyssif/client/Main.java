@@ -56,7 +56,7 @@ public final class Main {
 		StreamHandler handlerInfo = createStreamHandler(System.out, formatter);
 		handlerInfo.setFilter((LogRecord record) -> { return record.getLevel().equals(Level.INFO) || record.getLevel().equals(Level.CONFIG); }); //Only show INFO logs
 		handlerInfo.setLevel(Level.ALL);
-		
+
 		logger.setLevel(Level.ALL);
 		logger.setUseParentHandlers(false);
 		logger.addHandler(handlerInfo);

@@ -7,7 +7,7 @@ public final class User extends Model<User>{
 	private SimpleStringProperty email;
 	private SimpleStringProperty name;
 
-	public User(int id) {
+	public User(Integer id) {
 		super(id);
 		email = new SimpleStringProperty();
 		name = new SimpleStringProperty();

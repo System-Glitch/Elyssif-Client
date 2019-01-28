@@ -44,12 +44,28 @@ public final class MainController extends ContainerController {
 		authController.show(false);
 	}
 
+	/**
+	 * Get the single instance of MainController
+	 * @return instance
+	 */
 	public static MainController getInstance() {
 		return instance;
 	}
 
+	/**
+	 * Get the authenticator.
+	 * @return authenticator
+	 */
 	public final Authenticator getAuthenticator() {
 		return authenticator;
+	}
+
+	/**
+	 * Get the http client.
+	 * @return client
+	 */
+	public final HttpClient getHttpClient() {
+		return client;
 	}
 
 	/**
