@@ -32,7 +32,15 @@ public final class SideMenuController extends Controller {
 
 		binding = new HashMap<Integer, Controller>();
 		registerListener();
-		sideList.getSelectionModel().select(0);
+		selectIndex(0);
+	}
+	
+	/**
+	 * Select the given index in the menu list.
+	 * @param index
+	 */
+	protected void selectIndex(int index) {
+		sideList.getSelectionModel().select(index);
 	}
 
 	/**
