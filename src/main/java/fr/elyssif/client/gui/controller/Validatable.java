@@ -42,6 +42,11 @@ public interface Validatable {
 	 * Reset validation for all inputs.
 	 */
 	void resetValidation();
+	
+	/**
+	 * Reset all inputs.
+	 */
+	void resetForm();
 
 	/**
 	 * Create a ServerValidator and register it.<br>

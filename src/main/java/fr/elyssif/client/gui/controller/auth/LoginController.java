@@ -131,5 +131,10 @@ public final class LoginController extends FadeController implements Lockable, V
 	public HashMap<String, ServerValidator> getServerValidators() {
 		return serverValidators;
 	}
+	
+	public void resetForm() {
+		emailField.setText(null);
+		passwordField.setText(null);
+	}
 
 }

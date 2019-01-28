@@ -163,5 +163,12 @@ public final class RegisterController extends FadeController implements Lockable
 	public HashMap<String, ServerValidator> getServerValidators() {
 		return serverValidators;
 	}
+	
+	public void resetForm() {
+		emailField.setText(null);
+		nameField.setText(null);
+		passwordField.setText(null);
+		passwordConfirmationField.setText(null);
+	}
 
 }
