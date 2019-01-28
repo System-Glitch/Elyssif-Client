@@ -142,6 +142,12 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 		}
 	}
 
+	/**
+	 * Find field by its name from given class and its super-class.
+	 * @param type
+	 * @param attributeName
+	 * @return field or null if not found
+	 */
 	private Field findField(Class<?> type, String attributeName) {
 		for(Field field : type.getSuperclass().getDeclaredFields()) {
 			if(field.getName().equals(attributeName))
