@@ -143,17 +143,32 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	}
 
 	/**
-	 * Find field by its name from given class and its super-class.
+	 * Find field by its name from given class and its super-class.<br><br>
+	 *
+	 * <code>getFields()</code> only returns <code>public</code> fields.
+	 * As a result, we use <code>getDeclaredFields()</code> which returns the private fields.
+	 * However it returns only the fields declared in the prompted class, so prompting
+	 * the super-class is also needed, hence the double processing in this method.
 	 * @param type
 	 * @param attributeName
 	 * @return field or null if not found
 	 */
 	private Field findField(Class<?> type, String attributeName) {
-		for(Field field : type.getSuperclass().getDeclaredFields()) {
-			if(field.getName().equals(attributeName))
-				return field;
-		}
-		for(Field field : type.getDeclaredFields()) {
+		Field field = findField(type.getSuperclass().getDeclaredFields(), attributeName);
+		if(field != null) return field;
+
+		field = findField(type.getDeclaredFields(), attributeName);
+		return field;
+	}
+
+	/**
+	 * Find a field by its name in an array of fields.
+	 * @param fields
+	 * @param attributeName
+	 * @return field or null if not found
+	 */
+	private Field findField(Field[] fields, String attributeName) {
+		for(Field field : fields) {
 			if(field.getName().equals(attributeName))
 				return field;
 		}
