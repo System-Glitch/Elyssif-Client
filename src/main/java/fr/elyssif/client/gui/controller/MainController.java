@@ -21,7 +21,7 @@ import javafx.fxml.FXML;
  * @author Jérémy LAMBERT
  *
  */
-public final class MainController extends Controller {
+public final class MainController extends ContainerController {
 
 	private static MainController instance;
 
@@ -39,7 +39,6 @@ public final class MainController extends Controller {
 		authenticator = new Authenticator(client, Config.getInstance().get("Host"), Config.getInstance().get("Token"));
 		instance = this;
 
-		getPane().setDisable(false);
 		SnackbarController.getInstance().setSnackbar(new JFXSnackbar(getPane()));
 
 		authController.show(false);
