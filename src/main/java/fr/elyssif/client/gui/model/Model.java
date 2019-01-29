@@ -34,11 +34,27 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	private SimpleObjectProperty<Date> updatedAt;
 
 	/**
+	 * Create a new instance of a model with a zero ID.
+	 */
+	public Model() {
+		this(0, null, null);
+	}
+
+	/**
 	 * Create a new instance of a model.
 	 * @param id - the ID of the resource
 	 */
 	public Model(Integer id) {
 		this(id, null, null);
+	}
+
+	/**
+	 * Create a new instance of a model and load it from
+	 * the given json object.
+	 * @param object
+	 */
+	public Model(JsonObject object) {
+		loadFromJsonObject(object);
 	}
 
 	/**
