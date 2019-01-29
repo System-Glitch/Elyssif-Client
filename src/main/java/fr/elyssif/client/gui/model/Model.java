@@ -113,7 +113,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	 *
 	 * @throws RuntimeException if mapped field is not a property or is not found.
 	 */
-	public final void fromJsonObject(JsonObject object) {
+	public final void loadFromJsonObject(JsonObject object) {
 		for(Entry<String, JsonElement> element : object.entrySet()) {
 			String attributeName = getAttributeName(element.getKey());
 			Field field = findField(getClass(), attributeName);
