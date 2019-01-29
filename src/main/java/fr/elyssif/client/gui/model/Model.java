@@ -12,6 +12,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.WritableValue;
@@ -109,19 +110,21 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	/**
 	 * Load this object's attributes from a json object.
 	 * @param object
+	 *
+	 * @throws RuntimeException if mapped field is not a property or is not found.
 	 */
 	public final void fromJsonObject(JsonObject object) {
 		for(Entry<String, JsonElement> element : object.entrySet()) {
 			String attributeName = getAttributeName(element.getKey());
 			Field field = findField(getClass(), attributeName);
 			if(field != null) {
-				if(WritableValue.class.isAssignableFrom(field.getType())) {
+				if(WritableValue.class.isAssignableFrom(field.getType()) && Property.class.isAssignableFrom(field.getType())) {
 					Method[] methods = field.getType().getMethods();
 					for(Method method : methods) { // Find setter method
 						if(method.getName().equals("set")) {
 
 							try {
-								Object value = getValueFromJson(method, element.getValue());
+								Object value = getValueFromJson(method, element.getValue(), attributeName);
 								if(value != null) {
 									field.setAccessible(true);
 									// TODO handle dates and timestamps
@@ -135,10 +138,10 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 						}
 					}
 				} else
-					Logger.getGlobal().log(Level.SEVERE, "Field \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + "\" is not a property.",  new RuntimeException());
+					throw new RuntimeException("Field \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + "\" is not a property.");
 
 			} else
-				Logger.getGlobal().log(Level.SEVERE, "Couldn't find field \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + "\".", new RuntimeException());
+				throw new RuntimeException("Couldn't find field \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + "\".");
 		}
 	}
 
@@ -179,11 +182,16 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	 * Get the value of the given element with the correct type for the given method.
 	 * @param method
 	 * @param element
+	 * @param attributeName
 	 * @return value got from the given element
 	 */
-	private Object getValueFromJson(Method method, JsonElement element) {
+	private Object getValueFromJson(Method method, JsonElement element, String attributeName) {
+
+		if(attributeName.endsWith("At")) { // Attribute is a timestamp
+			return new Date(element.getAsLong() * 1000); // *1000 because value given in secods
+		}
+
 		Class<?> type = method.getParameterTypes()[0];
-		Logger.getGlobal().info(type.getSimpleName());
 		switch(type.getSimpleName()) {
 		case "boolean":
 		case "Boolean":
