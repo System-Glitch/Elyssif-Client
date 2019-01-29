@@ -18,6 +18,7 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.WritableValue;
+import javafx.collections.ObservableList;
 
 /**
  * Super-class for models. All members of the model may not be filled, depending on the request that created it.
@@ -138,6 +139,24 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 							break;
 						}
 					}
+				} else if(ObservableList.class.isAssignableFrom(field.getType())) { // Lists
+					Method[] methods = field.getType().getMethods();
+					for(Method method : methods) { // Find add method
+						if(method.getName().equals("add") && method.getParameters().length == 1) {
+
+							try {
+								field.setAccessible(true);
+								for(JsonElement listElement : element.getValue().getAsJsonArray()) {
+									Object value = getValueFromJson(field, method, listElement, attributeName);
+									method.invoke(field.get(this), value);
+								}
+							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+								Logger.getGlobal().log(Level.SEVERE, "Couldn't add value to list \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + ".", e);
+							}
+
+							break;
+						}
+					}
 				} else
 					throw new RuntimeException("Field \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + "\" is not a property.");
 
@@ -188,12 +207,21 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	 * @return value got from the given element
 	 */
 	private Object getValueFromJson(Field field, Method method, JsonElement element, String attributeName) {
+		return getValueFromJson(field, method, element, attributeName, null);
+	}
 
-		if(attributeName.endsWith("At")) { // Attribute is a timestamp
-			return new Date(element.getAsLong() * 1000); // *1000 because value given in secods
-		}
+	/**
+	 * Get the value of the given element with the correct type for the given method.
+	 * @param field
+	 * @param method
+	 * @param element
+	 * @param attributeName
+	 * @param paramType nullable
+	 * @return value got from the given element
+	 */
+	private Object getValueFromJson(Field field, Method method, JsonElement element, String attributeName, Class<?> paramType) {
 
-		Class<?> type = method.getParameterTypes()[0];
+		Class<?> type = paramType != null ? paramType : method.getParameterTypes()[0];
 		switch(type.getSimpleName()) {
 		case "boolean":
 		case "Boolean":
@@ -216,9 +244,13 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 		case "String":
 			return element.getAsString();
 		case "Object":
+
+			if(attributeName.endsWith("At")) { // Attribute is a timestamp
+				return new Date(element.getAsLong() * 1000); // *1000 because value given in secods
+			}
+
 			Object value = getObjectFromJson(field, method, element, attributeName);
 			if(value != null) return value;
-		// TODO handle lists
 		}
 		Logger.getGlobal().warning("Unsupported type: " + type.getSimpleName() + " for attribute \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + "\".");
 		return null;
@@ -238,7 +270,6 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 			ParameterizedType pType = (ParameterizedType) fieldType;
 			if(pType.getActualTypeArguments().length == 1) {
 				Class<?> genericType = (Class<?>) pType.getActualTypeArguments()[0];
-
 				if(Model.class.isAssignableFrom(genericType)) {
 					try {
 						Model<?> model = (Model<?>) genericType.getConstructor(Integer.class).newInstance(0);
@@ -248,15 +279,17 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 							| InvocationTargetException | NoSuchMethodException | SecurityException e) {
 						Logger.getGlobal().log(Level.SEVERE, "Couldn't instantiate nested model \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + ".", e);
 					}
-				} else {
-					throw new RuntimeException("Nested object \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + "\" is not a Model.");
-				}
-			} else {
+				} else if(!genericType.getSimpleName().equals("Object")) {
+					return getValueFromJson(field, method, element, attributeName, genericType);
+				} else
+					throw new RuntimeException("Nested object \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + "\" is not a Model nor primitive type.");
+
+			} else
 				throw new RuntimeException("Couldn't load nested object \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + "\": multiple type arguments.");
-			}
+
 		} else { // Special case for strings (since reflection returns Object for StringProperty)
 			try {
-				method = field.getType().getMethod("set", String.class);
+				method = field.getType().getMethod(method.getName(), String.class);
 				return element.getAsString();
 			} catch(NoSuchMethodException e) {
 				// Do nothing if method not found
