@@ -1,7 +1,10 @@
 package fr.elyssif.client.gui.model;
 
+import java.util.Date;
+
 import com.google.gson.JsonObject;
 
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,6 +13,8 @@ public final class User extends Model<User>{
 
 	private SimpleStringProperty email;
 	private SimpleStringProperty name;
+
+	private SimpleObjectProperty<Date> emailVerifiedAt;
 
 	private ObservableList<User> list;
 
@@ -29,6 +34,7 @@ public final class User extends Model<User>{
 		email = new SimpleStringProperty();
 		name = new SimpleStringProperty();
 		list = FXCollections.observableArrayList();
+		emailVerifiedAt = new SimpleObjectProperty<Date>();
 	}
 
 	/**
@@ -59,6 +65,14 @@ public final class User extends Model<User>{
 
 	public final ObservableList<User> getList() {
 		return list;
+	}
+
+	public final SimpleObjectProperty<Date> getEmailVerifiedAt() {
+		return emailVerifiedAt;
+	}
+
+	public final void setEmailVerifiedAt(Date emailVerifiedAt) {
+		this.emailVerifiedAt.set(emailVerifiedAt);
 	}
 
 }

@@ -5,6 +5,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -164,11 +166,8 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	private void fillProperty(Field field, JsonElement element, String attributeName) {
 		try {
 			Method method = findMethod(field.getType(), "set");
-			Object value = getValueFromJson(field, method, element, attributeName);
-			if(value != null) {
-				field.setAccessible(true);
-				method.invoke(field.get(this), value);
-			}
+			field.setAccessible(true);
+			method.invoke(field.get(this), getValueFromJson(field, method, element, attributeName));
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException e) {
 			Logger.getGlobal().log(Level.SEVERE, "Couldn't set value of field \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + ".", e);
 		}
@@ -185,8 +184,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 			Method method = findMethod(field.getType(), "add");
 			field.setAccessible(true);
 			for(JsonElement listElement : array) {
-				Object value = getValueFromJson(field, method, listElement, attributeName);
-				method.invoke(field.get(this), value);
+				method.invoke(field.get(this), getValueFromJson(field, method, listElement, attributeName));
 			}
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException e) {
 			Logger.getGlobal().log(Level.SEVERE, "Couldn't add value to list \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + ".", e);
@@ -268,6 +266,8 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	 */
 	private Object getValueFromJson(Field field, Method method, JsonElement element, String attributeName, Class<?> paramType) {
 
+		if(element.isJsonNull()) return null;
+
 		Class<?> type = paramType != null ? paramType : method.getParameterTypes()[0];
 		switch(type.getSimpleName()) {
 		case "boolean":
@@ -293,7 +293,12 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 		case "Object":
 
 			if(attributeName.endsWith("At")) { // Attribute is a timestamp
-				return new Date(element.getAsLong() * 1000); // *1000 because value given in secods
+				try {
+					return new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(element.getAsString());
+				} catch (ParseException e) {
+					Logger.getGlobal().log(Level.SEVERE, "Couldn't parse date " + element.getAsString(), e);
+					return null;
+				}
 			}
 
 			Object value = getObjectFromJson(field, method, element, attributeName);

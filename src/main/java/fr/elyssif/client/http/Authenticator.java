@@ -142,11 +142,7 @@ public final class Authenticator {
 			public void run() {
 				RestResponse response = getResponse();
 				if(response.getStatus() == 200) {
-					//TODO load from repository and sanity check
-					JsonObject obj = response.getJsonObject();
-					user = new User(obj.get("id").getAsInt());
-					user.setEmail(obj.get("email").getAsString());
-					user.setName(obj.get("name").getAsString());
+					user = new User(response.getJsonObject());
 					Logger.getGlobal().info("Authenticated user: " + user.getEmail().get() + " (" + user.getName().get() + ")");
 				} else if(response.getStatus() == 401) {
 					token = null;
