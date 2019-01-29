@@ -3,6 +3,8 @@ package fr.elyssif.client.gui.model;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -124,10 +126,9 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 						if(method.getName().equals("set")) {
 
 							try {
-								Object value = getValueFromJson(method, element.getValue(), attributeName);
+								Object value = getValueFromJson(field, method, element.getValue(), attributeName);
 								if(value != null) {
 									field.setAccessible(true);
-									// TODO handle dates and timestamps
 									method.invoke(field.get(this), value);
 								}
 							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -180,12 +181,13 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 
 	/**
 	 * Get the value of the given element with the correct type for the given method.
+	 * @param field
 	 * @param method
 	 * @param element
 	 * @param attributeName
 	 * @return value got from the given element
 	 */
-	private Object getValueFromJson(Method method, JsonElement element, String attributeName) {
+	private Object getValueFromJson(Field field, Method method, JsonElement element, String attributeName) {
 
 		if(attributeName.endsWith("At")) { // Attribute is a timestamp
 			return new Date(element.getAsLong() * 1000); // *1000 because value given in secods
@@ -213,8 +215,54 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 			return element.getAsDouble();
 		case "String":
 			return element.getAsString();
+		case "Object":
+			Object value = getObjectFromJson(field, method, element, attributeName);
+			if(value != null) return value;
+		// TODO handle lists
 		}
-		Logger.getGlobal().warning("Unsupported type: " + type.getSimpleName());
+		Logger.getGlobal().warning("Unsupported type: " + type.getSimpleName() + " for attribute \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + "\".");
+		return null;
+	}
+
+	/**
+	 * Handle "Object" and "String" parameter type for auto-loading properties from json.
+	 * @param field
+	 * @param method
+	 * @param element
+	 * @param attributeName
+	 * @return value or null if not supported
+	 */
+	private Object getObjectFromJson(Field field, Method method, JsonElement element, String attributeName) {
+		Type fieldType = field.getGenericType();
+		if(fieldType instanceof ParameterizedType) {
+			ParameterizedType pType = (ParameterizedType) fieldType;
+			if(pType.getActualTypeArguments().length == 1) {
+				Class<?> genericType = (Class<?>) pType.getActualTypeArguments()[0];
+
+				if(Model.class.isAssignableFrom(genericType)) {
+					try {
+						Model<?> model = (Model<?>) genericType.getConstructor(Integer.class).newInstance(0);
+						model.loadFromJsonObject(element.getAsJsonObject());
+						return model;
+					} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+							| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+						Logger.getGlobal().log(Level.SEVERE, "Couldn't instantiate nested model \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + ".", e);
+					}
+				} else {
+					throw new RuntimeException("Nested object \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + "\" is not a Model.");
+				}
+			} else {
+				throw new RuntimeException("Couldn't load nested object \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + "\": multiple type arguments.");
+			}
+		} else { // Special case for strings (since reflection returns Object for StringProperty)
+			try {
+				method = field.getType().getMethod("set", String.class);
+				return element.getAsString();
+			} catch(NoSuchMethodException e) {
+				// Do nothing if method not found
+			}
+		}
+
 		return null;
 	}
 
