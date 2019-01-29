@@ -119,50 +119,58 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	public final void loadFromJsonObject(JsonObject object) {
 		for(Entry<String, JsonElement> element : object.entrySet()) {
 			String attributeName = getAttributeName(element.getKey());
-			Field field = findField(getClass(), attributeName);
-			if(field != null) {
+			try {
+				Field field = findField(getClass(), attributeName);
 				if(WritableValue.class.isAssignableFrom(field.getType()) && Property.class.isAssignableFrom(field.getType())) {
-					Method[] methods = field.getType().getMethods();
-					for(Method method : methods) { // Find setter method
-						if(method.getName().equals("set")) {
 
-							try {
-								Object value = getValueFromJson(field, method, element.getValue(), attributeName);
-								if(value != null) {
-									field.setAccessible(true);
-									method.invoke(field.get(this), value);
-								}
-							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-								Logger.getGlobal().log(Level.SEVERE, "Couldn't set value of field \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + ".", e);
-							}
-
-							break;
+					try {
+						Method method = findMethod(field.getType(), "set");
+						Object value = getValueFromJson(field, method, element.getValue(), attributeName);
+						if(value != null) {
+							field.setAccessible(true);
+							method.invoke(field.get(this), value);
 						}
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException e) {
+						Logger.getGlobal().log(Level.SEVERE, "Couldn't set value of field \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + ".", e);
 					}
+
 				} else if(ObservableList.class.isAssignableFrom(field.getType())) { // Lists
-					Method[] methods = field.getType().getMethods();
-					for(Method method : methods) { // Find add method
-						if(method.getName().equals("add") && method.getParameters().length == 1) {
 
-							try {
-								field.setAccessible(true);
-								for(JsonElement listElement : element.getValue().getAsJsonArray()) {
-									Object value = getValueFromJson(field, method, listElement, attributeName);
-									method.invoke(field.get(this), value);
-								}
-							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-								Logger.getGlobal().log(Level.SEVERE, "Couldn't add value to list \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + ".", e);
-							}
-
-							break;
+					try {
+						Method method = findMethod(field.getType(), "add");
+						field.setAccessible(true);
+						for(JsonElement listElement : element.getValue().getAsJsonArray()) {
+							Object value = getValueFromJson(field, method, listElement, attributeName);
+							method.invoke(field.get(this), value);
 						}
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException e) {
+						Logger.getGlobal().log(Level.SEVERE, "Couldn't add value to list \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + ".", e);
 					}
+
 				} else
 					throw new RuntimeException("Field \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + "\" is not a property.");
 
-			} else
-				throw new RuntimeException("Couldn't find field \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + "\".");
+			} catch(NoSuchFieldException e) {
+				Logger.getGlobal().log(Level.SEVERE, "Couldn't find field \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + "\".", e);
+			}
 		}
+	}
+
+	/**
+	 * Find method by its name. Only returns method that have one parameter
+	 * @param type
+	 * @param name
+	 * @return method
+	 * @throws NoSuchMethodException
+	 */
+	private Method findMethod(Class<?> type, String name) throws NoSuchMethodException {
+		Method[] methods = type.getMethods();
+		for(Method method : methods) {
+			if(method.getName().equals(name) && method.getParameters().length == 1) {
+				return method;
+			}
+		}
+		throw new NoSuchMethodException("Method \"" + name + "\" not found in \"" + type + "\".");
 	}
 
 	/**
@@ -175,12 +183,14 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	 * @param type
 	 * @param attributeName
 	 * @return field or null if not found
+	 * @throws NoSuchFieldException
 	 */
-	private Field findField(Class<?> type, String attributeName) {
+	private Field findField(Class<?> type, String attributeName) throws NoSuchFieldException {
 		Field field = findField(type.getSuperclass().getDeclaredFields(), attributeName);
 		if(field != null) return field;
 
 		field = findField(type.getDeclaredFields(), attributeName);
+		if(field == null) throw new NoSuchFieldException("Field \"" + attributeName + "\" not found in \"" + type + "\".");
 		return field;
 	}
 
