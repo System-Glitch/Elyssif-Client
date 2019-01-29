@@ -6,8 +6,6 @@ import com.google.gson.JsonObject;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 public final class User extends Model<User>{
 
@@ -15,8 +13,6 @@ public final class User extends Model<User>{
 	private SimpleStringProperty name;
 
 	private SimpleObjectProperty<Date> emailVerifiedAt;
-
-	private ObservableList<User> list;
 
 	/**
 	 * Create a new instance of User with a zero ID.
@@ -33,7 +29,6 @@ public final class User extends Model<User>{
 		super(id);
 		email = new SimpleStringProperty();
 		name = new SimpleStringProperty();
-		list = FXCollections.observableArrayList();
 		emailVerifiedAt = new SimpleObjectProperty<Date>();
 	}
 
@@ -61,10 +56,6 @@ public final class User extends Model<User>{
 
 	public final void setName(String name) {
 		this.name.set(name);
-	}
-
-	public final ObservableList<User> getList() {
-		return list;
 	}
 
 	public final SimpleObjectProperty<Date> getEmailVerifiedAt() {
