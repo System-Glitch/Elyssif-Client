@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
@@ -123,29 +124,11 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 				Field field = findField(getClass(), attributeName);
 				if(WritableValue.class.isAssignableFrom(field.getType()) && Property.class.isAssignableFrom(field.getType())) {
 
-					try {
-						Method method = findMethod(field.getType(), "set");
-						Object value = getValueFromJson(field, method, element.getValue(), attributeName);
-						if(value != null) {
-							field.setAccessible(true);
-							method.invoke(field.get(this), value);
-						}
-					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException e) {
-						Logger.getGlobal().log(Level.SEVERE, "Couldn't set value of field \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + ".", e);
-					}
+					fillProperty(field, element.getValue(), attributeName);
 
-				} else if(ObservableList.class.isAssignableFrom(field.getType())) { // Lists
+				} else if(ObservableList.class.isAssignableFrom(field.getType())) {
 
-					try {
-						Method method = findMethod(field.getType(), "add");
-						field.setAccessible(true);
-						for(JsonElement listElement : element.getValue().getAsJsonArray()) {
-							Object value = getValueFromJson(field, method, listElement, attributeName);
-							method.invoke(field.get(this), value);
-						}
-					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException e) {
-						Logger.getGlobal().log(Level.SEVERE, "Couldn't add value to list \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + ".", e);
-					}
+					fillList(field, element.getValue().getAsJsonArray(), attributeName);
 
 				} else
 					throw new RuntimeException("Field \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + "\" is not a property.");
@@ -153,6 +136,44 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 			} catch(NoSuchFieldException e) {
 				Logger.getGlobal().log(Level.SEVERE, "Couldn't find field \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + "\".", e);
 			}
+		}
+	}
+
+	/**
+	 * Fill a property with the given json element.
+	 * @param field
+	 * @param element
+	 * @param attributeName
+	 */
+	private void fillProperty(Field field, JsonElement element, String attributeName) {
+		try {
+			Method method = findMethod(field.getType(), "set");
+			Object value = getValueFromJson(field, method, element, attributeName);
+			if(value != null) {
+				field.setAccessible(true);
+				method.invoke(field.get(this), value);
+			}
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException e) {
+			Logger.getGlobal().log(Level.SEVERE, "Couldn't set value of field \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + ".", e);
+		}
+	}
+
+	/**
+	 * Fill a list with the given json array
+	 * @param field
+	 * @param array
+	 * @param attributeName
+	 */
+	private void fillList(Field field, JsonArray array, String attributeName) {
+		try {
+			Method method = findMethod(field.getType(), "add");
+			field.setAccessible(true);
+			for(JsonElement listElement : array) {
+				Object value = getValueFromJson(field, method, listElement, attributeName);
+				method.invoke(field.get(this), value);
+			}
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException e) {
+			Logger.getGlobal().log(Level.SEVERE, "Couldn't add value to list \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + ".", e);
 		}
 	}
 
