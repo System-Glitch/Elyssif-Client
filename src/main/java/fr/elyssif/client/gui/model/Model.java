@@ -266,32 +266,29 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	 */
 	private Object getValueFromJson(Field field, Method method, JsonElement element, String attributeName, Class<?> paramType) {
 
-		if(element.isJsonNull()) return null;
-
 		Class<?> type = paramType != null ? paramType : method.getParameterTypes()[0];
 		switch(type.getSimpleName()) {
 		case "boolean":
 		case "Boolean":
-			return element.getAsBoolean();
-		case "short":
-		case "Short":
-			return element.getAsShort();
+			return element.isJsonNull() ? false : element.getAsBoolean();
 		case "int":
 		case "Integer":
-			return element.getAsInt();
+			return element.isJsonNull() ? 0 : element.getAsInt();
 		case "long":
 		case "Long":
-			return element.getAsLong();
+			return element.isJsonNull() ? 0 : element.getAsLong();
 		case "float":
 		case "Float":
-			return element.getAsFloat();
+			return element.isJsonNull() ? Float.NaN : element.getAsFloat();
 		case "double":
 		case "Double":
-			return element.getAsDouble();
+			return element.isJsonNull() ? Double.NaN : element.getAsDouble();
 		case "String":
-			return element.getAsString();
+			return element.isJsonNull() ? null : element.getAsString();
 		case "Object":
 
+			if(element.isJsonNull()) return null;
+			
 			if(attributeName.endsWith("At")) { // Attribute is a timestamp
 				try {
 					return new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(element.getAsString());
@@ -339,13 +336,6 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 			} else
 				throw new RuntimeException("Couldn't load nested object \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + "\": multiple type arguments.");
 
-		} else { // Special case for strings (since reflection returns Object for StringProperty)
-			try {
-				method = field.getType().getMethod(method.getName(), String.class);
-				return element.getAsString();
-			} catch(NoSuchMethodException e) {
-				// Do nothing if method not found
-			}
 		}
 
 		return null;
@@ -359,8 +349,9 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	private String getAttributeName(String entryName) {
 		StringBuilder builder = new StringBuilder(entryName);
 		int index = builder.indexOf("_");
-		while(index != -1 || index >= entryName.length() - 1) {
-			builder.setCharAt(index + 1, Character.toUpperCase(builder.charAt(index + 1)));
+		while(index != -1) {
+			if(index < entryName.length() - 1)
+				builder.setCharAt(index + 1, Character.toUpperCase(builder.charAt(index + 1)));
 			builder.deleteCharAt(index);
 			index = builder.indexOf("_");
 		}
