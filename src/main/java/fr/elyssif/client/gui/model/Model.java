@@ -136,6 +136,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	 * @throws RuntimeException if mapped field is not a property or is not found.
 	 */
 	public final void loadFromJsonObject(JsonObject object) {
+
 		for(Entry<String, JsonElement> element : object.entrySet()) {
 			String attributeName = getAttributeName(element.getKey());
 			try {
@@ -199,9 +200,31 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	 * @throws NoSuchMethodException
 	 */
 	private Method findMethod(Class<?> type, String name) throws NoSuchMethodException {
+		Method method = findMethod(type, name, null);
+
+		if(method != null && method.getParameterTypes()[0].equals(Object.class)) { // In case method is overridden
+			try {
+				return findMethod(type, name, method);
+			} catch(NoSuchMethodException e) {
+				// Do nothing if not found
+			}
+		}
+
+		return method;
+	}
+
+	/**
+	 * Find method by its name, excluding the given except method. Only returns method that have one parameter
+	 * @param type
+	 * @param name
+	 * @param except
+	 * @return method
+	 * @throws NoSuchMethodException
+	 */
+	private Method findMethod(Class<?> type, String name, Method except) throws NoSuchMethodException {
 		Method[] methods = type.getMethods();
 		for(Method method : methods) {
-			if(method.getName().equals(name) && method.getParameters().length == 1) {
+			if(method.getName().equals(name) && method.getParameters().length == 1 && (except == null || !method.equals(except))) {
 				return method;
 			}
 		}
@@ -288,7 +311,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 		case "Object":
 
 			if(element.isJsonNull()) return null;
-			
+
 			if(attributeName.endsWith("At")) { // Attribute is a timestamp
 				try {
 					return new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(element.getAsString());

@@ -14,6 +14,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
+import fr.elyssif.client.gui.model.User;
 import fr.elyssif.client.model.TestModel;
 
 class ModelTest {
@@ -152,6 +153,18 @@ class ModelTest {
 		
 		assertNotNull(model.getNested().get());
 		assertModel(model.getNested().get());
+	}
+	
+	@Test
+	void testUserModel() {
+		JsonObject json = new JsonObject();
+		json.addProperty("email", "test@example.org");
+		json.addProperty("name", "username");
+		
+		User user = new User(json);
+		
+		assertEquals("test@example.org", user.getEmail().get());
+		assertEquals("username", user.getName().get());
 	}
 
 	private void assertModel(TestModel model) {

@@ -28,17 +28,17 @@ public final class TestModel extends Model<TestModel> {
 
 	private ObservableList<String> stringList;
 	private ObservableList<Integer> intList;
-	
+
 	private SimpleStringProperty name;
-	
+
 	private String notProperty;
 
 	private SimpleObjectProperty<TestModel> nested;
-	
+
 	public TestModel() {
 		this(0);
 	}
-	
+
 	public TestModel(Integer id) {
 		super(id);
 		string = new SimpleStringProperty();
@@ -53,7 +53,7 @@ public final class TestModel extends Model<TestModel> {
 		stringList = FXCollections.observableArrayList();
 		intList = FXCollections.observableArrayList();
 	}
-	
+
 	public TestModel(JsonObject object) {
 		this();
 		loadFromJsonObject(object);
@@ -106,5 +106,5 @@ public final class TestModel extends Model<TestModel> {
 	public final SimpleObjectProperty<TestModel> getNested() {
 		return nested;
 	}
-	
+
 }
