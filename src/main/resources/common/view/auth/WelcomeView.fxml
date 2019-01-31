@@ -6,7 +6,7 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.FlowPane?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
 
 <FlowPane fx:id="pane" alignment="CENTER" columnHalignment="CENTER" prefHeight="635.0" prefWidth="1030.0" styleClass="gradient" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.auth.WelcomeController">
@@ -23,22 +23,22 @@
                   <Label styleClass="main-title" text="Elyssif" textAlignment="CENTER" />
                </children>
             </VBox>
-            <HBox spacing="50.0">
+            <TilePane alignment="CENTER" hgap="50.0">
                <children>
-                  <JFXButton buttonType="RAISED" onAction="#loginClicked" prefWidth="125.0" text="%login">
+                  <JFXButton buttonType="RAISED" maxWidth="1.7976931348623157E308" onAction="#loginClicked" text="%login">
                      <styleClass>
                         <String fx:value="blue-700" />
                         <String fx:value="welcome-btn" />
                      </styleClass>
                   </JFXButton>
-                  <JFXButton buttonType="RAISED" layoutX="10.0" layoutY="10.0" onAction="#registerClicked" prefWidth="125.0" text="%register">
+                  <JFXButton buttonType="RAISED" maxWidth="1.7976931348623157E308" onAction="#registerClicked" text="%register">
                      <styleClass>
                         <String fx:value="blue-700" />
                         <String fx:value="welcome-btn" />
                      </styleClass>
                   </JFXButton>
                </children>
-            </HBox>
+            </TilePane>
          </children>
       </VBox>
    </children>
