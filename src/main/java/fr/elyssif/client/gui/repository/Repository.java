@@ -7,8 +7,6 @@ import java.util.logging.Logger;
 
 import org.apache.http.client.HttpClient;
 
-import com.google.gson.JsonObject;
-
 import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.controller.LogoutCallback;
 import fr.elyssif.client.gui.controller.MainController;
@@ -19,6 +17,7 @@ import fr.elyssif.client.http.FailCallback;
 import fr.elyssif.client.http.HttpMethod;
 import fr.elyssif.client.http.JsonCallback;
 import fr.elyssif.client.http.RequestCallback;
+import fr.elyssif.client.http.RestCallback;
 import fr.elyssif.client.http.RestRequest;
 import fr.elyssif.client.http.RestResponse;
 
@@ -104,7 +103,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param callback - the callback to execute when the request is done, nullable
 	 * @param failCallback - the callback to execute if the request fails, nullable
 	 */
-	protected final void request(String action, HttpMethod method, JsonCallback callback, FailCallback failCallback) {
+	protected final void request(String action, HttpMethod method, RestCallback callback, FailCallback failCallback) {
 		RestRequest request = new RestRequest(httpClient, Config.getInstance().get("Host") + API_URL + model.getResourceName() + "/" + action);
 
 		if(authenticated && authenticator != null) {
@@ -117,9 +116,11 @@ public abstract class Repository<T extends Model<T>> {
 			public void run() {
 				RestResponse response = getResponse();
 				if(response != null && response.isSuccessful()) {
-					JsonObject payload = response.getJsonObject();
 					if(callback != null) {
-						callback.setObject(payload);
+
+						if(callback instanceof JsonCallback)
+							((JsonCallback) callback).setObject(response.getJsonObject());
+
 						callback.run();
 					}
 				} else {
@@ -130,7 +131,7 @@ public abstract class Repository<T extends Model<T>> {
 					if(response.getStatus() == 401 && authenticator != null) { // Unauthenticated
 						authenticator.logout(new LogoutCallback());
 					} else {
-						Logger.getGlobal().warning("Repository request failed: " + response.getStatus() + " " + failCallback.getMessage());
+						Logger.getGlobal().warning("Repository request failed: " + method.name() + " " + response.getStatus() + " " + failCallback.getMessage());
 					}
 				}
 			}
@@ -163,7 +164,6 @@ public abstract class Repository<T extends Model<T>> {
 
 	// create
 	// update
-	// delete
 
 	/**
 	 * Get a record by its id.
@@ -194,6 +194,45 @@ public abstract class Repository<T extends Model<T>> {
 			}
 
 		}, failCallback);
+	}
+
+	/**
+	 * Destroy a record.
+	 * @param id - the id of the record to destroy
+	 * @param callback - the callback executed on success
+	 */
+	public void destroy(T record, RestCallback callback) {
+		destroy(record.getId().get(), callback, null);
+	}
+
+	/**
+	 * Destroy a record.
+	 * @param id - the id of the record to destroy
+	 * @param callback - the callback executed on success
+	 * @param failCallback - the callback executed on failure
+	 */
+	public void destroy(T record, RestCallback callback, FailCallback failCallback) {
+		destroy(record.getId().get(), callback, failCallback);
+	}
+
+	/**
+	 * Destroy a record by its id.
+	 * @param id - the id of the record to destroy
+	 * @param callback - the callback executed on success
+	 */
+	public void destroy(int id, RestCallback callback) {
+		destroy(id, callback, null);
+	}
+
+	/**
+	 * Destroy a record by its id.
+	 * @param id - the id of the record to destroy
+	 * @param callback - the callback executed on success
+	 * @param failCallback - the callback executed on failure
+	 */
+	public void destroy(int id, RestCallback callback, FailCallback failCallback) {
+		if(id <= 0) throw new IllegalArgumentException("ID must be positive, " + id + " given.");
+		request(String.valueOf(id), HttpMethod.DELETE, callback, failCallback);
 	}
 
 }
