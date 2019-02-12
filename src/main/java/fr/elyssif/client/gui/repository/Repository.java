@@ -10,8 +10,10 @@ import org.apache.http.client.HttpClient;
 import com.google.gson.JsonObject;
 
 import fr.elyssif.client.Config;
+import fr.elyssif.client.gui.controller.LogoutCallback;
 import fr.elyssif.client.gui.controller.MainController;
 import fr.elyssif.client.gui.model.Model;
+import fr.elyssif.client.gui.model.ModelCallback;
 import fr.elyssif.client.http.Authenticator;
 import fr.elyssif.client.http.FailCallback;
 import fr.elyssif.client.http.HttpMethod;
@@ -59,23 +61,24 @@ public abstract class Repository<T extends Model<T>> {
 		this.authenticator = authenticator;
 		this.authenticated = true;
 
-		instantiateReferenceModel();
+		model = instantiateReferenceModel();
 	}
 
 	/**
 	 * Create an instance of the reference model from generic type.
 	 */
-	private void instantiateReferenceModel() {
+	private T instantiateReferenceModel() {
 		try {
 			ParameterizedType superClass = (ParameterizedType) getClass().getGenericSuperclass();
 
 			@SuppressWarnings("unchecked")
 			Class<T> type = (Class<T>) superClass.getActualTypeArguments()[0];
-			model = type.getConstructor(Integer.class).newInstance(0);
+			return type.getConstructor(Integer.class).newInstance(0);
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
 			Logger.getGlobal().log(Level.SEVERE, "Couldn't instantiate reference Model.", e);
 		}
+		return null;
 	}
 
 	/**
@@ -102,7 +105,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param failCallback - the callback to execute if the request fails, nullable
 	 */
 	protected final void request(String action, HttpMethod method, JsonCallback callback, FailCallback failCallback) {
-		RestRequest request = new RestRequest(httpClient, Config.getInstance().get("host") + API_URL + model.getResourceName() + "/" + action);
+		RestRequest request = new RestRequest(httpClient, Config.getInstance().get("Host") + API_URL + model.getResourceName() + "/" + action);
 
 		if(authenticated && authenticator != null) {
 			request.setAuthorizationToken(authenticator.getToken());
@@ -124,7 +127,11 @@ public abstract class Repository<T extends Model<T>> {
 						failCallback.setResponse(response);
 						failCallback.run();
 					}
-					Logger.getGlobal().warning("Repository request failed: " + response.getStatus() + " " + failCallback.getMessage());
+					if(response.getStatus() == 401 && authenticator != null) { // Unauthenticated
+						authenticator.logout(new LogoutCallback());
+					} else {
+						Logger.getGlobal().warning("Repository request failed: " + response.getStatus() + " " + failCallback.getMessage());
+					}
 				}
 			}
 
@@ -152,11 +159,41 @@ public abstract class Repository<T extends Model<T>> {
 
 	// FETCH (paginated)
 	// getAll
-	// getbyid
 	// getwhere
 
 	// create
 	// update
 	// delete
+
+	/**
+	 * Get a record by its id.
+	 * @param id - the id of the requested record, msut be positive
+	 * @param callback - the callback executed on success
+	 */
+	public void getById(int id, ModelCallback<T> callback) {
+		getById(id, callback, null);
+	}
+
+	/**
+	 * Get a record by its id.
+	 * @param id - the id of the requested record, msut be positive
+	 * @param callback - the callback executed on success
+	 * @param failCallback - the callback executed on failure
+	 */
+	public void getById(int id, ModelCallback<T> callback, FailCallback failCallback) {
+		if(id <= 0) throw new IllegalArgumentException("ID must be positive, " + id + " given.");
+		request(String.valueOf(id), HttpMethod.GET, new JsonCallback() {
+
+			public void run() {
+				T model = instantiateReferenceModel();
+				if(model != null) {
+					model.loadFromJsonObject(getObject());
+					callback.setModel(model);
+					callback.run();
+				}
+			}
+
+		}, failCallback);
+	}
 
 }
