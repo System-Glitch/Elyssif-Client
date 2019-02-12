@@ -7,9 +7,18 @@ import java.util.logging.Logger;
 
 import org.apache.http.client.HttpClient;
 
+import com.google.gson.JsonObject;
+
+import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.controller.MainController;
 import fr.elyssif.client.gui.model.Model;
 import fr.elyssif.client.http.Authenticator;
+import fr.elyssif.client.http.FailCallback;
+import fr.elyssif.client.http.HttpMethod;
+import fr.elyssif.client.http.JsonCallback;
+import fr.elyssif.client.http.RequestCallback;
+import fr.elyssif.client.http.RestRequest;
+import fr.elyssif.client.http.RestResponse;
 
 /**
  * The <b>Repository Pattern</b> is an addition to the MVC pattern.
@@ -24,7 +33,7 @@ import fr.elyssif.client.http.Authenticator;
  */
 public abstract class Repository<T extends Model<T>> {
 
-	private static final String API_URL = "api/";
+	private static final String API_URL = "/api/";
 
 	private HttpClient httpClient;
 	private Authenticator authenticator;
@@ -85,5 +94,69 @@ public abstract class Repository<T extends Model<T>> {
 	public boolean isAuthenticated() {
 		return authenticated;
 	}
+
+	/**
+	 * Executes a request and returns the raw result as JSON.
+	 * @param action - the action (last segment of the url)
+	 * @param callback - the callback to execute when the request is done, nullable
+	 * @param failCallback - the callback to execute if the request fails, nullable
+	 */
+	protected final void request(String action, HttpMethod method, JsonCallback callback, FailCallback failCallback) {
+		RestRequest request = new RestRequest(httpClient, Config.getInstance().get("host") + API_URL + model.getResourceName() + "/" + action);
+
+		if(authenticated && authenticator != null) {
+			request.setAuthorizationToken(authenticator.getToken());
+		}
+
+		request.asyncExecute(method, new RequestCallback() {
+
+			@Override
+			public void run() {
+				RestResponse response = getResponse();
+				if(response != null && response.isSuccessful()) {
+					JsonObject payload = response.getJsonObject();
+					if(callback != null) {
+						callback.setObject(payload);
+						callback.run();
+					}
+				} else {
+					if(failCallback != null) {
+						failCallback.setResponse(response);
+						failCallback.run();
+					}
+					Logger.getGlobal().warning("Repository request failed: " + response.getStatus() + " " + failCallback.getMessage());
+				}
+			}
+
+		});
+	}
+
+
+	/**
+	 * Prepare and execute a fail callback and log a warning.<br>
+	 * This method should only be called when a request was successful but
+	 * its response was malformed (missing attribute in response for example).
+	 *
+	 * @param response - the response to pass to the fail callback
+	 * @param failCallback - the fail callback to execute
+	 * @param expected - the name of the expected element
+	 */
+	protected void handleMalformedResponse(RestResponse response, FailCallback failCallback, String expected) {
+		failCallback.setResponse(response);
+		failCallback.setMessage("%malformed-response");
+		failCallback.run();
+		Logger.getGlobal().warning("Malformed paginate response (missing expected \"" + expected + "\"):\n\t" + response.getRawBody());
+	}
+
+	// TODO CRUD
+
+	// FETCH (paginated)
+	// getAll
+	// getbyid
+	// getwhere
+
+	// create
+	// update
+	// delete
 
 }

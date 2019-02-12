@@ -56,8 +56,10 @@ public class RestResponse {
 			try {
 				raw = EntityUtils.toString(response.getEntity());
 
-				JsonParser parser = new JsonParser();
-				jsonObject = parser.parse(raw).getAsJsonObject();
+				if(raw != null && !raw.isEmpty()) {
+					JsonParser parser = new JsonParser();
+					jsonObject = parser.parse(raw).getAsJsonObject();
+				}
 			} catch (UnsupportedOperationException | IOException e) {
 				Logger.getGlobal().log(Level.SEVERE, "Unable to read HttpResponse", e);
 			}
@@ -75,11 +77,12 @@ public class RestResponse {
 	}
 
 	/**
-	 * Get the success status of the query. Any error status (400, 500, ...) will flag the query as failed.
+	 * Get the success status of the query. Any error status (400, 500, ...) will flag the query as failed.<br>
+	 * Not that status 300 will not be considered as successful.
 	 * @return the success of the query
 	 */
 	public boolean isSuccessful() {
-		return status < 400;
+		return status < 300;
 	}
 
 	/**
