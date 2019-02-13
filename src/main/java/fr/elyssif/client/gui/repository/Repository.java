@@ -119,7 +119,7 @@ public abstract class Repository<T extends Model<T>> {
 					if(callback != null) {
 
 						if(callback instanceof JsonCallback)
-							((JsonCallback) callback).setObject(response.getJsonObject());
+							((JsonCallback) callback).setElement(response.getJsonElement());
 
 						callback.run();
 					}
@@ -153,7 +153,7 @@ public abstract class Repository<T extends Model<T>> {
 		failCallback.setResponse(response);
 		failCallback.setMessage("%malformed-response");
 		failCallback.run();
-		Logger.getGlobal().warning("Malformed paginate response (missing expected \"" + expected + "\"):\n\t" + response.getRawBody());
+		Logger.getGlobal().warning("Malformed response (expected " + expected + "):\n\t" + response.getRawBody());
 	}
 
 	// TODO CRUD
@@ -187,9 +187,13 @@ public abstract class Repository<T extends Model<T>> {
 			public void run() {
 				T model = instantiateReferenceModel();
 				if(model != null) {
-					model.loadFromJsonObject(getObject());
-					callback.setModel(model);
-					callback.run();
+					if(getElement().isJsonObject()) {
+						model.loadFromJsonObject(getElement().getAsJsonObject());
+						callback.setModel(model);
+						callback.run();
+					} else {
+						handleMalformedResponse(getResponse(), failCallback, "JSON object");
+					}
 				}
 			}
 

@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import org.apache.http.client.HttpClient;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import fr.elyssif.client.gui.model.User;
@@ -142,8 +143,13 @@ public final class Authenticator {
 			public void run() {
 				RestResponse response = getResponse();
 				if(response.getStatus() == 200) {
-					user = new User(response.getJsonObject());
-					Logger.getGlobal().info("Authenticated user: " + user.getEmail().get() + " (" + user.getName().get() + ")");
+					JsonElement element = response.getJsonElement();
+					if(element.isJsonObject()) {
+						user = new User(response.getJsonElement().getAsJsonObject());
+						Logger.getGlobal().info("Authenticated user: " + user.getEmail().get() + " (" + user.getName().get() + ")");
+					} else {
+						Logger.getGlobal().severe("Malformed user info response. Returned element is not a JSON object: " + response.getRawBody());
+					}
 				} else if(response.getStatus() == 401) {
 					token = null;
 					user = null;
@@ -176,13 +182,18 @@ public final class Authenticator {
 		public void run() {
 			RestResponse response = getResponse();
 			if(response.getStatus() == 200) {
-				JsonObject json = response.getJsonObject();
-				if(json.has("token") && json.get("token").isJsonPrimitive()) {
-					setToken(json.get("token").getAsString());
-					requestUserInfo(null);
+				JsonElement json = response.getJsonElement();
+				if(json.isJsonObject()) {
+					JsonObject object = json.getAsJsonObject();
+					if(object.has("token") && object.get("token").isJsonPrimitive()) {
+						setToken(object.get("token").getAsString());
+						requestUserInfo(null);
+					} else {
+						Logger.getGlobal().warning("Malformed authentication response: " + response.getRawBody());
+						return;
+					}
 				} else {
-					Logger.getGlobal().warning("Malformed authentication response: " + response.getRawBody());
-					return;
+					Logger.getGlobal().severe("Malformed authentication response. Returned element is not a JSON object: " + response.getRawBody());
 				}
 			}
 			callback.setResponse(response);

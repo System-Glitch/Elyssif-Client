@@ -9,7 +9,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 /**
@@ -26,7 +26,7 @@ public class RestResponse {
 	private int status;
 	private HttpResponse response;
 	private String raw;
-	private JsonObject jsonObject;
+	private JsonElement jsonElement;
 
 	/**
 	 * Use this constructor if the HttpRequest failed. Will instantiate a fail result
@@ -58,7 +58,7 @@ public class RestResponse {
 
 				if(raw != null && !raw.isEmpty()) {
 					JsonParser parser = new JsonParser();
-					jsonObject = parser.parse(raw).getAsJsonObject();
+					jsonElement = parser.parse(raw);
 				}
 			} catch (UnsupportedOperationException | IOException e) {
 				Logger.getGlobal().log(Level.SEVERE, "Unable to read HttpResponse", e);
@@ -102,12 +102,12 @@ public class RestResponse {
 	}
 
 	/**
-	 * Get the JsonObject parsed from the raw response
-	 * @return the json object parsed from the raw response
-	 * @see JsonObject
+	 * Get the JsonElement parsed from the raw response
+	 * @return the json element parsed from the raw response
+	 * @see JsonElement
 	 */
-	public JsonObject getJsonObject() {
-		return jsonObject;
+	public JsonElement getJsonElement() {
+		return jsonElement;
 	}
 
 	public String toString() {

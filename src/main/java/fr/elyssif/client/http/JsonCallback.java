@@ -1,6 +1,6 @@
 package fr.elyssif.client.http;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 
 /**
  * Custom Runnable used as callbacks for json REST requests
@@ -10,17 +10,17 @@ import com.google.gson.JsonObject;
  */
 public abstract class JsonCallback extends RestCallback {
 
-	private JsonObject response;
+	private JsonElement response;
 
-	public void setObject(JsonObject response) {
+	public void setElement(JsonElement response) {
 		this.response = response;
 	}
 
 	/**
-	 * Get the response from the request. All checks have to be done.
+	 * Get the response from the request. The returned element have not been sanity checked.
 	 * @return the response, can be null
 	 */
-	public JsonObject getObject() {
+	public JsonElement getElement() {
 		return response;
 	}
 

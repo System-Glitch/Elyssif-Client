@@ -21,10 +21,14 @@ public abstract class FailCallback extends RestCallback {
 		if(getResponse().getStatus() == -1) {
 			message = "%unreachable";
 		} else {
-			JsonElement element = getResponse().getJsonObject().get("error");
-			if(element != null && element.isJsonPrimitive())
-				message = element.getAsString();
-			else
+			JsonElement responseElement = getResponse().getJsonElement();
+			if(responseElement.isJsonObject()) {
+				JsonElement element = responseElement.getAsJsonObject().get("error");
+				if(element != null && element.isJsonPrimitive())
+					message = element.getAsString();
+				else
+					message = "%server-error";
+			} else
 				message = "%server-error";
 		}
 	}
