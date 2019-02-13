@@ -2,6 +2,8 @@ package fr.elyssif.client.gui.repository;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -179,13 +181,110 @@ public abstract class Repository<T extends Model<T>> {
 	}
 
 	/**
-	 * Executes a request and returns the raw result as JSON.
+	 * Execute a request without parameters.
+	 *
 	 * @param action the action (last segment of the url)
-	 * @param callback the callback to execute when the request is done, nullable
-	 * @param failCallback the callback to execute if the request fails, nullable
+	 * @param method the method to use in the request
+	 *
+	 * @see HttpMethod
+	 */
+	protected final void request(String action, HttpMethod method) {
+		request(action, method, null, null, null);
+	}
+
+	/**
+	 * Execute a request without parameters and return the raw result. If the given <code>callback</code>
+	 * is a <code>JsonCallback</code>, the parsed JSON will be passed to it.
+	 *
+	 * @param action the action (last segment of the url)
+	 * @param method the method to use in the request
+	 * @param callback the callback to execute when the request is done, nullable.
+	 *
+	 * @see HttpMethod
+	 * @see RestCallback
+	 */
+	protected final void request(String action, HttpMethod method, RestCallback callback) {
+		request(action, method, null, callback, null);
+	}
+
+	/**
+	 * Execute a request without parameters and return the raw result. If the given <code>callback</code>
+	 * is a <code>JsonCallback</code>, the parsed JSON will be passed to it.
+	 *
+	 * @param action the action (last segment of the url)
+	 * @param method the method to use in the request
+	 * @param callback the callback to execute when the request is done, nullable.
+	 * @param failCallback the callback to execute if the request fails, nullable.
+	 *
+	 * @see HttpMethod
+	 * @see RestCallback
+	 * @see FailCallback
 	 */
 	protected final void request(String action, HttpMethod method, RestCallback callback, FailCallback failCallback) {
+		request(action, method, null, callback, failCallback);
+	}
+
+	/**
+	 * Execute a request. If the given <code>callback</code>
+	 * is a <code>JsonCallback</code>, the parsed JSON will be passed to it.
+	 *
+	 * @param action the action (last segment of the url)
+	 * @param method the method to use in the request
+	 * @param params a map of parameters. If <code>method</code> is <code>GET</code>, the parameters
+	 * will be URL parameters and body parameters otherwise. Nullable.
+	 *
+	 * @see HttpMethod
+	 */
+	protected final void request(String action, HttpMethod method, HashMap<String, ?> params) {
+		request(action, method, params, null, null);
+	}
+
+	/**
+	 * Execute a request and return the raw result. If the given <code>callback</code>
+	 * is a <code>JsonCallback</code>, the parsed JSON will be passed to it.
+	 *
+	 * @param action the action (last segment of the url)
+	 * @param method the method to use in the request
+	 * @param params a map of parameters. If <code>method</code> is <code>GET</code>, the parameters
+	 * will be URL parameters and body parameters otherwise. Nullable.
+	 * @param callback the callback to execute when the request is done, nullable.
+	 *
+	 * @see HttpMethod
+	 * @see RestCallback
+	 */
+	protected final void request(String action, HttpMethod method, HashMap<String, ?> params, RestCallback callback) {
+		request(action, method, params, callback, null);
+	}
+
+	/**
+	 * Execute a request and return the raw result. If the given <code>callback</code>
+	 * is a <code>JsonCallback</code>, the parsed JSON will be passed to it.
+	 *
+	 * @param action the action (last segment of the url)
+	 * @param method the method to use in the request
+	 * @param params a map of parameters. If <code>method</code> is <code>GET</code>, the parameters
+	 * will be URL parameters and body parameters otherwise. Nullable.
+	 * @param callback the callback to execute when the request is done, nullable.
+	 * @param failCallback the callback to execute if the request fails, nullable.
+	 *
+	 * @see HttpMethod
+	 * @see RestCallback
+	 * @see FailCallback
+	 */
+	protected final void request(String action, HttpMethod method, HashMap<String, ?> params, RestCallback callback, FailCallback failCallback) {
 		RestRequest request = new RestRequest(httpClient, Config.getInstance().get("Host") + API_URL + model.getResourceName() + "/" + action);
+
+		if(params != null) { // Set params
+			if(method.equals(HttpMethod.GET)) { // Set URL params if method is GET
+				for(Entry<String, ?> entry : params.entrySet()) {
+					request.urlParam(entry.getKey(), entry.getValue());
+				}
+			} else { // Set body params if method is not GET
+				for(Entry<String, ?> entry : params.entrySet()) {
+					request.param(entry.getKey(), entry.getValue());
+				}
+			}
+		}
 
 		if(authenticated && authenticator != null) {
 			request.setAuthorizationToken(authenticator.getToken());
@@ -199,6 +298,7 @@ public abstract class Repository<T extends Model<T>> {
 				if(response != null && response.isSuccessful()) {
 					if(callback != null) {
 
+						callback.setResponse(response);
 						if(callback instanceof JsonCallback)
 							((JsonCallback) callback).setElement(response.getJsonElement());
 
@@ -239,9 +339,6 @@ public abstract class Repository<T extends Model<T>> {
 
 	// TODO CRUD
 
-	// FETCH (paginated)
-	// getwhere
-
 	// create
 	// update
 
@@ -259,6 +356,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param id the id of the requested record, msut be positive
 	 * @param callback the callback executed on success
 	 * @param failCallback the callback executed on failure
+	 * @throws IllegalArgumentException thrown if <code>id</code> isn't positive
 	 */
 	public void getById(int id, ModelCallback<T> callback, FailCallback failCallback) {
 		if(id <= 0) throw new IllegalArgumentException("ID must be positive, " + id + " given.");
@@ -280,8 +378,34 @@ public abstract class Repository<T extends Model<T>> {
 		}, failCallback);
 	}
 
-	public void getAll(PaginateCallback<T> callback, FailCallback failCallback) {
-		request("", HttpMethod.GET, new JsonCallback() { // Empty action for index
+	/**
+	 * Get a paginate of all the records.
+	 * @param page the page number, must be positive
+	 * @param callback the callback executed on success
+	 * @param failCallback the callback executed on failure
+	 * @throws IllegalArgumentException thrown if <code>page</code> isn't positive
+	 */
+	public void getAll(int page, PaginateCallback<T> callback, FailCallback failCallback) {
+		if(page <= 0) throw new IllegalArgumentException("Page number must be positive, " + page + " given.");
+
+		var params = new HashMap<String, Integer>();
+		params.put("page", page);
+
+		request("", HttpMethod.GET, params, new JsonCallback() { // Empty action for index
+
+			public void run() {
+				handlePaginateResponse(getResponse(), callback, failCallback);
+			}
+
+		}, failCallback);
+	}
+
+	public void getWhere(String search, PaginateCallback<T> callback, FailCallback failCallback) {
+
+		var params = new HashMap<String, String>();
+		params.put("search", search);
+
+		request("", HttpMethod.GET, params, new JsonCallback() { // Empty action for index
 
 			public void run() {
 				handlePaginateResponse(getResponse(), callback, failCallback);
@@ -323,6 +447,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param id the id of the record to destroy
 	 * @param callback the callback executed on success
 	 * @param failCallback the callback executed on failure
+	 * @throws IllegalArgumentException thrown if <code>id</code> isn't positive
 	 */
 	public void destroy(int id, RestCallback callback, FailCallback failCallback) {
 		if(id <= 0) throw new IllegalArgumentException("ID must be positive, " + id + " given.");

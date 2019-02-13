@@ -9,12 +9,17 @@ public abstract class RestCallback implements Runnable {
 
 	private RestResponse response;
 
-	protected void setResponse(RestResponse response) {
+	/**
+	 * Set the response for this callback.
+	 * @param response the response, nullable
+	 */
+	public void setResponse(RestResponse response) {
 		this.response = response;
 	}
 
 	/**
 	 * Get the response from the request. All checks have to be done.
+	 * (Such as <code>isSuccessful()</code>)
 	 * @return the response, can be null
 	 */
 	public RestResponse getResponse() {

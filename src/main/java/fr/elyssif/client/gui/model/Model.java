@@ -215,11 +215,11 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 
 	/**
 	 * Find method by its name, excluding the given except method. Only returns method that have one parameter
-	 * @param type
-	 * @param name
-	 * @param except
+	 * @param type the class in which the method will be searched
+	 * @param name the name of the method
+	 * @param except a method to exclude from the search
 	 * @return method
-	 * @throws NoSuchMethodException
+	 * @throws NoSuchMethodException thrown if the method doesn't exist
 	 */
 	private Method findMethod(Class<?> type, String name, Method except) throws NoSuchMethodException {
 		Method[] methods = type.getMethods();
@@ -241,7 +241,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	 * @param type
 	 * @param attributeName
 	 * @return field or null if not found
-	 * @throws NoSuchFieldException
+	 * @throws NoSuchFieldException thrown if the field doesn't exist
 	 */
 	private Field findField(Class<?> type, String attributeName) throws NoSuchFieldException {
 		Field field = findField(type.getSuperclass().getDeclaredFields(), attributeName);
@@ -335,6 +335,8 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	 * @param element
 	 * @param attributeName
 	 * @return value or null if not supported
+	 * @throws RuntimeException thrown if nested object is not a model nor primitive type
+	 * @throws RuntimeException thrown if nested object has multiple type arguments
 	 */
 	private Object getObjectFromJson(Field field, Method method, JsonElement element, String attributeName) {
 		Type fieldType = field.getGenericType();

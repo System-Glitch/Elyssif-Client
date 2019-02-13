@@ -8,9 +8,11 @@ import javafx.scene.control.Label;
 import javafx.util.Duration;
 
 /**
- * Singleton controller for the snackbar
- * @author Jérémy LAMBERT
+ * Singleton controller for the snackbar.<br>
+ * A snackbar is used to display short messages on the
+ * bottom of the window.
  *
+ * @author Jérémy LAMBERT
  */
 public final class SnackbarController {
 
