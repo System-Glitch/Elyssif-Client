@@ -327,7 +327,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * its response was malformed (missing attribute in response for example).
 	 *
 	 * @param response the response to pass to the fail callback
-	 * @param failCallback the fail callback to execute
+	 * @param failCallback the fail callback to execute, nullable
 	 * @param expected the name of the expected element
 	 */
 	protected void handleMalformedResponse(RestResponse response, FailCallback failCallback, String expected) {
@@ -338,11 +338,6 @@ public abstract class Repository<T extends Model<T>> {
 		}
 		Logger.getGlobal().warning("Malformed response (expected " + expected + "):\n\t" + response.getRawBody());
 	}
-
-	// TODO CRUD
-
-	// create
-	// update
 
 	/**
 	 * Get a record by its id.
@@ -357,7 +352,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * Get a record by its id.
 	 * @param id the id of the requested record, msut be positive
 	 * @param callback the callback executed on success
-	 * @param failCallback the callback executed on failure
+	 * @param failCallback the callback executed on failure, nullable
 	 * @throws IllegalArgumentException thrown if <code>id</code> isn't positive
 	 */
 	public void getById(int id, ModelCallback<T> callback, FailCallback failCallback) {
@@ -409,7 +404,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * Get a paginate of all the records matching the given <code>search</code>.
 	 * @param search the search keyword(s)
 	 * @param callback the callback executed on success
-	 * @param failCallback the callback executed on failure
+	 * @param failCallback the callback executed on failure, nullable
 	 */
 	public void getWhere(String search, PaginateCallback<T> callback) {
 		getWhere(search, callback, null);
@@ -431,7 +426,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * Execute a generic GET request
 	 * @param params the URL params for the request
 	 * @param callback the callback executed on success
-	 * @param failCallback the callback executed on failure
+	 * @param failCallback the callback executed on failure, nullable
 	 */
 	private void get(HashMap<String, ?> params, PaginateCallback<T> callback, FailCallback failCallback) {
 		request("", HttpMethod.GET, params, new JsonCallback() { // Empty action for index
@@ -441,6 +436,62 @@ public abstract class Repository<T extends Model<T>> {
 			}
 
 		}, failCallback);
+	}
+
+	/**
+	 * <p>Create and store a model on the server.</p>
+	 * <p>The record will be created with all the non-null
+	 * fields inside the given <code>model</code>.
+	 * On success, the given <code>model</code> is updated with
+	 * the values of the new resource. You can then use it safely.
+	 * The instance passed to the given <code>callback</code> equals
+	 * the given <code>model</code>.</p>
+	 * @param model the model to store on the server
+	 * @param callback the callback executed on success, nullable
+	 */
+	public void store(T model, ModelCallback<T> callback) {
+		store(model, callback, null);
+	}
+
+	/**
+	 * <p>Create and store a model on the server.</p>
+	 * <p>The record will be created with all the non-null
+	 * fields inside the given <code>model</code>.
+	 * On success, the given <code>model</code> is updated with
+	 * the values of the new resource. You can then use it safely.
+	 * The instance passed to the given <code>callback</code> equals
+	 * the given <code>model</code>.</p>
+	 * @param model the model to store on the server
+	 * @param callback the callback executed on success
+	 * @param failCallback the callback executed on failure, nullable
+	 */
+	public void store(T model, ModelCallback<T> callback, FailCallback failCallback) {
+		// TODO implement store
+		// Get all properties (like in load fromJsonObject)
+		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	/**
+	 * Update the given <code>model</code> on the server
+	 * based on its id. All fields (even null ones) will be sent.
+	 * @param model the model to update on the server
+	 * @param callback the callback executed on success
+	 */
+	public void update(T model, RestCallback callback) {
+		update(model, callback, null);
+	}
+
+	/**
+	 * Update the given <code>model</code> on the server
+	 * based on its id. All fields (even null ones) will be sent.
+	 * @param model the model to update on the server
+	 * @param callback the callback executed on success, nullable
+	 * @param failCallback the callback executed on failure, nullable
+	 */
+	public void update(T model, RestCallback callback, FailCallback failCallback) {
+		// TODO implement update
+		// Possibility to update a single field?
+		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	/**
@@ -481,6 +532,19 @@ public abstract class Repository<T extends Model<T>> {
 	public void destroy(int id, RestCallback callback, FailCallback failCallback) {
 		if(id <= 0) throw new IllegalArgumentException("ID must be positive, " + id + " given.");
 		request(String.valueOf(id), HttpMethod.DELETE, callback, failCallback);
+	}
+
+	private String toSnakeCase(String name) {
+		StringBuilder builder = new StringBuilder(name);
+		for(int i = 0 ; i < builder.length() ; i++) {
+			char c = builder.charAt(i);
+			if(Character.isUpperCase(c)) {
+				builder.setCharAt(i, Character.toLowerCase(c));
+				builder.insert(i, '_');
+			}
+		}
+
+		return builder.toString();
 	}
 
 }

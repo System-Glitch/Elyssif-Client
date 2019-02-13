@@ -145,7 +145,7 @@ public final class Authenticator {
 				if(response.getStatus() == 200) {
 					JsonElement element = response.getJsonElement();
 					if(element.isJsonObject()) {
-						user = new User(response.getJsonElement().getAsJsonObject());
+						user = new User(element.getAsJsonObject());
 						Logger.getGlobal().info("Authenticated user: " + user.getEmail().get() + " (" + user.getName().get() + ")");
 					} else {
 						Logger.getGlobal().severe("Malformed user info response. Returned element is not a JSON object: " + response.getRawBody());
