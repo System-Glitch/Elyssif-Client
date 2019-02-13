@@ -17,6 +17,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 
+import fr.elyssif.client.StringUtils;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -138,7 +139,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	public final void loadFromJsonObject(JsonObject object) {
 
 		for(Entry<String, JsonElement> element : object.entrySet()) {
-			String attributeName = getAttributeName(element.getKey());
+			String attributeName = StringUtils.toCamelCase(element.getKey());
 			try {
 				Field field = findField(getClass(), attributeName);
 				if(WritableValue.class.isAssignableFrom(field.getType()) && Property.class.isAssignableFrom(field.getType())) {
@@ -364,22 +365,5 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 		}
 
 		return null;
-	}
-
-	/**
-	 * Convert the snake case attribute name to camel case.
-	 * @param entryName
-	 * @return attributeName
-	 */
-	private String getAttributeName(String entryName) {
-		StringBuilder builder = new StringBuilder(entryName);
-		int index = builder.indexOf("_");
-		while(index != -1) {
-			if(index < entryName.length() - 1)
-				builder.setCharAt(index + 1, Character.toUpperCase(builder.charAt(index + 1)));
-			builder.deleteCharAt(index);
-			index = builder.indexOf("_");
-		}
-		return builder.toString();
 	}
 }

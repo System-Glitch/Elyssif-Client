@@ -534,22 +534,4 @@ public abstract class Repository<T extends Model<T>> {
 		request(String.valueOf(id), HttpMethod.DELETE, callback, failCallback);
 	}
 
-	/**
-	 * Convert a camel case string to snake case.
-	 * @param str the string to convert
-	 * @return a snake case version of the given string
-	 */
-	private String toSnakeCase(String str) {
-		StringBuilder builder = new StringBuilder(str);
-		for(int i = 0 ; i < builder.length() ; i++) {
-			char c = builder.charAt(i);
-			if(Character.isUpperCase(c)) {
-				builder.setCharAt(i, Character.toLowerCase(c));
-				builder.insert(i, '_');
-			}
-		}
-
-		return builder.toString();
-	}
-
 }
