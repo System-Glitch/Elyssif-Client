@@ -105,8 +105,8 @@ public class RestRequest {
 
 	/**
 	 * Puts a parameter to the request. Overrides if a value with the given name already exists
-	 * @param name - the name of the parameter
-	 * @param value - the value associated with the given name, should implement Serializable
+	 * @param name the name of the parameter
+	 * @param value the value associated with the given name, should implement Serializable
 	 * @return current instance, used to chain the builder
 	 * @see Serializable
 	 */
@@ -125,8 +125,8 @@ public class RestRequest {
 
 	/**
 	 * Puts a URL parameter to the request. Overrides if a value with the given name already exists
-	 * @param name - the name of the parameter
-	 * @param value - the value associated with the given name, should implement Serializable
+	 * @param name the name of the parameter
+	 * @param value the value associated with the given name, should implement Serializable
 	 * @return current instance, used to chain the builder
 	 * @see Serializable
 	 */
@@ -184,9 +184,8 @@ public class RestRequest {
 	/**
 	 * Execute the request asynchronously using the given HttpMethod and executes the given callback when done
 	 * 
-	 * @param method - the Http method to use for this request
-	 * @param callback - the action to execute when the request is done
-	 * @return the result of the request
+	 * @param method the Http method to use for this request
+	 * @param callback the action to execute when the request is done
 	 * 
 	 * @see RestResponse
 	 * @see HttpMethod
@@ -223,7 +222,7 @@ public class RestRequest {
 
 	/**
 	 * Prepare the request by instantiating it, setting the headers and the parameters.
-	 * @param method - The HttpMethod used
+	 * @param method The HttpMethod used
 	 * @return the prepared request, ready to be executed. null if an error occurred
 	 * @see HttpMethod
 	 */

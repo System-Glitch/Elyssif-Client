@@ -23,7 +23,7 @@ public final class User extends Model<User>{
 
 	/**
 	 * Create a new instance of a User.
-	 * @param id - the ID of the resource
+	 * @param id the ID of the resource
 	 */
 	public User(Integer id) {
 		super(id);

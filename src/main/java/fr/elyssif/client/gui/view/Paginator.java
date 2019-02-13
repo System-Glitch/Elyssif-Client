@@ -55,7 +55,7 @@ public class Paginator<T> {
 
 	/**
 	 * Load page information from the given json object. If the needed values are not found, they will use the default value 1.
-	 * @param object - the json object containing the paginator
+	 * @param object the json object containing the paginator
 	 */
 	public void loadFromJson(JsonObject object) {
 		JsonElement element = object.get("currentPage");

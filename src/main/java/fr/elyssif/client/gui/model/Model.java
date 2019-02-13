@@ -44,7 +44,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 
 	/**
 	 * Create a new instance of a model.
-	 * @param id - the ID of the resource
+	 * @param id the ID of the resource
 	 */
 	public Model(Integer id) {
 		this(id, null, null);
@@ -89,7 +89,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 
 	/**
 	 * Get the date this record was created.
-	 * @param updatedAt
+	 * @return createdAt
 	 */
 	public final SimpleObjectProperty<Date> getCreatedAt() {
 		return createdAt;
@@ -97,7 +97,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 
 	/**
 	 * Set the date this record was created.
-	 * @param updatedAt
+	 * @param createdAt
 	 */
 	public final void setCreatedAt(Date createdAt) {
 		this.createdAt.set(createdAt);
@@ -105,7 +105,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 
 	/**
 	 * Get the date this record was last updated.
-	 * @param updatedAt
+	 * @return updatedAt
 	 */
 	public final SimpleObjectProperty<Date> getUpdatedAt() {
 		return updatedAt;

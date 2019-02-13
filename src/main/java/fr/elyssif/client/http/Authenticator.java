@@ -11,8 +11,8 @@ import fr.elyssif.client.gui.model.User;
 
 /**
  * Utility class for authentication and token holding.
- * @author Jérémy LAMBERT
  *
+ * @author Jérémy LAMBERT
  */
 public final class Authenticator {
 
@@ -29,8 +29,8 @@ public final class Authenticator {
 	/**
 	 * Create a new instance of Authenticator.
 	 * 
-	 * @param client
-	 * @param host - the url of the host (without trailing slash)
+	 * @param client the client to use for the authentication and user info queries
+	 * @param host the url of the host (without trailing slash)
 	 */
 	public Authenticator(HttpClient client, String host) {
 		this(client, host, null);
@@ -39,9 +39,9 @@ public final class Authenticator {
 	/**
 	 * Create a new instance of Authenticator.
 	 * 
-	 * @param client
-	 * @param host - the url of the host (without trailing slash)
-	 * @param token - access token if you have it, nullable
+	 * @param client the client to use for the authentication and user info queries
+	 * @param host the url of the host (without trailing slash)
+	 * @param token access token if you have it, nullable
 	 */
 	public Authenticator(HttpClient client, String host, String token) {
 		this.client = client;
@@ -67,7 +67,7 @@ public final class Authenticator {
 
 	/**
 	 * Get currently authenticated user.
-	 * @return user - can be null
+	 * @return user, can be null
 	 */
 	public final User getUser() {
 		return user;
@@ -77,7 +77,7 @@ public final class Authenticator {
 	 * Send a login request and store the access token on success.
 	 * @param email
 	 * @param password
-	 * @param formCallback
+	 * @param callback the callback to execute on success
 	 */
 	public final void login(String email, String password, FormCallback callback) {
 		RestRequest request = new RestRequest(client, host + LOGIN_ENDPOINT)
@@ -116,9 +116,9 @@ public final class Authenticator {
 	 * Send a register request and store the access token on success.
 	 * @param email
 	 * @param password
-	 * @param passwordConfirmation
-	 * @param name
-	 * @param formCallback
+	 * @param passwordConfirmation the password confirmation, should be equal to <code>password</code>
+	 * @param name the name of the user to register
+	 * @param callback
 	 */
 	public final void register(String email, String password, String passwordConfirmation, String name, FormCallback callback) {
 		RestRequest request = new RestRequest(client, host + REGISTER_ENDPOINT)
@@ -132,7 +132,7 @@ public final class Authenticator {
 
 	/**
 	 * Make a request to get the current authenticated user's info and store it.
-	 * @param callback - nullable
+	 * @param callback the callback to execute after the response is received, successful or not. Nullable
 	 */
 	public final void requestUserInfo(RequestCallback callback) {
 		RestRequest request = new RestRequest(client, host + USER_INFO_ENDPOINT)
@@ -168,8 +168,8 @@ public final class Authenticator {
 
 	/**
 	 * Custom callback for authentication requests.
-	 * @author Jérémy LAMBERT
 	 *
+	 * @author Jérémy LAMBERT
 	 */
 	private class AuthenticationCallback extends RequestCallback {
 

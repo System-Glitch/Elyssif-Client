@@ -39,7 +39,7 @@ public abstract class Controller implements Initializable {
 
 	/**
 	 * Show the according view. Plays the transition if slide direction is not "none" and transition is true.
-	 * @param transition - plays transition if true, simply puts pane to front if false
+	 * @param transition plays transition if true, simply puts pane to front if false
 	 */
 	public void show(boolean transition) {
 		show(transition, null);
@@ -47,8 +47,8 @@ public abstract class Controller implements Initializable {
 
 	/**
 	 * Show the according view. Plays the transition if slide direction is not "none" and transition is true.
-	 * @param transition - plays transition if true, simply puts pane to front if false
-	 * @param backController - the controller which should be called when the back button is clicked
+	 * @param transition plays transition if true, simply puts pane to front if false
+	 * @param backController the controller which should be called when the back button is clicked
 	 */
 	protected void show(boolean transition, Controller backController) {
 		setBackController(backController);
@@ -121,7 +121,7 @@ public abstract class Controller implements Initializable {
 
 	/**
 	 * Set the next controller and show it.
-	 * @param controller - the controller of the next view to show
+	 * @param controller the controller of the next view to show
 	 * @param transition
 	 */
 	public void showNext(Controller controller, boolean transition) {
@@ -158,7 +158,7 @@ public abstract class Controller implements Initializable {
 
 	/**
 	 * Get a child controller by its name.
-	 * @param key - the name of the controller
+	 * @param key the name of the controller
 	 * @return controller
 	 * @see Controller
 	 */
@@ -168,7 +168,7 @@ public abstract class Controller implements Initializable {
 
 	/**
 	 * Register a child controller.
-	 * @param key - the name of the controller
+	 * @param key the name of the controller
 	 * @param controller
 	 */
 	private void registerController(String key, Controller controller) {

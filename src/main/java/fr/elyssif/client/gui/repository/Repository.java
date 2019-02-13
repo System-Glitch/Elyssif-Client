@@ -34,11 +34,13 @@ import javafx.collections.ObservableList;
  * It fits right between the Controller and the Model so the controller never interacts directly with the Model.
  *
  * The aim is to:
- * - Lighten controllers by moving the query building and logic into the repositories.
- * - Improve readability and maintainability.
- * - Reduce code redundancy as the super-class `Repository` contains most frequent queries.
+ * <ul>
+ * <li>Lighten controllers by moving the query building and logic into the repositories.</li>
+ * <li>Improve readability and maintainability.</li>
+ * <li>Reduce code redundancy as the super-class <code>Repository</code> contains most frequent queries.</li>
  *
  * @author Jérémy LAMBERT
+ * @see Model
  */
 public abstract class Repository<T extends Model<T>> {
 
@@ -51,18 +53,35 @@ public abstract class Repository<T extends Model<T>> {
 
 	private T model; // Empty model for reference
 
+	/**
+	 * Create a new Repository instance using
+	 * the global http client and authenticator.
+	 */
 	public Repository() {
 		this(MainController.getInstance().getHttpClient(), MainController.getInstance().getAuthenticator());
 	}
 
+	/**
+	 * Create a new Repository instance using the global authenticator.
+	 * @param client the http client used for queries
+	 */
 	public Repository(HttpClient client) {
 		this(client, MainController.getInstance().getAuthenticator());
 	}
 
+	/**
+	 * Create a new Repository instance using the global authenticator.
+	 * @param authenticator the authenticator used for authenticated queries
+	 */
 	public Repository(Authenticator authenticator) {
 		this(MainController.getInstance().getHttpClient(), authenticator);
 	}
 
+	/**
+	 * Create a new Repository instance.
+	 * @param httpClient the http client used for queries
+	 * @param authenticator the authenticator used for authenticated queries
+	 */
 	public Repository(HttpClient httpClient, Authenticator authenticator) {
 		this.httpClient = httpClient;
 		this.authenticator = authenticator;
@@ -91,7 +110,7 @@ public abstract class Repository<T extends Model<T>> {
 	/**
 	 * Create a new instance of the reference model for each
 	 * element in the given JsonArray.
-	 * @param array
+	 * @param array the items array
 	 * @return list
 	 */
 	private ObservableList<T> parseArray(JsonArray array) {
@@ -110,9 +129,9 @@ public abstract class Repository<T extends Model<T>> {
 
 	/**
 	 * Handle a paginate response. Prepare and execute callbacks.
-	 * @param response - the response
-	 * @param callback - the callback to execute on success
-	 * @param failCallback - the callback to execute if the response is invalid
+	 * @param response the response
+	 * @param callback the callback to execute on success
+	 * @param failCallback the callback to execute if the response is invalid
 	 */
 	private void handlePaginateResponse(RestResponse response, PaginateCallback<T> callback, FailCallback failCallback) {
 		JsonElement element = response.getJsonElement();
@@ -161,9 +180,9 @@ public abstract class Repository<T extends Model<T>> {
 
 	/**
 	 * Executes a request and returns the raw result as JSON.
-	 * @param action - the action (last segment of the url)
-	 * @param callback - the callback to execute when the request is done, nullable
-	 * @param failCallback - the callback to execute if the request fails, nullable
+	 * @param action the action (last segment of the url)
+	 * @param callback the callback to execute when the request is done, nullable
+	 * @param failCallback the callback to execute if the request fails, nullable
 	 */
 	protected final void request(String action, HttpMethod method, RestCallback callback, FailCallback failCallback) {
 		RestRequest request = new RestRequest(httpClient, Config.getInstance().get("Host") + API_URL + model.getResourceName() + "/" + action);
@@ -207,9 +226,9 @@ public abstract class Repository<T extends Model<T>> {
 	 * This method should only be called when a request was successful but
 	 * its response was malformed (missing attribute in response for example).
 	 *
-	 * @param response - the response to pass to the fail callback
-	 * @param failCallback - the fail callback to execute
-	 * @param expected - the name of the expected element
+	 * @param response the response to pass to the fail callback
+	 * @param failCallback the fail callback to execute
+	 * @param expected the name of the expected element
 	 */
 	protected void handleMalformedResponse(RestResponse response, FailCallback failCallback, String expected) {
 		failCallback.setResponse(response);
@@ -228,8 +247,8 @@ public abstract class Repository<T extends Model<T>> {
 
 	/**
 	 * Get a record by its id.
-	 * @param id - the id of the requested record, msut be positive
-	 * @param callback - the callback executed on success
+	 * @param id the id of the requested record, msut be positive
+	 * @param callback the callback executed on success
 	 */
 	public void getById(int id, ModelCallback<T> callback) {
 		getById(id, callback, null);
@@ -237,9 +256,9 @@ public abstract class Repository<T extends Model<T>> {
 
 	/**
 	 * Get a record by its id.
-	 * @param id - the id of the requested record, msut be positive
-	 * @param callback - the callback executed on success
-	 * @param failCallback - the callback executed on failure
+	 * @param id the id of the requested record, msut be positive
+	 * @param callback the callback executed on success
+	 * @param failCallback the callback executed on failure
 	 */
 	public void getById(int id, ModelCallback<T> callback, FailCallback failCallback) {
 		if(id <= 0) throw new IllegalArgumentException("ID must be positive, " + id + " given.");
@@ -273,8 +292,8 @@ public abstract class Repository<T extends Model<T>> {
 
 	/**
 	 * Destroy a record.
-	 * @param id - the id of the record to destroy
-	 * @param callback - the callback executed on success
+	 * @param record the record to destroy
+	 * @param callback the callback executed on success
 	 */
 	public void destroy(T record, RestCallback callback) {
 		destroy(record.getId().get(), callback, null);
@@ -282,9 +301,9 @@ public abstract class Repository<T extends Model<T>> {
 
 	/**
 	 * Destroy a record.
-	 * @param id - the id of the record to destroy
-	 * @param callback - the callback executed on success
-	 * @param failCallback - the callback executed on failure
+	 * @param record the record to destroy
+	 * @param callback the callback executed on success
+	 * @param failCallback the callback executed on failure
 	 */
 	public void destroy(T record, RestCallback callback, FailCallback failCallback) {
 		destroy(record.getId().get(), callback, failCallback);
@@ -292,8 +311,8 @@ public abstract class Repository<T extends Model<T>> {
 
 	/**
 	 * Destroy a record by its id.
-	 * @param id - the id of the record to destroy
-	 * @param callback - the callback executed on success
+	 * @param id the id of the record to destroy
+	 * @param callback the callback executed on success
 	 */
 	public void destroy(int id, RestCallback callback) {
 		destroy(id, callback, null);
@@ -301,9 +320,9 @@ public abstract class Repository<T extends Model<T>> {
 
 	/**
 	 * Destroy a record by its id.
-	 * @param id - the id of the record to destroy
-	 * @param callback - the callback executed on success
-	 * @param failCallback - the callback executed on failure
+	 * @param id the id of the record to destroy
+	 * @param callback the callback executed on success
+	 * @param failCallback the callback executed on failure
 	 */
 	public void destroy(int id, RestCallback callback, FailCallback failCallback) {
 		if(id <= 0) throw new IllegalArgumentException("ID must be positive, " + id + " given.");
