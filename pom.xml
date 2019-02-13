@@ -73,6 +73,7 @@
 						</goals>
 						<configuration>
 			                <doclint>none</doclint>
+			                <additionalJOption>--no-module-directories</additionalJOption>
 			            </configuration>
 					</execution>
 				</executions>

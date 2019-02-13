@@ -73,7 +73,7 @@ public abstract class Controller implements Initializable {
 
 	/**
 	 * Get the main pane for this controller.
-	 * @return pane
+	 * @return the root pane of the view controlled by this controller
 	 */
 	protected final Pane getPane() {
 		return pane;
@@ -140,7 +140,7 @@ public abstract class Controller implements Initializable {
 
 	/**
 	 * Get the ResourceBundle for this controller.
-	 * @return bundle
+	 * @return the ResourceBundle used in the view controlled by this controller
 	 * @see ResourceBundle
 	 */
 	protected final ResourceBundle getBundle() {
@@ -149,7 +149,7 @@ public abstract class Controller implements Initializable {
 
 	/**
 	 * Get the location used to resolve relative paths for the root object, or null if the location is not known.
-	 * @return location 
+	 * @return location
 	 */
 	protected final URL getLocation() {
 		return location;
@@ -159,7 +159,7 @@ public abstract class Controller implements Initializable {
 	/**
 	 * Get a child controller by its name.
 	 * @param key the name of the controller
-	 * @return controller
+	 * @return the child controller named with the given key. Null if doesn't exist.
 	 * @see Controller
 	 */
 	public Controller getController(String key) {
@@ -169,7 +169,7 @@ public abstract class Controller implements Initializable {
 	/**
 	 * Register a child controller.
 	 * @param key the name of the controller
-	 * @param controller
+	 * @param controller the child controller to register
 	 */
 	private void registerController(String key, Controller controller) {
 		controllers.put(key, controller);
