@@ -33,7 +33,8 @@ public final class AuthController extends Controller {
 	 */
 	public void show(boolean transition, Controller backController) {
 		super.show(transition, backController);
-		welcomeController.show(transition);
+		if(transition)
+			welcomeController.show(transition);
 		loginController.resetForm();
 		registerController.resetForm();
 	}
