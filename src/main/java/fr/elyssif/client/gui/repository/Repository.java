@@ -331,9 +331,11 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param expected the name of the expected element
 	 */
 	protected void handleMalformedResponse(RestResponse response, FailCallback failCallback, String expected) {
-		failCallback.setResponse(response);
-		failCallback.setMessage("%malformed-response");
-		failCallback.run();
+		if(failCallback != null) {
+			failCallback.setResponse(response);
+			failCallback.setMessage("%malformed-response");
+			failCallback.run();
+		}
 		Logger.getGlobal().warning("Malformed response (expected " + expected + "):\n\t" + response.getRawBody());
 	}
 
@@ -382,7 +384,17 @@ public abstract class Repository<T extends Model<T>> {
 	 * Get a paginate of all the records.
 	 * @param page the page number, must be positive
 	 * @param callback the callback executed on success
-	 * @param failCallback the callback executed on failure
+	 * @throws IllegalArgumentException thrown if <code>page</code> isn't positive
+	 */
+	public void getAll(int page, PaginateCallback<T> callback) {
+		getAll(page, callback, null);
+	}
+
+	/**
+	 * Get a paginate of all the records.
+	 * @param page the page number, must be positive
+	 * @param callback the callback executed on success
+	 * @param failCallback the callback executed on failure, nullable
 	 * @throws IllegalArgumentException thrown if <code>page</code> isn't positive
 	 */
 	public void getAll(int page, PaginateCallback<T> callback, FailCallback failCallback) {
@@ -398,6 +410,16 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param search the search keyword(s)
 	 * @param callback the callback executed on success
 	 * @param failCallback the callback executed on failure
+	 */
+	public void getWhere(String search, PaginateCallback<T> callback) {
+		getWhere(search, callback, null);
+	}
+
+	/**
+	 * Get a paginate of all the records matching the given <code>search</code>.
+	 * @param search the search keyword(s)
+	 * @param callback the callback executed on success
+	 * @param failCallback the callback executed on failure, nullable
 	 */
 	public void getWhere(String search, PaginateCallback<T> callback, FailCallback failCallback) {
 		var params = new HashMap<String, String>();
