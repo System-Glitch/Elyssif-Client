@@ -15,6 +15,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -27,7 +28,7 @@ public final class ElyssifClient extends Application {
 
 	private static final int DEFAULT_WIDTH = 1050;
 	private static final int DEFAULT_HEIGHT = 635;
-	
+
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		try {
@@ -37,29 +38,37 @@ public final class ElyssifClient extends Application {
 			JFXDecorator decorator = new JFXDecorator(primaryStage, rootLayout, false, true, true);
 			Scene scene = new Scene(decorator);
 			scene.getStylesheets().addAll(getClass().getResource("/com/jfoenix/assets/css/jfoenix-fonts.css").toExternalForm(),
-										getClass().getResource("/com/jfoenix/assets/css/jfoenix-design.css").toExternalForm(),
-										getClass().getResource("/view/css/application.css").toExternalForm());
+					getClass().getResource("/com/jfoenix/assets/css/jfoenix-design.css").toExternalForm(),
+					getClass().getResource("/view/css/application.css").toExternalForm());
+
+			disableContextMenu(scene);
 			
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Elyssif");
 
 			setupIcons(primaryStage);
-			
+
 			primaryStage.show();
-			
+
 			primaryStage.setMinHeight(DEFAULT_HEIGHT);
 			primaryStage.setMinWidth(DEFAULT_WIDTH);
 			primaryStage.setHeight(DEFAULT_HEIGHT);
 			primaryStage.setWidth(DEFAULT_WIDTH);
-			
+
 			primaryStage.centerOnScreen();
-			
+
 			MainController.getInstance().ready();
 
 		} catch( Exception e ) {
 			Logger.getGlobal().log(Level.SEVERE, "Error while loading the graphical interface.", e);
 			Platform.exit();
 		}
+	}
+
+	private void disableContextMenu(Scene scene) {
+		scene.addEventFilter(ContextMenuEvent.CONTEXT_MENU_REQUESTED, evt -> {
+			evt.consume();
+		});
 	}
 
 	private void setupIcons(Stage primaryStage) {
@@ -70,19 +79,19 @@ public final class ElyssifClient extends Application {
 		primaryStage.getIcons().add(new Image(getClass().getResource("/view/img/logo/logo128.png").toExternalForm()));
 		primaryStage.getIcons().add(new Image(getClass().getResource("/view/img/logo/logo256.png").toExternalForm()));
 	}
-	
+
 	private void setupLanguage(FXMLLoader loader) {
 		Locale locale = getLocale();
 		Logger.getGlobal().info("Language: " + locale.getLanguage());
-		
+
 		loader.setResources(ResourceBundle.getBundle("bundles.lang", locale));
 		RestRequest.setGlobalLocale(locale);
 	}
-	
+
 	private Locale getLocale() {
 		String loc = Config.getInstance().get("Locale");
 		if(loc == null) return Locale.ENGLISH;
-		
+
 		for(Locale locale : Locale.getAvailableLocales()) {
 			if(locale.getLanguage().equals(loc)) {
 				if(getClass().getResource("/bundles/lang_" + locale.getLanguage() + ".properties") != null) {
@@ -95,7 +104,7 @@ public final class ElyssifClient extends Application {
 		}
 		return Locale.ENGLISH;
 	}
-	
+
 	public static void run(String[] args) {
 		launch(args);
 	}
