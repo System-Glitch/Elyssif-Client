@@ -7,19 +7,27 @@ import java.util.logging.Logger;
 
 import org.apache.http.client.HttpClient;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.controller.LogoutCallback;
 import fr.elyssif.client.gui.controller.MainController;
 import fr.elyssif.client.gui.model.Model;
 import fr.elyssif.client.gui.model.ModelCallback;
+import fr.elyssif.client.gui.view.Paginator;
 import fr.elyssif.client.http.Authenticator;
 import fr.elyssif.client.http.FailCallback;
 import fr.elyssif.client.http.HttpMethod;
 import fr.elyssif.client.http.JsonCallback;
+import fr.elyssif.client.http.PaginateCallback;
 import fr.elyssif.client.http.RequestCallback;
 import fr.elyssif.client.http.RestCallback;
 import fr.elyssif.client.http.RestRequest;
 import fr.elyssif.client.http.RestResponse;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  * The <b>Repository Pattern</b> is an addition to the MVC pattern.
@@ -78,6 +86,60 @@ public abstract class Repository<T extends Model<T>> {
 			Logger.getGlobal().log(Level.SEVERE, "Couldn't instantiate reference Model.", e);
 		}
 		return null;
+	}
+
+	/**
+	 * Create a new instance of the reference model for each
+	 * element in the given JsonArray.
+	 * @param array
+	 * @return list
+	 */
+	private ObservableList<T> parseArray(JsonArray array) {
+		ObservableList<T> list = FXCollections.observableArrayList();
+		for(JsonElement element : array) {
+			if(element.isJsonObject()) {
+				T model = instantiateReferenceModel();
+				model.loadFromJsonObject(element.getAsJsonObject());
+				list.add(model);
+			} else
+				Logger.getGlobal().warning("Array element is not an object. Skip.\n\t" + element.toString());
+		}
+
+		return list;
+	}
+
+	/**
+	 * Handle a paginate response. Prepare and execute callbacks.
+	 * @param response - the response
+	 * @param callback - the callback to execute on success
+	 * @param failCallback - the callback to execute if the response is invalid
+	 */
+	private void handlePaginateResponse(RestResponse response, PaginateCallback<T> callback, FailCallback failCallback) {
+		JsonElement element = response.getJsonElement();
+		if(element.isJsonObject()) {
+
+			JsonObject object = element.getAsJsonObject();
+			if(object.has("items")) {
+				JsonElement itemsElement = object.get("items");
+				if(itemsElement.isJsonArray()) {
+					ObservableList<T> list = parseArray(itemsElement.getAsJsonArray());
+					Paginator<T> paginator = new Paginator<T>(list);
+
+					if(object.has("paginator")) {
+						JsonElement paginatorElement = object.get("paginator");
+						if(paginatorElement.isJsonObject()) {
+							paginator.loadFromJson(paginatorElement.getAsJsonObject());
+						} else handleMalformedResponse(response, failCallback, "\"paginator\" attribute to be an object");
+					} else {
+						Logger.getGlobal().warning("Paginate response doesn't contain paginator. Skip and use default values.");
+					}
+
+					callback.setPaginator(paginator);
+					callback.run();
+
+				} else handleMalformedResponse(response, failCallback, "\"items\" attribute to be an array");
+			} else handleMalformedResponse(response, failCallback, "missing attribute \"data\"");
+		} else handleMalformedResponse(response, failCallback, "JSON object");
 	}
 
 	/**
@@ -159,7 +221,6 @@ public abstract class Repository<T extends Model<T>> {
 	// TODO CRUD
 
 	// FETCH (paginated)
-	// getAll
 	// getwhere
 
 	// create
@@ -195,6 +256,16 @@ public abstract class Repository<T extends Model<T>> {
 						handleMalformedResponse(getResponse(), failCallback, "JSON object");
 					}
 				}
+			}
+
+		}, failCallback);
+	}
+
+	public void getAll(PaginateCallback<T> callback, FailCallback failCallback) {
+		request("", HttpMethod.GET, new JsonCallback() { // Empty action for index
+
+			public void run() {
+				handlePaginateResponse(getResponse(), callback, failCallback);
 			}
 
 		}, failCallback);

@@ -22,6 +22,10 @@ public class Paginator<T> {
 		this(1, 1, 0, FXCollections.observableArrayList());
 	}
 
+	public Paginator(ObservableList<T> observableList) {
+		this(1, 1, 0, observableList);
+	}
+
 	public Paginator(int currentPage, int maxPage, int perPage) {
 		this(currentPage, maxPage, perPage, FXCollections.observableArrayList());
 	}
