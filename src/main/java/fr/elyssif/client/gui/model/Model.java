@@ -55,7 +55,8 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	/**
 	 * Create a new instance of a model and load it from
 	 * the given json object.
-	 * @param object
+	 * @param object the json object from which the attributes
+	 * will be loaded.
 	 */
 	public Model(JsonObject object) {
 		loadFromJsonObject(object);
@@ -63,9 +64,9 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 
 	/**
 	 * Create a new instance of a model.
-	 * @param id
-	 * @param createdAt
-	 * @param updatedAt
+	 * @param id the id of the record
+	 * @param createdAt the date of creation
+	 * @param updatedAt the date of last update
 	 */
 	public Model(int id, Date createdAt, Date updatedAt) {
 		this.id = new SimpleIntegerProperty(id);
@@ -75,7 +76,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 
 	/**
 	 * Get the ID of the resource.
-	 * @return id
+	 * @return the id of the record
 	 */
 	public final SimpleIntegerProperty getId() {
 		return id;
@@ -83,7 +84,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 
 	/**
 	 * Set the ID of the resource.
-	 * @param id
+	 * @param id the id of the record
 	 */
 	public final void setId(int id) {
 		this.id.set(id);
@@ -91,7 +92,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 
 	/**
 	 * Get the date this record was created.
-	 * @return createdAt
+	 * @return the date of creation
 	 */
 	public final SimpleObjectProperty<Date> getCreatedAt() {
 		return createdAt;
@@ -99,7 +100,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 
 	/**
 	 * Set the date this record was created.
-	 * @param createdAt
+	 * @param createdAt the date of creation
 	 */
 	public final void setCreatedAt(Date createdAt) {
 		this.createdAt.set(createdAt);
@@ -107,7 +108,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 
 	/**
 	 * Get the date this record was last updated.
-	 * @return updatedAt
+	 * @return the date of last update
 	 */
 	public final SimpleObjectProperty<Date> getUpdatedAt() {
 		return updatedAt;
@@ -115,7 +116,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 
 	/**
 	 * Set the date this record was last updated.
-	 * @param updatedAt
+	 * @param updatedAt the date of last update
 	 */
 	public final void setUpdatedAt(Date updatedAt) {
 		this.updatedAt.set(updatedAt);
@@ -133,7 +134,8 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 
 	/**
 	 * Load this object's attributes from a json object.
-	 * @param object
+	 * @param the json object from which the attributes
+	 * will be loaded.
 	 *
 	 * @throws RuntimeException if mapped field is not a property or is not found.
 	 */
