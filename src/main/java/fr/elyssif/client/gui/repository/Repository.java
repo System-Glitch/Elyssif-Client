@@ -542,7 +542,6 @@ public abstract class Repository<T extends Model<T>> {
 				}
 			}
 		});
-		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	/**
