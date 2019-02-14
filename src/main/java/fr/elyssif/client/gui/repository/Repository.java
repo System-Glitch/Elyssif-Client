@@ -47,6 +47,7 @@ import javafx.collections.ObservableList;
  * <li>Lighten controllers by moving the query building and logic into the repositories.</li>
  * <li>Improve readability and maintainability.</li>
  * <li>Reduce code redundancy as the super-class <code>Repository</code> contains most frequent queries.</li>
+ * </ul>
  *
  * @author Jérémy LAMBERT
  * @see Model
