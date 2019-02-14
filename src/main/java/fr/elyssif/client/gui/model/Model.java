@@ -17,6 +17,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 
+import fr.elyssif.client.ReflectionUtils;
 import fr.elyssif.client.StringUtils;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -141,7 +142,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 		for(Entry<String, JsonElement> element : object.entrySet()) {
 			String attributeName = StringUtils.toCamelCase(element.getKey());
 			try {
-				Field field = findField(getClass(), attributeName);
+				Field field = ReflectionUtils.findField(getClass(), attributeName);
 				if(WritableValue.class.isAssignableFrom(field.getType()) && Property.class.isAssignableFrom(field.getType())) {
 
 					fillProperty(field, element.getValue(), attributeName);
@@ -167,7 +168,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	 */
 	private void fillProperty(Field field, JsonElement element, String attributeName) {
 		try {
-			Method method = findMethod(field.getType(), "set");
+			Method method = ReflectionUtils.findMethod(field.getType(), "set");
 			field.setAccessible(true);
 			method.invoke(field.get(this), getValueFromJson(field, method, element, attributeName));
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException e) {
@@ -183,7 +184,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	 */
 	private void fillList(Field field, JsonArray array, String attributeName) {
 		try {
-			Method method = findMethod(field.getType(), "add");
+			Method method = ReflectionUtils.findMethod(field.getType(), "add");
 			field.setAccessible(true);
 			for(JsonElement listElement : array) {
 				method.invoke(field.get(this), getValueFromJson(field, method, listElement, attributeName));
@@ -191,80 +192,6 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException e) {
 			Logger.getGlobal().log(Level.SEVERE, "Couldn't add value to list \"" + attributeName + "\" in model \"" + getClass().getSimpleName() + ".", e);
 		}
-	}
-
-	/**
-	 * Find method by its name. Only returns method that have one parameter
-	 * @param type
-	 * @param name
-	 * @return method
-	 * @throws NoSuchMethodException
-	 */
-	private Method findMethod(Class<?> type, String name) throws NoSuchMethodException {
-		Method method = findMethod(type, name, null);
-
-		if(method != null && method.getParameterTypes()[0].equals(Object.class)) { // In case method is overridden
-			try {
-				return findMethod(type, name, method);
-			} catch(NoSuchMethodException e) {
-				// Do nothing if not found
-			}
-		}
-
-		return method;
-	}
-
-	/**
-	 * Find method by its name, excluding the given except method. Only returns method that have one parameter
-	 * @param type the class in which the method will be searched
-	 * @param name the name of the method
-	 * @param except a method to exclude from the search
-	 * @return method
-	 * @throws NoSuchMethodException thrown if the method doesn't exist
-	 */
-	private Method findMethod(Class<?> type, String name, Method except) throws NoSuchMethodException {
-		Method[] methods = type.getMethods();
-		for(Method method : methods) {
-			if(method.getName().equals(name) && method.getParameters().length == 1 && (except == null || !method.equals(except))) {
-				return method;
-			}
-		}
-		throw new NoSuchMethodException("Method \"" + name + "\" not found in \"" + type + "\".");
-	}
-
-	/**
-	 * Find field by its name from given class and its super-class.<br><br>
-	 *
-	 * <code>getFields()</code> only returns <code>public</code> fields.
-	 * As a result, we use <code>getDeclaredFields()</code> which returns the private fields.
-	 * However it returns only the fields declared in the prompted class, so prompting
-	 * the super-class is also needed, hence the double processing in this method.
-	 * @param type
-	 * @param attributeName
-	 * @return field or null if not found
-	 * @throws NoSuchFieldException thrown if the field doesn't exist
-	 */
-	private Field findField(Class<?> type, String attributeName) throws NoSuchFieldException {
-		Field field = findField(type.getSuperclass().getDeclaredFields(), attributeName);
-		if(field != null) return field;
-
-		field = findField(type.getDeclaredFields(), attributeName);
-		if(field == null) throw new NoSuchFieldException("Field \"" + attributeName + "\" not found in \"" + type + "\".");
-		return field;
-	}
-
-	/**
-	 * Find a field by its name in an array of fields.
-	 * @param fields
-	 * @param attributeName
-	 * @return field or null if not found
-	 */
-	private Field findField(Field[] fields, String attributeName) {
-		for(Field field : fields) {
-			if(field.getName().equals(attributeName))
-				return field;
-		}
-		return null;
 	}
 
 	/**

@@ -1,7 +1,9 @@
 package fr.elyssif.client.gui.repository;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -28,6 +30,8 @@ import fr.elyssif.client.http.RequestCallback;
 import fr.elyssif.client.http.RestCallback;
 import fr.elyssif.client.http.RestRequest;
 import fr.elyssif.client.http.RestResponse;
+import javafx.beans.property.Property;
+import javafx.beans.value.WritableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -95,7 +99,7 @@ public abstract class Repository<T extends Model<T>> {
 	/**
 	 * Create an instance of the reference model from generic type.
 	 */
-	private T instantiateReferenceModel() {
+	private final T instantiateReferenceModel() {
 		try {
 			ParameterizedType superClass = (ParameterizedType) getClass().getGenericSuperclass();
 
@@ -115,7 +119,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param array the items array
 	 * @return list
 	 */
-	private ObservableList<T> parseArray(JsonArray array) {
+	private final ObservableList<T> parseArray(JsonArray array) {
 		ObservableList<T> list = FXCollections.observableArrayList();
 		for(JsonElement element : array) {
 			if(element.isJsonObject()) {
@@ -135,7 +139,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param callback the callback to execute on success
 	 * @param failCallback the callback to execute if the response is invalid
 	 */
-	private void handlePaginateResponse(RestResponse response, PaginateCallback<T> callback, FailCallback failCallback) {
+	private final void handlePaginateResponse(RestResponse response, PaginateCallback<T> callback, FailCallback failCallback) {
 		JsonElement element = response.getJsonElement();
 		if(element.isJsonObject()) {
 
@@ -168,7 +172,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * The token used will be the one from the Authenticator given at the instantiation.
 	 * @param authenticated
 	 */
-	protected void setAuthenticated(boolean authenticated) {
+	protected final void setAuthenticated(boolean authenticated) {
 		this.authenticated = authenticated;
 	}
 
@@ -176,8 +180,28 @@ public abstract class Repository<T extends Model<T>> {
 	 * Get if the repository needs to add an access token to every request.
 	 * @return authenticated
 	 */
-	public boolean isAuthenticated() {
+	public final boolean isAuthenticated() {
 		return authenticated;
+	}
+
+	private HashMap<String, Object> getAttributes() {
+		var attributes = new HashMap<String, Object>();
+		var fields = new ArrayList<Field>();
+
+		// TODO Get all fields
+		// Doesn't support more than one inheritance !
+		for(Field field : model.getClass().getSuperclass().getDeclaredFields())
+			fields.add(field);
+		for(Field field : model.getClass().getDeclaredFields())
+			fields.add(field);
+
+		for(Field field : fields) {
+			if(WritableValue.class.isAssignableFrom(field.getType()) && Property.class.isAssignableFrom(field.getType())) {
+
+			}
+		}
+		// TODO implement getattributes
+		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	/**
@@ -320,7 +344,6 @@ public abstract class Repository<T extends Model<T>> {
 		});
 	}
 
-
 	/**
 	 * Prepare and execute a fail callback and log a warning.<br>
 	 * This method should only be called when a request was successful but
@@ -330,7 +353,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param failCallback the fail callback to execute, nullable
 	 * @param expected the name of the expected element
 	 */
-	protected void handleMalformedResponse(RestResponse response, FailCallback failCallback, String expected) {
+	protected final void handleMalformedResponse(RestResponse response, FailCallback failCallback, String expected) {
 		if(failCallback != null) {
 			failCallback.setResponse(response);
 			failCallback.setMessage("%malformed-response");
@@ -441,7 +464,7 @@ public abstract class Repository<T extends Model<T>> {
 	/**
 	 * <p>Create and store a model on the server.</p>
 	 * <p>The record will be created with all the non-null
-	 * fields inside the given <code>model</code>.
+	 * fields inside the given <code>model</code>. Lists will be ignored too.
 	 * On success, the given <code>model</code> is updated with
 	 * the values of the new resource. You can then use it safely.
 	 * The instance passed to the given <code>callback</code> equals
@@ -456,7 +479,7 @@ public abstract class Repository<T extends Model<T>> {
 	/**
 	 * <p>Create and store a model on the server.</p>
 	 * <p>The record will be created with all the non-null
-	 * fields inside the given <code>model</code>.
+	 * fields inside the given <code>model</code>. Lists will be ignored too.
 	 * On success, the given <code>model</code> is updated with
 	 * the values of the new resource. You can then use it safely.
 	 * The instance passed to the given <code>callback</code> equals
@@ -473,7 +496,7 @@ public abstract class Repository<T extends Model<T>> {
 
 	/**
 	 * Update the given <code>model</code> on the server
-	 * based on its id. All fields (even null ones) will be sent.
+	 * based on its id. All fields (even null ones) except lists will be sent.
 	 * @param model the model to update on the server
 	 * @param callback the callback executed on success
 	 */
@@ -483,7 +506,7 @@ public abstract class Repository<T extends Model<T>> {
 
 	/**
 	 * Update the given <code>model</code> on the server
-	 * based on its id. All fields (even null ones) will be sent.
+	 * based on its id. All fields (even null ones) except lists will be sent.
 	 * @param model the model to update on the server
 	 * @param callback the callback executed on success, nullable
 	 * @param failCallback the callback executed on failure, nullable
