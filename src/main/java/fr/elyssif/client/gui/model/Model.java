@@ -168,7 +168,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	 */
 	private void fillProperty(Field field, JsonElement element, String attributeName) {
 		try {
-			Method method = ReflectionUtils.findMethod(field.getType(), "set");
+			Method method = ReflectionUtils.findMethod(field.getType(), "set", true);
 			field.setAccessible(true);
 			method.invoke(field.get(this), getValueFromJson(field, method, element, attributeName));
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException e) {
@@ -184,7 +184,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	 */
 	private void fillList(Field field, JsonArray array, String attributeName) {
 		try {
-			Method method = ReflectionUtils.findMethod(field.getType(), "add");
+			Method method = ReflectionUtils.findMethod(field.getType(), "add", true);
 			field.setAccessible(true);
 			for(JsonElement listElement : array) {
 				method.invoke(field.get(this), getValueFromJson(field, method, listElement, attributeName));

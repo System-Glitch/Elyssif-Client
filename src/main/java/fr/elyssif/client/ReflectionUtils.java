@@ -3,7 +3,6 @@ package fr.elyssif.client;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.logging.Logger;
 
 /**
  * Reflection-related utilities.
@@ -14,18 +13,21 @@ import java.util.logging.Logger;
 public abstract class ReflectionUtils {
 
 	/**
-	 * Find method by its name. Only returns method that have one parameter
+	 * <p>Find method by its name.</p>
+	 * <p>Only returns method that have one parameter if
+	 * <code>hasParam</code> is true.</p>
 	 * @param type
 	 * @param name
+	 * @param hasParam
 	 * @return method
-	 * @throws NoSuchMethodException
+	 * @throws NoSuchMethodException thrown if the method doesn't exist
 	 */
-	public static Method findMethod(Class<?> type, String name) throws NoSuchMethodException {
-		Method method = findMethod(type, name, null);
+	public static Method findMethod(Class<?> type, String name, boolean hasParam) throws NoSuchMethodException {
+		Method method = findMethod(type, name, hasParam, null);
 
-		if(method != null && method.getParameterTypes()[0].equals(Object.class)) { // In case method is overridden
+		if(method != null && (!hasParam || method.getParameterTypes()[0].equals(Object.class))) { // In case method is overridden
 			try {
-				return findMethod(type, name, method);
+				return findMethod(type, name, hasParam, method);
 			} catch(NoSuchMethodException e) {
 				// Do nothing if not found
 			}
@@ -35,17 +37,20 @@ public abstract class ReflectionUtils {
 	}
 
 	/**
-	 * Find method by its name, excluding the given except method. Only returns method that have one parameter
+	 * <p>Find method by its name, excluding the given except method.</p>
+	 * <p>Only returns method that have one parameter if
+	 * <code>hasParam</code> is true.</p>
 	 * @param type the class in which the method will be searched
 	 * @param name the name of the method
 	 * @param except a method to exclude from the search
+	 * @param hasParam
 	 * @return method
 	 * @throws NoSuchMethodException thrown if the method doesn't exist
 	 */
-	private static Method findMethod(Class<?> type, String name, Method except) throws NoSuchMethodException {
+	private static Method findMethod(Class<?> type, String name, boolean hasParam, Method except) throws NoSuchMethodException {
 		Method[] methods = type.getMethods();
 		for(Method method : methods) {
-			if(method.getName().equals(name) && !method.isSynthetic() && method.getParameters().length == 1 && (except == null || !method.equals(except))) {
+			if(method.getName().equals(name) && !method.isSynthetic() && (!hasParam || method.getParameters().length == 1) && (except == null || !method.equals(except))) {
 				return method;
 			}
 		}
@@ -108,7 +113,6 @@ public abstract class ReflectionUtils {
 			for(Field field : clazz.getDeclaredFields())
 				if(!fields.containsKey(field.getName()) && !field.isSynthetic()) {
 					fields.put(field.getName(), field);
-					Logger.getGlobal().info(field.getName());
 				}
 
 			if(clazz.equals(lastAncestor)) break;

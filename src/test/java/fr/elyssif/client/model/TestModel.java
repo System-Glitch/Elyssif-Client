@@ -107,4 +107,12 @@ public final class TestModel extends Model<TestModel> {
 		return nested;
 	}
 
+	public final void setInteger(int integer) {
+		this.integer.set(integer);
+	}
+
+	public final void setName(String name) {
+		this.name.set(name);
+	}
+
 }

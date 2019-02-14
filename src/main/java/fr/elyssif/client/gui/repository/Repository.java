@@ -2,6 +2,7 @@ package fr.elyssif.client.gui.repository;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -16,6 +17,7 @@ import com.google.gson.JsonObject;
 
 import fr.elyssif.client.Config;
 import fr.elyssif.client.ReflectionUtils;
+import fr.elyssif.client.StringUtils;
 import fr.elyssif.client.gui.controller.LogoutCallback;
 import fr.elyssif.client.gui.controller.MainController;
 import fr.elyssif.client.gui.model.Model;
@@ -184,17 +186,40 @@ public abstract class Repository<T extends Model<T>> {
 		return authenticated;
 	}
 
-	private HashMap<String, Object> getAttributes() {
+	/**
+	 * <p>Get all attributes values from the given <code>model</code></p>
+	 * <p>Ignores null attributes, lists and nested models.</p>
+	 * <p>Override this method if you want to manually provide the attributes,
+	 * to include a list or nested object if needed for example.</p>
+	 * @param model the model to extract the attributes from
+	 * @return a map of the attributes, the key being the attribute name in snake_case
+	 */
+	protected HashMap<String, Object> getAttributes(T model) {
 		var attributes = new HashMap<String, Object>();
 		HashMap<String, Field> fields = ReflectionUtils.getFields(model.getClass(), Model.class);
 
 		for(Field field : fields.values()) {
 			if(WritableValue.class.isAssignableFrom(field.getType()) && Property.class.isAssignableFrom(field.getType())) {
 
+				try {
+					Method method = ReflectionUtils.findMethod(field.getType(), "get", false);
+
+					if(Model.class.isAssignableFrom(method.getReturnType())) // Ignore nested models
+						continue;
+
+					field.setAccessible(true);
+					Object value = method.invoke(field.get(model));
+
+					if(value != null)
+						attributes.put(StringUtils.toSnakeCase(field.getName()), value);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException e) {
+					Logger.getGlobal().log(Level.SEVERE, "Couldn't get value of field \"" + field.getName() + "\" in model \"" + model.getClass().getSimpleName() + "\".", e);
+				}
+
 			}
 		}
-		// TODO implement getattributes
-		throw new UnsupportedOperationException("Not implemented");
+
+		return attributes;
 	}
 
 	/**
