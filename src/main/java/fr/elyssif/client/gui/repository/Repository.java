@@ -3,7 +3,6 @@ package fr.elyssif.client.gui.repository;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -16,6 +15,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import fr.elyssif.client.Config;
+import fr.elyssif.client.ReflectionUtils;
 import fr.elyssif.client.gui.controller.LogoutCallback;
 import fr.elyssif.client.gui.controller.MainController;
 import fr.elyssif.client.gui.model.Model;
@@ -186,16 +186,9 @@ public abstract class Repository<T extends Model<T>> {
 
 	private HashMap<String, Object> getAttributes() {
 		var attributes = new HashMap<String, Object>();
-		var fields = new ArrayList<Field>();
+		HashMap<String, Field> fields = ReflectionUtils.getFields(model.getClass(), Model.class);
 
-		// TODO Get all fields
-		// Doesn't support more than one inheritance !
-		for(Field field : model.getClass().getSuperclass().getDeclaredFields())
-			fields.add(field);
-		for(Field field : model.getClass().getDeclaredFields())
-			fields.add(field);
-
-		for(Field field : fields) {
+		for(Field field : fields.values()) {
 			if(WritableValue.class.isAssignableFrom(field.getType()) && Property.class.isAssignableFrom(field.getType())) {
 
 			}

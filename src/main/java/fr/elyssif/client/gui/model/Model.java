@@ -142,7 +142,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 		for(Entry<String, JsonElement> element : object.entrySet()) {
 			String attributeName = StringUtils.toCamelCase(element.getKey());
 			try {
-				Field field = ReflectionUtils.findField(getClass(), attributeName);
+				Field field = ReflectionUtils.findField(getClass(), attributeName, Model.class);
 				if(WritableValue.class.isAssignableFrom(field.getType()) && Property.class.isAssignableFrom(field.getType())) {
 
 					fillProperty(field, element.getValue(), attributeName);

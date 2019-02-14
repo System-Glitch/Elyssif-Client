@@ -2,6 +2,8 @@ package fr.elyssif.client;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.logging.Logger;
 
 /**
  * Reflection-related utilities.
@@ -43,7 +45,7 @@ public abstract class ReflectionUtils {
 	private static Method findMethod(Class<?> type, String name, Method except) throws NoSuchMethodException {
 		Method[] methods = type.getMethods();
 		for(Method method : methods) {
-			if(method.getName().equals(name) && method.getParameters().length == 1 && (except == null || !method.equals(except))) {
+			if(method.getName().equals(name) && !method.isSynthetic() && method.getParameters().length == 1 && (except == null || !method.equals(except))) {
 				return method;
 			}
 		}
@@ -51,39 +53,70 @@ public abstract class ReflectionUtils {
 	}
 
 	/**
-	 * Find field by its name from given class and its super-class.<br><br>
+	 * <p>Find field by its name from given class and its ancestors.</p>
 	 *
-	 * <code>getFields()</code> only returns <code>public</code> fields.
-	 * As a result, we use <code>getDeclaredFields()</code> which returns the private fields.
-	 * However it returns only the fields declared in the prompted class, so prompting
-	 * the super-class is also needed, hence the double processing in this method.
-	 * @param type
-	 * @param attributeName
+	 * @param type the class in which to search for the wanted attribute
+	 * @param attributeName the name of the wanted attribute
 	 * @return field or null if not found
 	 * @throws NoSuchFieldException thrown if the field doesn't exist
+	 * @throws IllegalArgumentException thrown if <code>lastAncestor</code> is not a parent of <code>type</code>.
 	 */
 	public static Field findField(Class<?> type, String attributeName) throws NoSuchFieldException {
-		// TODO Doesn't support more than one inheritance !
-		Field field = findField(type.getSuperclass().getDeclaredFields(), attributeName);
-		if(field != null) return field;
-
-		field = findField(type.getDeclaredFields(), attributeName);
-		if(field == null) throw new NoSuchFieldException("Field \"" + attributeName + "\" not found in \"" + type + "\".");
-		return field;
+		return findField(type, attributeName, Object.class);
 	}
 
 	/**
-	 * Find a field by its name in an array of fields.
-	 * @param fields
-	 * @param attributeName
+	 * <p>Find field by its name from given class and its ancestors until
+	 * the given <code>lastAncestor</code>.</p>
+	 *
+	 * @param type the class in which to search for the wanted attribute
+	 * @param attributeName the name of the wanted attribute
+	 * @param lastAncestor the last ancestor to get the fields from
 	 * @return field or null if not found
+	 * @throws NoSuchFieldException thrown if the field doesn't exist
+	 * @throws IllegalArgumentException thrown if <code>lastAncestor</code> is not a parent of <code>type</code>.
 	 */
-	private static Field findField(Field[] fields, String attributeName) {
-		for(Field field : fields) {
-			if(field.getName().equals(attributeName))
-				return field;
+	public static Field findField(Class<?> type, String attributeName, Class<?> lastAncestor) throws NoSuchFieldException {
+		HashMap<String, Field> fields = getFields(type, lastAncestor);
+
+		if(!fields.containsKey(attributeName)) {
+			throw new NoSuchFieldException("Field \"" + attributeName + "\" not found in \"" + type + "\".");
 		}
-		return null;
+
+		return fields.get(attributeName);
+	}
+
+	/**
+	 * <p>Get a list of all fields declared in the given <code>type</code> and
+	 * its inherited fields until the given <code>lastAncestor</code>.</p>
+	 * <p>The attributes are retrieved from bottom (<code>type</code>) to top
+	 * (<code>lastAncestor</code>). If two attributes with the same name are found,
+	 * only the one the least high in the inheritance is kept.</p>
+	 * @param type the class from which the fields will be retrieved
+	 * @param lastAncestor the last ancestor to get the fields from
+	 * @return a map of the fields. The key being the field name.
+	 * @throws IllegalArgumentException thrown if <code>lastAncestor</code> is not a parent of <code>type</code>.
+	 */
+	public static HashMap<String, Field> getFields(Class<?> type, Class<?> lastAncestor) {
+		if(!lastAncestor.isAssignableFrom(type)) throw new IllegalArgumentException(lastAncestor.getName() + " is not a parent of " + type.getName());
+
+		var fields = new HashMap<String, Field>();
+		var clazz = type;
+
+		while(clazz != null) {
+
+			for(Field field : clazz.getDeclaredFields())
+				if(!fields.containsKey(field.getName()) && !field.isSynthetic()) {
+					fields.put(field.getName(), field);
+					Logger.getGlobal().info(field.getName());
+				}
+
+			if(clazz.equals(lastAncestor)) break;
+
+			clazz = clazz.getSuperclass();
+		}
+
+		return fields;
 	}
 
 }

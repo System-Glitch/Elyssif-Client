@@ -29,6 +29,7 @@ class ModelTest {
 	@BeforeAll
 	static void setUp() {
 		json = new JsonObject();
+		json.addProperty("id", 666);
 		json.addProperty("string", "lorem ipsum");
 		json.addProperty("bool", true);
 		json.addProperty("integer", 42);
@@ -196,6 +197,7 @@ class ModelTest {
 	}
 
 	private void assertModel(TestModel model) {
+		assertEquals(666, model.getId().get());
 		assertEquals("lorem ipsum", model.getString().get());
 		assertTrue(model.getBool().get());
 		assertEquals(42, model.getInteger().get());
