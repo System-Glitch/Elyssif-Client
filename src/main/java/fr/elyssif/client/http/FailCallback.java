@@ -34,13 +34,17 @@ public abstract class FailCallback extends RestCallback {
 	}
 
 	/**
-	 * Get the error message
+	 * Get the error message.
 	 * @return the message from the response
 	 */
 	public String getMessage() {
 		return message;
 	}
 
+	/**
+	 * Set the error message.
+	 * @param message the error message
+	 */
 	public void setMessage(String message) {
 		this.message = message;
 	}
@@ -50,7 +54,7 @@ public abstract class FailCallback extends RestCallback {
 	 * @return a built message for the user
 	 */
 	public String getFullMessage() {
-		return getStatus() != 200 && getStatus() != -1 ? getStatus() + " : " + getMessage() : getMessage();
+		return !getResponse().isSuccessful() && getStatus() != -1 ? getStatus() + " : " + getMessage() : getMessage();
 	}
 
 }

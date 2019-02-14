@@ -9,7 +9,7 @@ import fr.elyssif.client.gui.view.Paginator;
  * @see Runnable
  * @see fr.elyssif.client.gui.view.Paginator
  */
-public abstract class PaginateCallback<T> implements Runnable {
+public abstract class PaginateCallback<T> extends RestCallback implements Runnable {
 
 	private Paginator<T> paginator;
 
@@ -24,5 +24,5 @@ public abstract class PaginateCallback<T> implements Runnable {
 	public final void setPaginator(Paginator<T> paginator) {
 		this.paginator = paginator;
 	}
-	
+
 }

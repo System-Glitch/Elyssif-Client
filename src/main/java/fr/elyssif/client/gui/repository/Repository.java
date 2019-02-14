@@ -161,6 +161,7 @@ public abstract class Repository<T extends Model<T>> {
 						Logger.getGlobal().warning("Paginate response doesn't contain paginator. Skip and use default values.");
 					}
 
+					callback.setResponse(response);
 					callback.setPaginator(paginator);
 					callback.run();
 
@@ -192,7 +193,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * <p>Override this method if you want to manually provide the attributes,
 	 * to include a list or nested object if needed for example.</p>
 	 * @param model the model to extract the attributes from
-	 * @return a map of the attributes, the key being the attribute name in snake_case
+	 * @return a map of the attributes, the key being the attribute name in snake case
 	 */
 	protected HashMap<String, Object> getAttributes(T model) {
 		var attributes = new HashMap<String, Object>();
@@ -406,6 +407,7 @@ public abstract class Repository<T extends Model<T>> {
 				if(model != null) {
 					if(getElement().isJsonObject()) {
 						model.loadFromJsonObject(getElement().getAsJsonObject());
+						callback.setResponse(getResponse());
 						callback.setModel(model);
 						callback.run();
 					} else {
@@ -536,7 +538,7 @@ public abstract class Repository<T extends Model<T>> {
 				if(getStatus() == 422) { // Validation errors
 					formCallback.setResponse(getResponse());
 					formCallback.run();
-				} else if(failCallback != null){
+				} else if(failCallback != null) {
 					failCallback.setResponse(getResponse());
 					failCallback.run();
 				}
@@ -545,26 +547,100 @@ public abstract class Repository<T extends Model<T>> {
 	}
 
 	/**
-	 * Update the given <code>model</code> on the server
-	 * based on its id. All fields (even null ones) except lists will be sent.
+	 * <p>Update the given <code>model</code> on the server
+	 * based on its id.<p>
+	 * <p>All fields given as parameter will be sent for update.
+	 * Lists and nested models are ignored.</p>
 	 * @param model the model to update on the server
-	 * @param callback the callback executed on success
+	 * @param formCallback the callback executed on validation error
+	 * @param fields the fields to update (in snake case)
+	 * @throws IllegalArgumentException thrown if no field is provided
 	 */
-	public void update(T model, FormCallback callback) {
-		update(model, callback, null);
+	public void update(T model, FormCallback formCallback, String ... fields) {
+		update(model, null, formCallback, null, fields);
 	}
 
 	/**
-	 * Update the given <code>model</code> on the server
-	 * based on its id. All fields (even null ones) except lists will be sent.
+	 * <p>Update the given <code>model</code> on the server
+	 * based on its id.<p>
+	 * <p>All fields given as parameter will be sent for update.
+	 * Lists and nested models are ignored.</p>
 	 * @param model the model to update on the server
 	 * @param callback the callback executed on success, nullable
-	 * @param failCallback the callback executed on failure, nullable
+	 * @param formCallback the callback executed on validation error
+	 * @param fields the fields to update (in snake case)
+	 * @throws IllegalArgumentException thrown if no field is provided
 	 */
-	public void update(T model, FormCallback callback, FailCallback failCallback) {
-		// TODO implement update
-		// Possibility to update a single field?
-		throw new UnsupportedOperationException("Not implemented");
+	public void update(T model, RestCallback callback, FormCallback formCallback, String ... fields) {
+		update(model, callback, formCallback, null, fields);
+	}
+
+	/**
+	 * <p>Update the given <code>model</code> on the server
+	 * based on its id.<p>
+	 * <p>All fields given as parameter will be sent for update.
+	 * Lists and nested models are ignored.</p>
+	 * @param model the model to update on the server
+	 * @param callback the callback executed on success, nullable
+	 * @param formCallback the callback executed on validation error
+	 * @param fields the fields to update (in snake case)
+	 * @throws IllegalArgumentException thrown if no field is provided
+	 */
+	public void update(T model, FormCallback formCallback, FailCallback failCallback, String ... fields) {
+		update(model, null, formCallback, failCallback, fields);
+	}
+
+	/**
+	 * <p>Update the given <code>model</code> on the server
+	 * based on its id.<p>
+	 * <p>All fields given as parameter will be sent for update.
+	 * Lists and nested models are ignored.</p>
+	 * @param model the model to update on the server
+	 * @param callback the callback executed on success, nullable
+	 * @param formCallback the callback executed on validation error
+	 * @param failCallback the callback executed on failure, nullable
+	 * @param fields the fields to update (in snake case)
+	 * @throws IllegalArgumentException thrown if no field is provided
+	 */
+	public void update(T model, RestCallback callback, FormCallback formCallback, FailCallback failCallback, String ... fields) {
+		if(fields.length == 0) throw new IllegalArgumentException("At least one field must be given to update.");
+
+		var params = new HashMap<String, Object>();
+		HashMap<String, Object> attributes = getAttributes(model);
+
+		for(String s : fields) {
+			if(attributes.containsKey(s)) {
+				params.put(s, attributes.get(s));
+			} else {
+				Logger.getGlobal().warning("Attribute \"" + s + "\" doesn't exist or is not applicable.");
+			}
+		}
+
+		request(String.valueOf(model.getId().get()), HttpMethod.PUT, attributes, new RestCallback() {
+
+			public void run() {
+				if(getStatus() != 204) {
+					Logger.getGlobal().warning("Update request returned status " + getStatus() + ", expected 204.");
+				}
+				if(callback != null) {
+					callback.setResponse(getResponse());
+					callback.run();
+				}
+			}
+
+		}, new FailCallback() {
+
+			public void run() {
+				if(getStatus() == 422) { // Validation errors
+					formCallback.setResponse(getResponse());
+					formCallback.run();
+				} else if(failCallback != null) {
+					failCallback.setResponse(getResponse());
+					failCallback.run();
+				}
+			}
+
+		});
 	}
 
 	/**
