@@ -7,6 +7,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.Date;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -47,7 +49,7 @@ class ModelTest {
 
 		json.add("int_list", intList);
 	}
-	
+
 	@Test
 	void testLoadFromJson() {
 		TestModel model = new TestModel(json);
@@ -84,87 +86,113 @@ class ModelTest {
 		assertEquals("updated string", model.getString().get());
 		assertEquals(Double.NaN, model.getDbl().get(), 0.001);
 		assertEquals(Float.NaN, model.getFlt().get(), 0.001);
-		
+
 		updateJson = new JsonObject();
 		updateJson.add("bool", JsonNull.INSTANCE);
 		updateJson.add("integer", JsonNull.INSTANCE);
 		updateJson.add("lng", JsonNull.INSTANCE);
 		updateJson.add("string", JsonNull.INSTANCE);
-		
+
 		model.loadFromJsonObject(updateJson);
-		
+
 		assertEquals(0, model.getInteger().get());
 		assertEquals(0, model.getLng().get());
 		assertFalse(model.getBool().get());
 		assertNull(model.getString().get());
 	}
-	
+
 	@Test
 	void testNaming() {
 		JsonObject json = new JsonObject();
 		json.addProperty("name_", "value");
-		
+
 		TestModel model = new TestModel(json);
-		
+
 		assertEquals("value", model.getName().get());
 	}
-	
+
 	@Test
 	void testResourceName() {
 		assertEquals("testmodels", new TestModel().getResourceName());
 	}
-	
+
 	@Test
 	void testNotProperty() {
 		JsonObject json = new JsonObject();
 		TestModel model = new TestModel();
-		
+
 		json.addProperty("not_property", "test");
-		
+
 		assertThrows(RuntimeException.class, () -> model.loadFromJsonObject(json), "Field \"notProperty\" in model \"TestModel\" is not a property.");
 		assertNull(model.getNotProperty());
 	}
-	
+
 	@Test
 	void testNoField() {
 		JsonObject json = new JsonObject();
-		
+
 		json.addProperty("doesntexist", "test");
 		new TestModel(json);
 		// Exception should have been thrown
 	}
-	
+
 	@Test
 	void testWrongDate() {
 		JsonObject json = new JsonObject();
 		json.addProperty("date_at", "wrong date");
-		
+
 		TestModel model = new TestModel(json);
-		
+
 		assertNull(model.getDateAt().get());
 	}
-	
+
 	@Test
 	void testNestedObject() {
 		JsonObject json = new JsonObject();
 		json.add("nested", ModelTest.json);
-		
+
 		TestModel model = new TestModel(json);
-		
+
 		assertNotNull(model.getNested().get());
 		assertModel(model.getNested().get());
 	}
-	
+
 	@Test
 	void testUserModel() {
 		JsonObject json = new JsonObject();
 		json.addProperty("email", "test@example.org");
 		json.addProperty("name", "username");
-		
+
 		User user = new User(json);
-		
+
 		assertEquals("test@example.org", user.getEmail().get());
 		assertEquals("username", user.getName().get());
+
+		// Getters and setters
+		user.setEmail("johndoe@example.org");
+		assertEquals("johndoe@example.org", user.getEmail().get());
+
+		Date now = new Date();
+		user.setEmailVerifiedAt(now);
+		assertEquals(now, user.getEmailVerifiedAt().get());
+
+		user.setName("John Doe");
+		assertEquals("John Doe", user.getName().get());
+	}
+
+	@Test
+	void testModelAttributes() {
+		TestModel model = new TestModel();
+		model.setId(42);
+		assertEquals(42, model.getId().get());
+
+		Date createdAt = new Date();
+		model.setCreatedAt(createdAt);
+		assertEquals(createdAt, model.getCreatedAt().get());
+
+		Date updatedAt = new Date();
+		model.setUpdatedAt(updatedAt);
+		assertEquals(updatedAt, model.getUpdatedAt().get());
 	}
 
 	private void assertModel(TestModel model) {
