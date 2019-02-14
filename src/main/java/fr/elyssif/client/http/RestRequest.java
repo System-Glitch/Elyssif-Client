@@ -189,9 +189,9 @@ public class RestRequest {
 	 * 
 	 * @see RestResponse
 	 * @see HttpMethod
-	 * @see RequestCallback
+	 * @see RestCallback
 	 */
-	public void asyncExecute(HttpMethod method, RequestCallback callback) {
+	public void asyncExecute(HttpMethod method, RestCallback callback) {
 
 		Thread thread = new Thread(() -> {
 

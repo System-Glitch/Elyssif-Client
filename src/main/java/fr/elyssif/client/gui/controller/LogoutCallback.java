@@ -2,14 +2,14 @@ package fr.elyssif.client.gui.controller;
 
 import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
-import fr.elyssif.client.http.RequestCallback;
+import fr.elyssif.client.http.RestCallback;
 
 /**
  * Custom callback for logout requests.
  * @author Jérémy LAMBERT
  *
  */
-public class LogoutCallback extends RequestCallback {
+public class LogoutCallback extends RestCallback {
 
 	@Override
 	public void run() {

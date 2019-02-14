@@ -91,11 +91,11 @@ public final class Authenticator {
 	 * Send a logout request and destroy the access token.
 	 * @param callback
 	 */
-	public final void logout(RequestCallback callback) {
+	public final void logout(RestCallback callback) {
 		RestRequest request = new RestRequest(client, host + LOGOUT_ENDPOINT)
 				.setAuthorizationToken(token);
 
-		request.asyncExecute(HttpMethod.DELETE, new RequestCallback() {
+		request.asyncExecute(HttpMethod.DELETE, new RestCallback() {
 
 			public void run() {
 				RestResponse response = getResponse();
@@ -134,11 +134,11 @@ public final class Authenticator {
 	 * Make a request to get the current authenticated user's info and store it.
 	 * @param callback the callback to execute after the response is received, successful or not. Nullable
 	 */
-	public final void requestUserInfo(RequestCallback callback) {
+	public final void requestUserInfo(RestCallback callback) {
 		RestRequest request = new RestRequest(client, host + USER_INFO_ENDPOINT)
 				.setAuthorizationToken(token);
 
-		request.asyncExecute(HttpMethod.GET, new RequestCallback() {
+		request.asyncExecute(HttpMethod.GET, new RestCallback() {
 
 			public void run() {
 				RestResponse response = getResponse();
@@ -171,11 +171,11 @@ public final class Authenticator {
 	 *
 	 * @author Jérémy LAMBERT
 	 */
-	private class AuthenticationCallback extends RequestCallback {
+	private class AuthenticationCallback extends RestCallback {
 
-		private RequestCallback callback;
+		private RestCallback callback;
 
-		AuthenticationCallback(RequestCallback callback) {
+		AuthenticationCallback(RestCallback callback) {
 			this.callback = callback;
 		}
 

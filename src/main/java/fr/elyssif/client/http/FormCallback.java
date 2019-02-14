@@ -13,7 +13,7 @@ import com.google.gson.JsonObject;
  * @author Jérémy LAMBERT
  *
  */
-public abstract class FormCallback extends RequestCallback implements Runnable {
+public abstract class FormCallback extends RestCallback implements Runnable {
 
 	private HashMap<String, ArrayList<String>> validationErrors;
 
@@ -21,7 +21,7 @@ public abstract class FormCallback extends RequestCallback implements Runnable {
 		validationErrors = new HashMap<String, ArrayList<String>>();
 	}
 
-	protected void setResponse(RestResponse response) {
+	public void setResponse(RestResponse response) {
 		super.setResponse(response);
 
 		//Handle validation errors

@@ -73,7 +73,7 @@ public class RestResponse {
 	 * @return if the response is a redirect
 	 */
 	public boolean isRedirect() {
-		return status >= 300 && status < 400;
+		return status >= 300 && status < 400 && status != -1;
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class RestResponse {
 	 * @return the success of the query
 	 */
 	public boolean isSuccessful() {
-		return status < 300;
+		return status < 300 && status != -1;
 	}
 
 	/**

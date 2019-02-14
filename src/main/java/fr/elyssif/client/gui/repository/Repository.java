@@ -25,10 +25,10 @@ import fr.elyssif.client.gui.model.ModelCallback;
 import fr.elyssif.client.gui.view.Paginator;
 import fr.elyssif.client.http.Authenticator;
 import fr.elyssif.client.http.FailCallback;
+import fr.elyssif.client.http.FormCallback;
 import fr.elyssif.client.http.HttpMethod;
 import fr.elyssif.client.http.JsonCallback;
 import fr.elyssif.client.http.PaginateCallback;
-import fr.elyssif.client.http.RequestCallback;
 import fr.elyssif.client.http.RestCallback;
 import fr.elyssif.client.http.RestRequest;
 import fr.elyssif.client.http.RestResponse;
@@ -332,12 +332,12 @@ public abstract class Repository<T extends Model<T>> {
 			request.setAuthorizationToken(authenticator.getToken());
 		}
 
-		request.asyncExecute(method, new RequestCallback() {
+		request.asyncExecute(method, new RestCallback() {
 
 			@Override
 			public void run() {
 				RestResponse response = getResponse();
-				if(response != null && response.isSuccessful()) {
+				if(response.isSuccessful()) {
 					if(callback != null) {
 
 						callback.setResponse(response);
@@ -351,11 +351,12 @@ public abstract class Repository<T extends Model<T>> {
 						failCallback.setResponse(response);
 						failCallback.run();
 					}
-					if(response.getStatus() == 401 && authenticator != null) { // Unauthenticated
-						authenticator.logout(new LogoutCallback());
-					} else {
-						Logger.getGlobal().warning("Repository request failed: " + method.name() + " " + response.getStatus() + " " + failCallback.getMessage());
-					}
+				}
+
+				if(response.getStatus() == 401 && authenticator != null) { // Unauthenticated
+					authenticator.logout(new LogoutCallback());
+				} else {
+					Logger.getGlobal().warning("Repository request failed: " + method.name() + " " + response.getStatus() + " " + failCallback.getMessage());
 				}
 			}
 
@@ -488,10 +489,11 @@ public abstract class Repository<T extends Model<T>> {
 	 * The instance passed to the given <code>callback</code> equals
 	 * the given <code>model</code>.</p>
 	 * @param model the model to store on the server
-	 * @param callback the callback executed on success, nullable
+	 * @param callback the callback executed on success
+	 * @param formCallback the callback executed on validation error
 	 */
-	public void store(T model, ModelCallback<T> callback) {
-		store(model, callback, null);
+	public void store(T model, ModelCallback<T> callback, FormCallback formCallback) {
+		store(model, callback, formCallback, null);
 	}
 
 	/**
@@ -504,11 +506,42 @@ public abstract class Repository<T extends Model<T>> {
 	 * the given <code>model</code>.</p>
 	 * @param model the model to store on the server
 	 * @param callback the callback executed on success
+	 * @param formCallback the callback executed on validation error
 	 * @param failCallback the callback executed on failure, nullable
 	 */
-	public void store(T model, ModelCallback<T> callback, FailCallback failCallback) {
-		// TODO implement store
-		// Get all properties (like in load fromJsonObject)
+	public void store(T model, ModelCallback<T> callback, FormCallback formCallback, FailCallback failCallback) {
+		HashMap<String, Object> attributes = getAttributes(model);
+
+		request("", HttpMethod.POST, attributes, new JsonCallback() {
+
+			public void run() {
+				if(getStatus() == 201) {
+					JsonElement element = getElement();
+					if(element != null) {
+						if(element.isJsonObject()) {
+							model.loadFromJsonObject(element.getAsJsonObject());
+							callback.setResponse(getResponse());
+							callback.setModel(model);
+							callback.run();
+						} else handleMalformedResponse(getResponse(), failCallback, "JSON object");
+					} else handleMalformedResponse(getResponse(), failCallback, "JSON element but was null");
+				} else {
+					Logger.getGlobal().warning("Store request returned status " + getStatus() + ", expected 201.");
+				}
+			}
+
+		}, new FailCallback() {
+
+			public void run() {
+				if(getStatus() == 422) { // Validation errors
+					formCallback.setResponse(getResponse());
+					formCallback.run();
+				} else if(failCallback != null){
+					failCallback.setResponse(getResponse());
+					failCallback.run();
+				}
+			}
+		});
 		throw new UnsupportedOperationException("Not implemented");
 	}
 
@@ -518,7 +551,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param model the model to update on the server
 	 * @param callback the callback executed on success
 	 */
-	public void update(T model, RestCallback callback) {
+	public void update(T model, FormCallback callback) {
 		update(model, callback, null);
 	}
 
@@ -529,7 +562,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param callback the callback executed on success, nullable
 	 * @param failCallback the callback executed on failure, nullable
 	 */
-	public void update(T model, RestCallback callback, FailCallback failCallback) {
+	public void update(T model, FormCallback callback, FailCallback failCallback) {
 		// TODO implement update
 		// Possibility to update a single field?
 		throw new UnsupportedOperationException("Not implemented");
