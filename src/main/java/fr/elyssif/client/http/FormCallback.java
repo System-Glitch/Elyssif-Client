@@ -13,35 +13,38 @@ import com.google.gson.JsonObject;
  * @author Jérémy LAMBERT
  *
  */
-public abstract class FormCallback extends RequestCallback implements Runnable {
+public abstract class FormCallback extends RestCallback implements Runnable {
 
 	private HashMap<String, ArrayList<String>> validationErrors;
 
 	public FormCallback() {
 		validationErrors = new HashMap<String, ArrayList<String>>();
 	}
-	
-	protected void setResponse(RestResponse response) {
+
+	public void setResponse(RestResponse response) {
 		super.setResponse(response);
 
 		//Handle validation errors
-		JsonObject json = response.getJsonObject();
-		if(json.has("errors")) {
-			JsonElement errors = json.get("errors");
-			if(errors.isJsonObject()) {
-				for(Entry<String, JsonElement> entry : ((JsonObject) errors).entrySet()) {
+		JsonElement json = response.getJsonElement();
+		if(json.isJsonObject()) {
+			JsonObject object = json.getAsJsonObject();
+			if(object.has("errors")) {
+				JsonElement errors = object.get("errors");
+				if(errors.isJsonObject()) {
+					for(Entry<String, JsonElement> entry : errors.getAsJsonObject().entrySet()) {
 
-					if(entry.getValue().isJsonArray()) { //Store all messages for a single entry
-						JsonArray array = entry.getValue().getAsJsonArray();
-						var messages = new ArrayList<String>();
-						for(JsonElement message : array) {
-							if(message.isJsonPrimitive())
-								messages.add(message.getAsString());
+						if(entry.getValue().isJsonArray()) { //Store all messages for a single entry
+							JsonArray array = entry.getValue().getAsJsonArray();
+							var messages = new ArrayList<String>();
+							for(JsonElement message : array) {
+								if(message.isJsonPrimitive())
+									messages.add(message.getAsString());
+							}
+							validationErrors.put(entry.getKey(), messages);
+
 						}
-						validationErrors.put(entry.getKey(), messages);
 
 					}
-
 				}
 			}
 		}

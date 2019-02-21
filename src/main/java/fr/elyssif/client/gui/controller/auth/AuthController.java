@@ -28,12 +28,13 @@ public final class AuthController extends Controller {
 
 	/**
 	 * Show the according view. Plays the transition if slide direction is not "none" and transition is true.
-	 * @param transition - plays transition if true, simply puts pane to front if false
-	 * @param backController - the controller which should be called when the back button is clicked
+	 * @param transition plays transition if true, simply puts pane to front if false
+	 * @param backController the controller which should be called when the back button is clicked
 	 */
 	public void show(boolean transition, Controller backController) {
 		super.show(transition, backController);
-		welcomeController.show(transition);
+		if(transition)
+			welcomeController.show(transition);
 		loginController.resetForm();
 		registerController.resetForm();
 	}

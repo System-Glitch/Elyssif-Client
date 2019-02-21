@@ -57,8 +57,8 @@ public abstract class FadeController extends Controller {
 
 	/**
 	 * Show the according view. Plays the transition if slide direction is not "none" and transition is true.
-	 * @param transition - plays transition if true, simply puts pane to front if false
-	 * @param backController - the controller which should be called when the back button is clicked
+	 * @param transition plays transition if true, simply puts pane to front if false
+	 * @param backController the controller which should be called when the back button is clicked
 	 */
 	protected void show(boolean transition, Controller backController) {
 		super.show(transition, backController);
@@ -70,7 +70,7 @@ public abstract class FadeController extends Controller {
 
 	/**
 	 * Set the next controller and show it.
-	 * @param controller - the controller of the next view to show
+	 * @param controller the controller of the next view to show
 	 * @param transition
 	 */
 	public void showNext(Controller controller, boolean transition) {

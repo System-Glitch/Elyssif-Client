@@ -61,7 +61,7 @@ public final class LoginController extends FadeController implements Lockable, V
 			authenticator.login(emailField.getText(), passwordField.getText(), new FormCallback() {
 
 				public void run() {
-					int status = getResponse().getStatus();
+					int status = getStatus();
 					if(status == 200) {
 						Config.getInstance().set("Token", authenticator.getToken());
 						Config.getInstance().save();

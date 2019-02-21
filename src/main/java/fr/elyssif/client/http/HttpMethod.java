@@ -39,7 +39,7 @@ public enum HttpMethod {
 
 	/**
 	 * Instantiate and get a request for this method.
-	 * @param url - the url of the request
+	 * @param url the url of the request
 	 * @return an instance of the correct subclass for the method.
 	 * 
 	 * @throws SecurityException 

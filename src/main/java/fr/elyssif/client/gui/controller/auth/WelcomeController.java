@@ -19,6 +19,7 @@ public final class WelcomeController extends FadeController {
 		if(Config.getInstance().isVerbose())
 			Logger.getGlobal().info("Loading welcome controller.");
 		super.initialize(location, resources);
+
 	}
 
 	@FXML

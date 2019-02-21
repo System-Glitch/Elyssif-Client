@@ -13,7 +13,7 @@ import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.controller.auth.AuthController;
 import fr.elyssif.client.http.Authenticator;
-import fr.elyssif.client.http.RequestCallback;
+import fr.elyssif.client.http.RestCallback;
 import javafx.fxml.FXML;
 
 /**
@@ -44,12 +44,28 @@ public final class MainController extends ContainerController {
 		authController.show(false);
 	}
 
+	/**
+	 * Get the single instance of MainController
+	 * @return instance
+	 */
 	public static MainController getInstance() {
 		return instance;
 	}
 
+	/**
+	 * Get the authenticator.
+	 * @return authenticator
+	 */
 	public final Authenticator getAuthenticator() {
 		return authenticator;
+	}
+
+	/**
+	 * Get the http client.
+	 * @return client
+	 */
+	public final HttpClient getHttpClient() {
+		return client;
 	}
 
 	/**
@@ -58,7 +74,7 @@ public final class MainController extends ContainerController {
 	public void ready() {
 		if(authenticator.getToken() != null) {
 			authController.getController("loader").show(true);
-			authenticator.requestUserInfo(new RequestCallback() {
+			authenticator.requestUserInfo(new RestCallback() {
 
 				public void run() {
 					int status = getResponse().getStatus();

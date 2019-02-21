@@ -9,7 +9,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 /**
@@ -26,7 +26,7 @@ public class RestResponse {
 	private int status;
 	private HttpResponse response;
 	private String raw;
-	private JsonObject jsonObject;
+	private JsonElement jsonElement;
 
 	/**
 	 * Use this constructor if the HttpRequest failed. Will instantiate a fail result
@@ -56,8 +56,10 @@ public class RestResponse {
 			try {
 				raw = EntityUtils.toString(response.getEntity());
 
-				JsonParser parser = new JsonParser();
-				jsonObject = parser.parse(raw).getAsJsonObject();
+				if(raw != null && !raw.isEmpty()) {
+					JsonParser parser = new JsonParser();
+					jsonElement = parser.parse(raw);
+				}
 			} catch (UnsupportedOperationException | IOException e) {
 				Logger.getGlobal().log(Level.SEVERE, "Unable to read HttpResponse", e);
 			}
@@ -71,15 +73,16 @@ public class RestResponse {
 	 * @return if the response is a redirect
 	 */
 	public boolean isRedirect() {
-		return status >= 300 && status < 400;
+		return status >= 300 && status < 400 && status != -1;
 	}
 
 	/**
-	 * Get the success status of the query. Any error status (400, 500, ...) will flag the query as failed.
+	 * Get the success status of the query. Any error status (400, 500, ...) will flag the query as failed.<br>
+	 * Not that status 300 will not be considered as successful.
 	 * @return the success of the query
 	 */
 	public boolean isSuccessful() {
-		return status < 400;
+		return status < 300 && status != -1;
 	}
 
 	/**
@@ -99,12 +102,12 @@ public class RestResponse {
 	}
 
 	/**
-	 * Get the JsonObject parsed from the raw response
-	 * @return the json object parsed from the raw response
-	 * @see JsonObject
+	 * Get the JsonElement parsed from the raw response
+	 * @return the json element parsed from the raw response
+	 * @see JsonElement
 	 */
-	public JsonObject getJsonObject() {
-		return jsonObject;
+	public JsonElement getJsonElement() {
+		return jsonElement;
 	}
 
 	public String toString() {

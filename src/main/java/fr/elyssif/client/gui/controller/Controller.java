@@ -39,7 +39,7 @@ public abstract class Controller implements Initializable {
 
 	/**
 	 * Show the according view. Plays the transition if slide direction is not "none" and transition is true.
-	 * @param transition - plays transition if true, simply puts pane to front if false
+	 * @param transition plays transition if true, simply puts pane to front if false
 	 */
 	public void show(boolean transition) {
 		show(transition, null);
@@ -47,8 +47,8 @@ public abstract class Controller implements Initializable {
 
 	/**
 	 * Show the according view. Plays the transition if slide direction is not "none" and transition is true.
-	 * @param transition - plays transition if true, simply puts pane to front if false
-	 * @param backController - the controller which should be called when the back button is clicked
+	 * @param transition plays transition if true, simply puts pane to front if false
+	 * @param backController the controller which should be called when the back button is clicked
 	 */
 	protected void show(boolean transition, Controller backController) {
 		setBackController(backController);
@@ -73,7 +73,7 @@ public abstract class Controller implements Initializable {
 
 	/**
 	 * Get the main pane for this controller.
-	 * @return pane
+	 * @return the root pane of the view controlled by this controller
 	 */
 	protected final Pane getPane() {
 		return pane;
@@ -121,7 +121,7 @@ public abstract class Controller implements Initializable {
 
 	/**
 	 * Set the next controller and show it.
-	 * @param controller - the controller of the next view to show
+	 * @param controller the controller of the next view to show
 	 * @param transition
 	 */
 	public void showNext(Controller controller, boolean transition) {
@@ -140,7 +140,7 @@ public abstract class Controller implements Initializable {
 
 	/**
 	 * Get the ResourceBundle for this controller.
-	 * @return bundle
+	 * @return the ResourceBundle used in the view controlled by this controller
 	 * @see ResourceBundle
 	 */
 	protected final ResourceBundle getBundle() {
@@ -149,7 +149,7 @@ public abstract class Controller implements Initializable {
 
 	/**
 	 * Get the location used to resolve relative paths for the root object, or null if the location is not known.
-	 * @return location 
+	 * @return location
 	 */
 	protected final URL getLocation() {
 		return location;
@@ -158,8 +158,8 @@ public abstract class Controller implements Initializable {
 
 	/**
 	 * Get a child controller by its name.
-	 * @param key - the name of the controller
-	 * @return controller
+	 * @param key the name of the controller
+	 * @return the child controller named with the given key. Null if doesn't exist.
 	 * @see Controller
 	 */
 	public Controller getController(String key) {
@@ -168,8 +168,8 @@ public abstract class Controller implements Initializable {
 
 	/**
 	 * Register a child controller.
-	 * @param key - the name of the controller
-	 * @param controller
+	 * @param key the name of the controller
+	 * @param controller the child controller to register
 	 */
 	private void registerController(String key, Controller controller) {
 		controllers.put(key, controller);

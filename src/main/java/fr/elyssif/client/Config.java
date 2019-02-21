@@ -90,9 +90,7 @@ public final class Config {
 		Logger.getGlobal().info("Current environment: " + get("Environment"));
 		Logger.getGlobal().info("Remote host: " + get("Host"));
 		Logger.getGlobal().info("Verbose: " + isVerbose());
-		
-		for(Entry<String, String> entry : values.entrySet())
-			Logger.getGlobal().info(entry.getKey() + ": " + entry.getValue());
+
 		return true;
 	}
 	

@@ -36,8 +36,8 @@ public abstract class SlideController extends Controller {
 
 	/**
 	 * Show the according view. Plays the transition if slide direction is not "none" and transition is true.
-	 * @param transition - plays transition if true, simply puts pane to front if false
-	 * @param backController - the controller which should be called when the back button is clicked
+	 * @param transition plays transition if true, simply puts pane to front if false
+	 * @param backController the controller which should be called when the back button is clicked
 	 */
 	protected void show(boolean transition, Controller backController) {
 		super.show(transition, backController);

@@ -62,6 +62,22 @@
 					<argLine>${argLine}</argLine>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+			                <doclint>none</doclint>
+			                <additionalJOption>--no-module-directories</additionalJOption>
+			            </configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
