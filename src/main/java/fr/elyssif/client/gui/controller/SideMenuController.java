@@ -32,7 +32,25 @@ public final class SideMenuController extends Controller {
 		registerListener();
 		selectIndex(0);
 	}
-	
+
+	/**
+	 * Get the currently active controller.
+	 * @return currentController
+	 */
+	protected Controller getCurrentController() {
+		return currentController;
+	}
+
+	/**
+	 * Set the currently active controller.
+	 * Clears the menu list selection.
+	 * @param controller
+	 */
+	protected void setCurrentController(Controller currentController) {
+		sideList.getSelectionModel().clearSelection();
+		this.currentController = currentController;
+	}
+
 	/**
 	 * Select the given index in the menu list.
 	 * @param index
@@ -49,7 +67,12 @@ public final class SideMenuController extends Controller {
 	 * @param controller
 	 */
 	protected void bind(Integer index, Controller controller) {
+		if(controller == null) throw new IllegalArgumentException("Cannot bind null controller");
 		binding.put(index, controller);
+
+		if(binding.size() == 1) {
+			currentController = controller;
+		}
 	}
 
 	private void registerListener() {
@@ -59,7 +82,13 @@ public final class SideMenuController extends Controller {
 					currentController = binding.get(oldVal);
 				}
 				Controller next = binding.get(newVal);
-				currentController.showNext(next, true);
+
+				if(currentController != null) {
+					currentController.showNext(next, true);
+				} else {
+					next.show(true);
+				}
+
 				currentController = next;
 			}
 		});

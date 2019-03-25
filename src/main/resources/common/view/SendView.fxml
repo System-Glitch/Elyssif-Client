@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+
+<FlowPane fx:id="pane" styleClass="white" alignment="CENTER" columnHalignment="CENTER" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.SendController">
+   <children>
+      <HBox fx:id="fadePane" alignment="CENTER" spacing="40.0">
+         <children>
+            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@img/lock.png" />
+               </image>
+            </ImageView>
+         </children>
+      </HBox>
+   </children>
+</FlowPane>

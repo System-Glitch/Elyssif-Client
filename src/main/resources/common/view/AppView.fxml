@@ -1,22 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXDrawer?>
 <?import com.jfoenix.controls.JFXHamburger?>
 <?import com.jfoenix.controls.JFXRippler?>
 <?import com.jfoenix.controls.JFXToolbar?>
-<?import com.jfoenix.controls.JFXDrawer?>
 <?import com.jfoenix.transitions.hamburger.HamburgerSlideCloseTransition?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
-<?import java.lang.String?>
 
-<BorderPane fx:id="pane" styleClass="white" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.AppController">
+<BorderPane fx:id="pane" styleClass="gradient" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.AppController">
 	<center>
 		<BorderPane fx:id="fadePane" prefHeight="635.0" prefWidth="1050.0" styleClass="white">
 			<top>
@@ -34,7 +30,7 @@
 						</JFXRippler>
 					</leftItems>
 					<rightItems>
-						<JFXButton alignment="CENTER" maxHeight="1.7976931348623157E308" ripplerFill="WHITE">
+						<JFXButton alignment="CENTER" maxHeight="1.7976931348623157E308" onAction="#sendClicked" ripplerFill="WHITE">
 							<graphic>
 								<ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
 									<image>
@@ -43,7 +39,7 @@
 								</ImageView>
 							</graphic>
 						</JFXButton>
-						<JFXButton alignment="CENTER" maxHeight="1.7976931348623157E308" ripplerFill="WHITE">
+						<JFXButton alignment="CENTER" maxHeight="1.7976931348623157E308" onAction="#receiveClicked" ripplerFill="WHITE">
 							<graphic>
 								<ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
 									<image>

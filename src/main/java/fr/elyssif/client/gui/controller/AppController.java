@@ -26,7 +26,6 @@ public final class AppController extends FadeController implements Lockable {
 	@FXML private JFXDrawer drawer;
 
 	@FXML private AppContainerController containerController;
-
 	@FXML private SideMenuController sideMenuController;
 
 	private SimpleBooleanProperty disableProperty;
@@ -73,7 +72,7 @@ public final class AppController extends FadeController implements Lockable {
 		});
 
 		// TODO bind menus
-		// sideMenuController.bind(0, containerController.getController("test"));
+		sideMenuController.bind(0, containerController.getController("home"));
 	}
 
 	public void bindControls() {
@@ -82,6 +81,19 @@ public final class AppController extends FadeController implements Lockable {
 
 	public void setLocked(boolean locked) {
 		disableProperty.set(locked);
+	}
+
+	@FXML
+	private void sendClicked() {
+		Controller sendViewController = containerController.getController("send");
+		sideMenuController.getCurrentController().showNext(sendViewController, true);
+		sideMenuController.setCurrentController(sendViewController);
+		drawer.close();
+	}
+
+	@FXML
+	private void receiveClicked() {
+		drawer.close();
 	}
 
 }
