@@ -134,7 +134,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 
 	/**
 	 * Load this object's attributes from a json object.
-	 * @param the json object from which the attributes
+	 * @param object the json object from which the attributes
 	 * will be loaded.
 	 *
 	 * @throws RuntimeException if mapped field is not a property or is not found.

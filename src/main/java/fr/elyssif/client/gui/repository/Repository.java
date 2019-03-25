@@ -450,7 +450,6 @@ public abstract class Repository<T extends Model<T>> {
 	 * Get a paginate of all the records matching the given <code>search</code>.
 	 * @param search the search keyword(s)
 	 * @param callback the callback executed on success
-	 * @param failCallback the callback executed on failure, nullable
 	 */
 	public void getWhere(String search, PaginateCallback<T> callback) {
 		getWhere(search, callback, null);
@@ -583,7 +582,6 @@ public abstract class Repository<T extends Model<T>> {
 	 * <p>All fields given as parameter will be sent for update.
 	 * Lists and nested models are ignored.</p>
 	 * @param model the model to update on the server
-	 * @param callback the callback executed on success, nullable
 	 * @param formCallback the callback executed on validation error
 	 * @param fields the fields to update (in snake case)
 	 * @throws IllegalArgumentException thrown if no field is provided
