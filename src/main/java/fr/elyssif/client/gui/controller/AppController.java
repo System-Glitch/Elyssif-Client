@@ -46,7 +46,6 @@ public final class AppController extends FadeController implements Lockable {
 	 */
 	protected void show(boolean transition, Controller backController) {
 		super.show(transition, backController);
-		sideMenuController.getPane().setDisable(false);
 		drawer.close();
 		sideMenuController.selectIndex(0);
 	}
@@ -77,6 +76,8 @@ public final class AppController extends FadeController implements Lockable {
 
 	public void bindControls() {
 		getFadePane().disableProperty().bind(disableProperty);
+		drawer.disableProperty().bind(disableProperty);
+		sideMenuController.getPane().disableProperty().bind(disableProperty);
 	}
 
 	public void setLocked(boolean locked) {

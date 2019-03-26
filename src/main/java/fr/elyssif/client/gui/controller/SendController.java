@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.validation.RequiredFieldValidator;
 
@@ -18,12 +19,18 @@ import fr.elyssif.client.gui.repository.FileRepository;
 import fr.elyssif.client.gui.validation.ServerValidator;
 import fr.elyssif.client.gui.validation.StringMaxLengthValidator;
 import fr.elyssif.client.gui.validation.StringMinLengthValidator;
+import fr.elyssif.client.gui.view.ImageSlideTransition;
+import fr.elyssif.client.gui.view.ViewUtils;
 import fr.elyssif.client.http.FailCallback;
 import fr.elyssif.client.http.FormCallback;
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
 
 /**
  * Controller for the "send file" view
@@ -32,6 +39,9 @@ import javafx.stage.FileChooser;
  */
 public final class SendController extends FadeController implements Lockable, Validatable {
 
+	@FXML private ImageView image;
+	@FXML private JFXSpinner spinner;
+
 	@FXML private JFXTextField nameInput;
 	@FXML private JFXTextField fileInput;
 	@FXML private JFXTextField recipientInput;
@@ -39,6 +49,8 @@ public final class SendController extends FadeController implements Lockable, Va
 	@FXML private JFXButton browseButton;
 	@FXML private JFXButton recipientButton;
 	@FXML private JFXButton encryptButton;
+
+	@FXML private VBox formContainer;
 
 	private java.io.File selectedFile;
 	private User selectedUser;
@@ -89,7 +101,7 @@ public final class SendController extends FadeController implements Lockable, Va
 	public void encryptClicked() {
 		if(validateAll()) {
 			setLocked(true);
-			//
+
 			File fileModel = new File();
 			fileModel.setName(nameInput.getText());
 			fileModel.setRecipientId(selectedUser.getId().get());
@@ -100,7 +112,8 @@ public final class SendController extends FadeController implements Lockable, Va
 					Logger.getGlobal().info(fileModel.getId().asString().get());
 					Logger.getGlobal().info(fileModel.getPublicKey().get());
 					resetForm();
-					setLocked(false);
+
+					playEncryptTransition();
 				}
 
 			}, new FormCallback() {
@@ -121,9 +134,23 @@ public final class SendController extends FadeController implements Lockable, Va
 		}
 	}
 
+	private void playEncryptTransition() {
+		FadeTransition ft = ViewUtils.createFadeOutTransition(formContainer, Duration.millis(750));
+		FadeTransition ft2 = ViewUtils.createFadeOutTransition(encryptButton, Duration.millis(750));
+		FadeTransition ft3 = ViewUtils.createFadeInTransition(spinner, Duration.millis(750));
+		ft3.setDelay(Duration.millis(1000));
+
+		ImageSlideTransition slide = new ImageSlideTransition(image, getFadePane().getHeight(), Duration.millis(750));
+		ft.play();
+		ft2.play();
+		ft3.play();
+		slide.play();
+	}
+
 	@Override
 	public void setLocked(boolean locked) {
 		disableProperty.set(locked);
+		((Lockable) MainController.getInstance().getController("app")).setLocked(locked);
 	}
 
 	@Override
