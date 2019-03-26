@@ -62,6 +62,8 @@ public class RestResponse {
 				}
 			} catch (UnsupportedOperationException | IOException e) {
 				Logger.getGlobal().log(Level.SEVERE, "Unable to read HttpResponse", e);
+				status = -1;
+				raw = e.getMessage();
 			}
 		} else {
 			raw = null;

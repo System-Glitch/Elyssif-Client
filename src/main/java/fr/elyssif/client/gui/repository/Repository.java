@@ -317,7 +317,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * @see FailCallback
 	 */
 	protected final void request(String action, HttpMethod method, HashMap<String, ?> params, RestCallback callback, FailCallback failCallback) {
-		RestRequest request = new RestRequest(httpClient, Config.getInstance().get("Host") + API_URL + model.getResourceName() + "/" + action);
+		RestRequest request = new RestRequest(httpClient, Config.getInstance().get("Host") + API_URL + model.getResourceName() + (action != "" ? "/" + action : ""));
 
 		if(params != null) { // Set params
 			if(method.equals(HttpMethod.GET)) { // Set URL params if method is GET
@@ -358,7 +358,7 @@ public abstract class Repository<T extends Model<T>> {
 
 				if(response.getStatus() == 401 && authenticator != null) { // Unauthenticated
 					authenticator.logout(new LogoutCallback());
-				} else {
+				} else if(!response.isSuccessful()) {
 					Logger.getGlobal().warning("Repository request failed: " + method.name() + " " + response.getStatus() + " " + failCallback.getMessage());
 				}
 			}

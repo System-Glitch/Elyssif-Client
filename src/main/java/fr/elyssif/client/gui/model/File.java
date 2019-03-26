@@ -12,6 +12,8 @@ import javafx.beans.property.SimpleStringProperty;
 public class File extends Model<File> {
 
 	private SimpleStringProperty name;
+	private SimpleStringProperty publicKey;
+	private SimpleStringProperty privateKey;
 	private SimpleStringProperty hash;
 	private SimpleStringProperty hashCiphered;
 	private SimpleObjectProperty<Date> cipheredAt;
@@ -34,14 +36,16 @@ public class File extends Model<File> {
 	 */
 	public File(Integer id) {
 		super(id);
-		name = new SimpleStringProperty();
-		hash = new SimpleStringProperty();
+		name         = new SimpleStringProperty();
+		publicKey    = new SimpleStringProperty();
+		privateKey   = new SimpleStringProperty();
+		hash         = new SimpleStringProperty();
 		hashCiphered = new SimpleStringProperty();
-		cipheredAt = new SimpleObjectProperty<Date>();
+		cipheredAt   = new SimpleObjectProperty<Date>();
 		decipheredAt = new SimpleObjectProperty<Date>();
-		price = new SimpleDoubleProperty();
-		senderId = new SimpleIntegerProperty();
-		recipientId = new SimpleIntegerProperty();
+		price        = new SimpleDoubleProperty();
+		senderId     = new SimpleIntegerProperty();
+		recipientId  = new SimpleIntegerProperty();
 	}
 
 	/**
@@ -60,6 +64,22 @@ public class File extends Model<File> {
 
 	public final void setName(String name) {
 		this.name.set(name);
+	}
+
+	public final SimpleStringProperty getPublicKey() {
+		return publicKey;
+	}
+
+	public final void setPublicKey(String publicKey) {
+		this.publicKey.set(publicKey);;
+	}
+
+	public final SimpleStringProperty getPrivateKey() {
+		return privateKey;
+	}
+
+	public final void setPrivateKey(String privateKey) {
+		this.privateKey.set(privateKey);
 	}
 
 	public final SimpleStringProperty getHash() {

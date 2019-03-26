@@ -17,13 +17,13 @@
                   <Image url="@img/lock.png" />
                </image>
             </ImageView>
-            <VBox spacing="20.0">
+            <VBox spacing="35.0">
                <children>
-                  <JFXTextField labelFloat="true" promptText="%filename" />
+                  <JFXTextField fx:id="nameInput" labelFloat="true" promptText="%filename" />
                   <HBox alignment="CENTER_LEFT" spacing="10.0">
                      <children>
-                        <JFXTextField editable="false" labelFloat="true" prefWidth="150.0" promptText="%file" />
-                        <JFXButton buttonType="RAISED" onAction="#browseClicked" style="-fx-background-radius: 100%;" styleClass="blue-700">
+                        <JFXTextField fx:id="fileInput" editable="false" labelFloat="true" prefWidth="150.0" promptText="%file" />
+                        <JFXButton fx:id="browseButton" buttonType="RAISED" onAction="#browseClicked" style="-fx-background-radius: 100%;" styleClass="blue-700">
                            <graphic>
                               <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -36,8 +36,8 @@
                   </HBox>
                   <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="55.0" spacing="10.0">
                      <children>
-                        <JFXTextField editable="false" labelFloat="true" prefWidth="150.0" promptText="%recipient" />
-                        <JFXButton buttonType="RAISED" onAction="#recipientClicked" style="-fx-background-radius: 100%;" styleClass="blue-700">
+                        <JFXTextField fx:id="recipientInput" editable="false" labelFloat="true" prefWidth="150.0" promptText="%recipient" />
+                        <JFXButton fx:id="recipientButton" buttonType="RAISED" onAction="#recipientClicked" style="-fx-background-radius: 100%;" styleClass="blue-700">
                            <graphic>
                               <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -48,21 +48,21 @@
                         </JFXButton>
                      </children>
                   </HBox>
-                  <HBox alignment="TOP_RIGHT">
-                     <children>
-                        <JFXButton onAction="#encryptClicked" styleClass="green-A700" text="%encrypt">
-                           <graphic>
-                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@img/padlock.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </JFXButton>
-                     </children>
-                  </HBox>
                </children>
             </VBox>
+            <HBox alignment="TOP_RIGHT">
+               <children>
+                  <JFXButton onAction="#encryptClicked" styleClass="green-A700" text="%encrypt" fx:id="encryptButton">
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@img/padlock.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </JFXButton>
+               </children>
+            </HBox>
          </children>
       </VBox>
    </children>

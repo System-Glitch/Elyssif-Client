@@ -279,11 +279,15 @@ public class RestRequest {
 	 * @throws UnsupportedEncodingException 
 	 */
 	private final String urlEncodeParameters() throws UnsupportedEncodingException {
-		StringJoiner builder = new StringJoiner("&");
-		for(Entry<String, Object> entry : urlParameters.entrySet()) {
-			builder.add(entry.getKey() + "=" + URLEncoder.encode(String.valueOf(entry.getValue()), "UTF-8"));
+		if(urlParameters.size() > 0) {
+			StringJoiner builder = new StringJoiner("&");
+			for(Entry<String, Object> entry : urlParameters.entrySet()) {
+				builder.add(entry.getKey() + "=" + URLEncoder.encode(String.valueOf(entry.getValue()), "UTF-8"));
+			}
+			return "?" + builder.toString();
+		} else {
+			return "";
 		}
-		return "?" + builder.toString();
 	}
 
 	/**
