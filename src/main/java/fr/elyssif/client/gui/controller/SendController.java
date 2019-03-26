@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import fr.elyssif.client.Config;
+import javafx.fxml.FXML;
 
 /**
  * Controller for the "send file" view
@@ -18,5 +19,20 @@ public class SendController extends FadeController {
 			Logger.getGlobal().info("Loading send controller.");
 		super.initialize(location, resources);
 	}
-	
+
+	@FXML
+	public void browseClicked() {
+		//
+	}
+
+	@FXML
+	public void recipientClicked() {
+		//
+	}
+
+	@FXML
+	public void encryptClicked() {
+
+	}
+
 }

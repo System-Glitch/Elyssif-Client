@@ -1,20 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<FlowPane fx:id="pane" styleClass="white" alignment="CENTER" columnHalignment="CENTER" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.SendController">
+<FlowPane fx:id="pane" alignment="CENTER" columnHalignment="CENTER" styleClass="white" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.SendController">
    <children>
-      <HBox fx:id="fadePane" alignment="CENTER" spacing="40.0">
+      <VBox fx:id="fadePane" alignment="TOP_CENTER" spacing="40.0">
          <children>
             <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@img/lock.png" />
                </image>
             </ImageView>
+            <VBox spacing="20.0">
+               <children>
+                  <JFXTextField labelFloat="true" promptText="%filename" />
+                  <HBox alignment="CENTER_LEFT" spacing="10.0">
+                     <children>
+                        <JFXTextField editable="false" labelFloat="true" prefWidth="150.0" promptText="%file" />
+                        <JFXButton buttonType="RAISED" onAction="#browseClicked" style="-fx-background-radius: 100%;" styleClass="blue-700">
+                           <graphic>
+                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@img/folder.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </JFXButton>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="55.0" spacing="10.0">
+                     <children>
+                        <JFXTextField editable="false" labelFloat="true" prefWidth="150.0" promptText="%recipient" />
+                        <JFXButton buttonType="RAISED" onAction="#recipientClicked" style="-fx-background-radius: 100%;" styleClass="blue-700">
+                           <graphic>
+                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@img/person.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </JFXButton>
+                     </children>
+                  </HBox>
+                  <HBox alignment="TOP_RIGHT">
+                     <children>
+                        <JFXButton onAction="#encryptClicked" styleClass="green-A700" text="%encrypt">
+                           <graphic>
+                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@img/padlock.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </JFXButton>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
          </children>
-      </HBox>
+      </VBox>
    </children>
 </FlowPane>
