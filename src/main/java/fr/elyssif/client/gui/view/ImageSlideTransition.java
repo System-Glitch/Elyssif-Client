@@ -3,6 +3,8 @@ package fr.elyssif.client.gui.view;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.util.Duration;
 
@@ -37,7 +39,7 @@ public final class ImageSlideTransition {
 		translate.setInterpolator(Interpolator.EASE_BOTH);
 	}
 
-	public void revert() {
+	public final void revert() {
 		scale.setRate(-scale.getRate());
 		translate.setRate(-translate.getRate());
 	}
@@ -48,6 +50,10 @@ public final class ImageSlideTransition {
 
 	public final void setNode(Node node) {
 		this.node = node;
+	}
+
+	public final void setOnFinished(EventHandler<ActionEvent> handler) {
+		scale.setOnFinished(handler);
 	}
 
 	public final void play() {
