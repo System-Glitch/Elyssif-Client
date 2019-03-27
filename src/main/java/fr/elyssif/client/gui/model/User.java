@@ -7,7 +7,7 @@ import com.google.gson.JsonObject;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public final class User extends Model<User>{
+public final class User extends Model<User> {
 
 	private SimpleStringProperty email;
 	private SimpleStringProperty name;

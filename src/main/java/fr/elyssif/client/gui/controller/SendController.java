@@ -16,10 +16,13 @@ import fr.elyssif.client.gui.model.File;
 import fr.elyssif.client.gui.model.ModelCallback;
 import fr.elyssif.client.gui.model.User;
 import fr.elyssif.client.gui.repository.FileRepository;
+import fr.elyssif.client.gui.repository.UserRepository;
 import fr.elyssif.client.gui.validation.ServerValidator;
 import fr.elyssif.client.gui.validation.StringMaxLengthValidator;
 import fr.elyssif.client.gui.validation.StringMinLengthValidator;
 import fr.elyssif.client.gui.view.ImageSlideTransition;
+import fr.elyssif.client.gui.view.LookupModal;
+import fr.elyssif.client.gui.view.UserListFactory;
 import fr.elyssif.client.gui.view.ViewUtils;
 import fr.elyssif.client.http.FailCallback;
 import fr.elyssif.client.http.FormCallback;
@@ -90,11 +93,17 @@ public final class SendController extends FadeController implements Lockable, Va
 
 	@FXML
 	public void recipientClicked() {
-		// TODO implement recipient searching
+		LookupModal<User> modal = new LookupModal<User>(new UserRepository());
+		modal.setTitle("recipient");
+		modal.setHeader("lookup-recipient");
+		modal.setTableFactory(new UserListFactory());
 
-		selectedUser = MainController.getInstance().getAuthenticator().getUser();
-		recipientInput.setText(selectedUser.getName().get());
-		recipientInput.validate();
+		User user = modal.showDialog(getPane().getScene().getWindow());
+		if(user != null) {
+			selectedUser = user;
+			recipientInput.setText(selectedUser.getName().get());
+			recipientInput.validate();
+		}
 	}
 
 	@FXML

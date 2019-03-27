@@ -243,13 +243,11 @@ public class RestRequest {
 				request.addHeader("Authorization", "Bearer " + authorizationToken);
 
 			//Parameters
-			if(parameters.size() > 0) {
-				request.setURI(new URI(url + urlEncodeParameters()));
-				if(!method.equals(HttpMethod.GET))
-					((HttpEntityEnclosingRequestBase) request).setEntity(serializeParameters());
-				else if(parameters.size() > 0)
-					Logger.getGlobal().warning("GET request has " + parameters.size() + " non-URL parameters.");
-			}
+			request.setURI(new URI(url + urlEncodeParameters()));
+			if(!method.equals(HttpMethod.GET))
+				((HttpEntityEnclosingRequestBase) request).setEntity(serializeParameters());
+			else if(parameters.size() > 0)
+				Logger.getGlobal().warning("GET request has " + parameters.size() + " non-URL parameters.");
 
 			return request;
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException

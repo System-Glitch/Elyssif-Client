@@ -1,5 +1,6 @@
 package fr.elyssif.client.http;
 
+import fr.elyssif.client.gui.model.Model;
 import fr.elyssif.client.gui.view.Paginator;
 
 /**
@@ -9,11 +10,11 @@ import fr.elyssif.client.gui.view.Paginator;
  * @see Runnable
  * @see fr.elyssif.client.gui.view.Paginator
  */
-public abstract class PaginateCallback<T> extends RestCallback implements Runnable {
+public abstract class PaginateCallback<T extends Model<T>> extends RestCallback implements Runnable {
 
-	private Paginator<T> paginator;
+	private Paginator<? extends Model<?>> paginator;
 
-	public final Paginator<T> getPaginator() {
+	public final Paginator<? extends Model<?>> getPaginator() {
 		return paginator;
 	}
 
@@ -21,7 +22,7 @@ public abstract class PaginateCallback<T> extends RestCallback implements Runnab
 	 * Get the response from the request.
 	 * @param paginator
 	 */
-	public final void setPaginator(Paginator<T> paginator) {
+	public final void setPaginator(Paginator<? extends Model<?>> paginator) {
 		this.paginator = paginator;
 	}
 

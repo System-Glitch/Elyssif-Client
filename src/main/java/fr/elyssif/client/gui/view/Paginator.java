@@ -16,24 +16,26 @@ public class Paginator<T> {
 	private int currentPage;
 	private int maxPage;
 	private int perPage;
+	private int total;
 	private ObservableList<T> items;
 
 	public Paginator() {
-		this(1, 1, 0, FXCollections.observableArrayList());
+		this(1, 1, 0, 0, FXCollections.observableArrayList());
 	}
 
 	public Paginator(ObservableList<T> observableList) {
-		this(1, 1, 0, observableList);
+		this(1, 1, 0, 0, observableList);
 	}
 
-	public Paginator(int currentPage, int maxPage, int perPage) {
-		this(currentPage, maxPage, perPage, FXCollections.observableArrayList());
+	public Paginator(int currentPage, int maxPage, int perPage, int total) {
+		this(currentPage, maxPage, perPage, total, FXCollections.observableArrayList());
 	}
 
-	public Paginator(int currentPage, int maxPage, int perPage, ObservableList<T> observableList) {
+	public Paginator(int currentPage, int maxPage, int perPage, int total, ObservableList<T> observableList) {
 		this.currentPage = currentPage;
 		this.maxPage = maxPage;
 		this.perPage = perPage;
+		this.total = total;
 		this.items = observableList;
 	}
 
@@ -49,6 +51,10 @@ public class Paginator<T> {
 		return perPage;
 	}
 
+	public final int getTotal() {
+		return total;
+	}
+
 	public final ObservableList<T> getItems() {
 		return items;
 	}
@@ -58,15 +64,18 @@ public class Paginator<T> {
 	 * @param object the json object containing the paginator
 	 */
 	public void loadFromJson(JsonObject object) {
-		JsonElement element = object.get("currentPage");
+		JsonElement element = object.get("current_page");
 
 		if(element != null && element.isJsonPrimitive()) currentPage = element.getAsInt();
 
-		element = object.get("lastPage");
+		element = object.get("last_page");
 		if(element != null && element.isJsonPrimitive()) maxPage = element.getAsInt();
 
-		element = object.get("perPage");
+		element = object.get("per_page");
 		if(element != null && element.isJsonPrimitive()) perPage = element.getAsInt();
+
+		element = object.get("total");
+		if(element != null && element.isJsonPrimitive()) total = element.getAsInt();
 	}
 
 }

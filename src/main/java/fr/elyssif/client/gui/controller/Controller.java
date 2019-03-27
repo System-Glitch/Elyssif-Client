@@ -143,7 +143,7 @@ public abstract class Controller implements Initializable {
 	 * @return the ResourceBundle used in the view controlled by this controller
 	 * @see ResourceBundle
 	 */
-	protected final ResourceBundle getBundle() {
+	public final ResourceBundle getBundle() {
 		return bundle;
 	}
 

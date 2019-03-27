@@ -9,13 +9,13 @@ import com.jfoenix.controls.JFXDecorator;
 
 import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.controller.MainController;
+import fr.elyssif.client.gui.view.ViewUtils;
 import fr.elyssif.client.http.RestRequest;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -41,7 +41,7 @@ public final class ElyssifClient extends Application {
 					getClass().getResource("/com/jfoenix/assets/css/jfoenix-design.css").toExternalForm(),
 					getClass().getResource("/view/css/application.css").toExternalForm());
 
-			disableContextMenu(scene);
+			ViewUtils.disableContextMenu(scene);
 			
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Elyssif");
@@ -63,12 +63,6 @@ public final class ElyssifClient extends Application {
 			Logger.getGlobal().log(Level.SEVERE, "Error while loading the graphical interface.", e);
 			Platform.exit();
 		}
-	}
-
-	private void disableContextMenu(Scene scene) {
-		scene.addEventFilter(ContextMenuEvent.CONTEXT_MENU_REQUESTED, evt -> {
-			evt.consume();
-		});
 	}
 
 	private void setupIcons(Stage primaryStage) {

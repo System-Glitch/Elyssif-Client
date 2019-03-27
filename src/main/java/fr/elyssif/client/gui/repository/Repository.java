@@ -143,25 +143,17 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param callback the callback to execute on success
 	 * @param failCallback the callback to execute if the response is invalid
 	 */
-	private final void handlePaginateResponse(RestResponse response, PaginateCallback<T> callback, FailCallback failCallback) {
+	private final void handlePaginateResponse(RestResponse response, PaginateCallback<? extends Model<?>> callback, FailCallback failCallback) {
 		JsonElement element = response.getJsonElement();
 		if(element.isJsonObject()) {
 
 			JsonObject object = element.getAsJsonObject();
-			if(object.has("items")) {
-				JsonElement itemsElement = object.get("items");
+			if(object.has("data")) {
+				JsonElement itemsElement = object.get("data");
 				if(itemsElement.isJsonArray()) {
-					ObservableList<T> list = parseArray(itemsElement.getAsJsonArray());
-					Paginator<T> paginator = new Paginator<T>(list);
-
-					if(object.has("paginator")) {
-						JsonElement paginatorElement = object.get("paginator");
-						if(paginatorElement.isJsonObject()) {
-							paginator.loadFromJson(paginatorElement.getAsJsonObject());
-						} else handleMalformedResponse(response, failCallback, "\"paginator\" attribute to be an object");
-					} else {
-						Logger.getGlobal().warning("Paginate response doesn't contain paginator. Skip and use default values.");
-					}
+					ObservableList<? extends Model<?>> list = parseArray(itemsElement.getAsJsonArray());
+					Paginator<? extends Model<?>> paginator = new Paginator<>(list);
+					paginator.loadFromJson(object);
 
 					callback.setResponse(response);
 					callback.setPaginator(paginator);
@@ -451,7 +443,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param search the search keyword(s)
 	 * @param callback the callback executed on success
 	 */
-	public void getWhere(String search, PaginateCallback<T> callback) {
+	public void getWhere(String search, PaginateCallback<? extends Model<?>> callback) {
 		getWhere(search, callback, null);
 	}
 
@@ -461,7 +453,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param callback the callback executed on success
 	 * @param failCallback the callback executed on failure, nullable
 	 */
-	public void getWhere(String search, PaginateCallback<T> callback, FailCallback failCallback) {
+	public void getWhere(String search, PaginateCallback<? extends Model<?>> callback, FailCallback failCallback) {
 		var params = new HashMap<String, String>();
 		params.put("search", search);
 		get(params, callback, failCallback);
@@ -473,7 +465,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param callback the callback executed on success
 	 * @param failCallback the callback executed on failure, nullable
 	 */
-	private void get(HashMap<String, ?> params, PaginateCallback<T> callback, FailCallback failCallback) {
+	private void get(HashMap<String, ?> params, PaginateCallback<? extends Model<?>> callback, FailCallback failCallback) {
 		request("", HttpMethod.GET, params, new JsonCallback() { // Empty action for index
 
 			public void run() {
