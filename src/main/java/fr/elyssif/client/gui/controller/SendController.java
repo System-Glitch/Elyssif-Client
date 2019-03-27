@@ -176,7 +176,7 @@ public final class SendController extends FadeController implements Lockable, Va
 					Platform.runLater(() -> spinner.setProgress(progress));
 
 					try {
-						Thread.sleep(50);
+						Thread.sleep(25);
 					} catch (InterruptedException ie) {
 						ie.printStackTrace();
 					}
@@ -207,6 +207,7 @@ public final class SendController extends FadeController implements Lockable, Va
 						slide.setOnFinished(e3 -> {
 							spinner.toBack();
 							progress = 0;
+							setLocked(false);
 						});
 					});
 				});
