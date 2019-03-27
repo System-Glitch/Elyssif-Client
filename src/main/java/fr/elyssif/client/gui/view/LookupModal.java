@@ -53,7 +53,7 @@ public class LookupModal<T extends Model<T>> {
 	public final void setTitle(String title) {
 		this.title = title;
 	}
-	
+
 	/**
 	 * Get the header of the modal.
 	 * @return the header of the modal
@@ -69,7 +69,7 @@ public class LookupModal<T extends Model<T>> {
 	public final void setHeader(String header) {
 		this.header = header;
 	}
-	
+
 	public void setTableFactory(ListFactory<T> tableFactory) {
 		factory = tableFactory;
 	}
@@ -93,28 +93,28 @@ public class LookupModal<T extends Model<T>> {
 		dialog.setMinWidth(DEFAULT_WIDTH);
 		dialog.setHeight(DEFAULT_HEIGHT);
 		dialog.setWidth(DEFAULT_WIDTH);
-		
+
 		try {
 			ResourceBundle bundle = MainController.getInstance().getBundle();
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/LookupView.fxml"));
 			loader.setResources(bundle);
-		
+
 			VBox rootLayout = (VBox) loader.load();
 			controller = (LookupController) loader.getController();
 			controller.setRepository(repository);
 			controller.setHeader(header);
 			controller.initList(factory);
-			
+
 			JFXDecorator decorator = new JFXDecorator(dialog, rootLayout, false, false, false);
 			Scene scene = new Scene(decorator);
 			scene.getStylesheets().addAll(ownerWindow.getScene().getStylesheets());
 			ViewUtils.disableContextMenu(scene);
-			
+
 			dialog.setResizable(false);
 			dialog.setScene(scene);
 			dialog.setTitle(bundle.getString(title));
 			dialog.showAndWait();
-			
+
 			return (T) controller.getSelected();
 		} catch (IOException e) {
 			Logger.getGlobal().log(Level.SEVERE, "Couldn't load lookup dialog.", e);
