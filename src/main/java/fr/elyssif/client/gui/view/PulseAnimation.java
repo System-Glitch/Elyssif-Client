@@ -3,6 +3,8 @@ package fr.elyssif.client.gui.view;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.util.Duration;
 
@@ -38,6 +40,10 @@ public final class PulseAnimation {
 
 	public final void setDelay(Duration duration) {
 		timeline.setDelay(duration);
+	}
+
+	public final void setOnFinished(EventHandler<ActionEvent> handler) {
+		timeline.setOnFinished(handler);
 	}
 
 	public final void play() {

@@ -52,6 +52,11 @@ public final class ImageSlideTransition {
 		this.node = node;
 	}
 
+	public final void setDelay(Duration duration) {
+		scale.setDelay(duration);
+		translate.setDelay(duration);
+	}
+
 	public final void setOnFinished(EventHandler<ActionEvent> handler) {
 		scale.setOnFinished(handler);
 	}
