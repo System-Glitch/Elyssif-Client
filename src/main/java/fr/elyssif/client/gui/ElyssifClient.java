@@ -13,11 +13,13 @@ import fr.elyssif.client.gui.view.ViewUtils;
 import fr.elyssif.client.http.RestRequest;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  * Main class for the GUI.
@@ -42,11 +44,19 @@ public final class ElyssifClient extends Application {
 					getClass().getResource("/view/css/application.css").toExternalForm());
 
 			ViewUtils.disableContextMenu(scene);
-			
+
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Elyssif");
 
 			setupIcons(primaryStage);
+
+			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+				public void handle(WindowEvent event) {
+					if(!MainController.getInstance().canExit()) {
+						event.consume();
+					}
+				}
+			});
 
 			primaryStage.show();
 

@@ -31,6 +31,8 @@ public final class MainController extends ContainerController {
 	@FXML private AppController appController;
 	@FXML private AuthController authController;
 
+	private boolean canExit = true;
+
 	public void initialize(URL location, ResourceBundle resources) {
 		if(Config.getInstance().isVerbose())
 			Logger.getGlobal().info("Loading main controller.");
@@ -93,6 +95,20 @@ public final class MainController extends ContainerController {
 			});
 		} else
 			authController.getController("welcome").show(true);
+	}
+
+	/**
+	 * If set to true, the program cannot exit.
+	 * Use this when doing a process that shouldn't stop
+	 * half way through.
+	 * @param canExit
+	 */
+	protected void setCanExit(boolean canExit) {
+		this.canExit = canExit;
+	}
+
+	public boolean canExit() {
+		return canExit;
 	}
 
 }

@@ -238,6 +238,7 @@ public final class SendController extends FadeController implements Lockable, Va
 	@Override
 	public void setLocked(boolean locked) {
 		disableProperty.set(locked);
+		MainController.getInstance().setCanExit(!locked);
 		((Lockable) MainController.getInstance().getController("app")).setLocked(locked);
 	}
 
