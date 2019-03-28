@@ -62,6 +62,7 @@ public final class SendController extends FadeController implements Lockable, Va
 	@FXML private VBox formContainer;
 
 	private java.io.File selectedFile;
+	private java.io.File destinationFile;
 	private User selectedUser;
 	private FileRepository fileRepository;
 
@@ -117,41 +118,45 @@ public final class SendController extends FadeController implements Lockable, Va
 	@FXML
 	public void encryptClicked() {
 		if(validateAll()) {
-			setLocked(true);
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle(getBundle().getString("save"));
+			destinationFile = fileChooser.showSaveDialog(getPane().getScene().getWindow());
+			if(destinationFile != null) {
+				setLocked(true);
+				File fileModel = new File();
+				fileModel.setName(nameInput.getText());
+				fileModel.setRecipientId(selectedUser.getId().get());
+				fileModel.setHash("b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9"); // TODO hash
+				fileRepository.store(fileModel, new ModelCallback<File>() {
 
-			File fileModel = new File();
-			fileModel.setName(nameInput.getText());
-			fileModel.setRecipientId(selectedUser.getId().get());
-			fileModel.setHash("b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9"); // TODO hash
-			fileRepository.store(fileModel, new ModelCallback<File>() {
+					public void run() {
+						Logger.getGlobal().info(fileModel.getId().asString().get());
+						Logger.getGlobal().info(fileModel.getPublicKey().get());
+						resetForm();
 
-				public void run() {
-					Logger.getGlobal().info(fileModel.getId().asString().get());
-					Logger.getGlobal().info(fileModel.getPublicKey().get());
-					resetForm();
+						playEncryptAnimation();
+					}
 
-					playEncryptTransition();
-				}
+				}, new FormCallback() {
 
-			}, new FormCallback() {
+					public void run() {
+						handleValidationErrors(getValidationErrors());
+						setLocked(false);
+					}
 
-				public void run() {
-					handleValidationErrors(getValidationErrors());
-					setLocked(false);
-				}
+				}, new FailCallback() {
 
-			}, new FailCallback() {
+					public void run() {
+						SnackbarController.getInstance().message(getFullMessage(), SnackbarMessageType.ERROR, 4000);
+						setLocked(false);
+					}
 
-				public void run() {
-					SnackbarController.getInstance().message(getFullMessage(), SnackbarMessageType.ERROR, 4000);
-					setLocked(false);
-				}
-
-			});
+				});
+			}
 		}
 	}
 
-	private void playEncryptTransition() {
+	private void playEncryptAnimation() {
 		spinner.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
 		FadeTransition ft = ViewUtils.createFadeOutTransition(formContainer, Duration.millis(750));
 		FadeTransition ft2 = ViewUtils.createFadeOutTransition(encryptButton, Duration.millis(750));
@@ -187,7 +192,7 @@ public final class SendController extends FadeController implements Lockable, Va
 					tada.play();
 					tada.setOnFinished(e2 -> {
 
-						saveFile();
+						openFile();
 
 						ft.setRate(-1);
 						ft2.setRate(-1);
@@ -216,20 +221,11 @@ public final class SendController extends FadeController implements Lockable, Va
 		});
 	}
 
-	private void saveFile() {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle(getBundle().getString("save"));
-		java.io.File file = fileChooser.showSaveDialog(getPane().getScene().getWindow());
-		if(file != null) {
-			// TODO copy temp file to chosen destination
-		} else {
-			// TODO file = tempfile
-		}
-
+	private void openFile() {
 		SnackbarController.getInstance().message(getBundle().getString("encrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
 		Desktop desktop = Desktop.getDesktop();
 		try {
-			desktop.open(file.getParentFile());
+			desktop.open(destinationFile.getParentFile());
 		} catch (IOException e) {
 			Logger.getGlobal().log(Level.SEVERE, "Couldn't open file explorer.", e);
 		}
