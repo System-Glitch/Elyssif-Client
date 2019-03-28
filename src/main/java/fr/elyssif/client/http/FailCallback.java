@@ -19,7 +19,7 @@ public abstract class FailCallback extends RestCallback {
 
 	private void loadMessage() {
 		if(getResponse().getStatus() == -1) {
-			message = "%unreachable";
+			message = "unreachable";
 		} else {
 			JsonElement responseElement = getResponse().getJsonElement();
 			if(responseElement.isJsonObject()) {
@@ -27,9 +27,9 @@ public abstract class FailCallback extends RestCallback {
 				if(element != null && element.isJsonPrimitive())
 					message = element.getAsString();
 				else
-					message = "%server-error";
+					message = "server-error";
 			} else
-				message = "%server-error";
+				message = "server-error";
 		}
 	}
 

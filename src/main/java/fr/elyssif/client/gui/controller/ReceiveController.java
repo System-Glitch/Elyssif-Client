@@ -11,6 +11,8 @@ import com.jfoenix.validation.RequiredFieldValidator;
 
 import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
+import fr.elyssif.client.http.FailCallback;
+import fr.elyssif.client.http.JsonCallback;
 import javafx.fxml.FXML;
 import javafx.stage.FileChooser;
 
@@ -25,6 +27,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 	@FXML private JFXButton browseButton;
 
 	private java.io.File selectedFile;
+	private String privateKey;
 
 	public void initialize(URL location, ResourceBundle resources) {
 		if(Config.getInstance().isVerbose())
@@ -46,19 +49,35 @@ public final class ReceiveController extends EncryptionController implements Loc
 
 	@FXML
 	public void onButtonClicked() {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle(getBundle().getString("save-decrypt"));
-		setDestinationFile(fileChooser.showSaveDialog(getPane().getScene().getWindow()));
-		if(getDestinationFile() != null) {
-			setLocked(true);
-			playAnimation();
-			// TODO fileRepository fetch then popup then decrypt
-		}
+		setLocked(true);
+
+		getFileRepository().fetch("03454af1793ba7be41f7789f9c1cbaebbdf7d967f8e45a0f747f24bc1c84108d", new JsonCallback() {
+			public void run() {
+				privateKey = getElement().getAsString();
+
+				// TODO show popup
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.setTitle(getBundle().getString("save-decrypt"));
+				setDestinationFile(fileChooser.showSaveDialog(getPane().getScene().getWindow()));
+				if(getDestinationFile() != null) {
+					playAnimation();
+				}
+			}
+		}, new FailCallback() {
+			public void run() {
+				if(getStatus() == 404) {
+					SnackbarController.getInstance().message(getBundle().getString("file-not-found"), SnackbarMessageType.ERROR, 4000);
+				} else {
+					SnackbarController.getInstance().message(getBundle().getString(getMessage()), SnackbarMessageType.ERROR, 4000);					
+				}
+				setLocked(false);
+			}
+		});
 	}
 
 	@Override
 	protected final void process(Runnable successCallback, Runnable failureCallback) {
-		// TODO encrypt
+		// TODO decrypt
 		Random random = new Random();
 		while(getProgress() < 1) {
 			setProgress(getProgress() + random.nextDouble() / 100);
@@ -102,6 +121,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 	public void resetForm() {
 		fileInput.setText(null);
 		selectedFile = null;
+		privateKey = null;
 	}
 
 }

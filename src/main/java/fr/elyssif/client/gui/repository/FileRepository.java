@@ -8,9 +8,45 @@ import fr.elyssif.client.gui.model.File;
 import fr.elyssif.client.http.FailCallback;
 import fr.elyssif.client.http.FormCallback;
 import fr.elyssif.client.http.HttpMethod;
+import fr.elyssif.client.http.JsonCallback;
 import fr.elyssif.client.http.RestCallback;
 
+/**
+ * Repository for the <code>File</code> model.
+ * @author Jérémy LAMBERT
+ *
+ */
 public class FileRepository extends Repository<File> {
+
+	/**
+	 * Get a record by its id.
+	 * @param id the id of the requested record, must be positive
+	 * @param callback the callback executed on success
+	 * @param failCallback the callback executed on failure, nullable
+	 * @throws IllegalArgumentException thrown if <code>hashCiphered</code> is null
+	 * or isn't 64 characters long
+	 */
+	public void fetch(String hashCiphered, JsonCallback callback, FailCallback failCallback) {
+		if(hashCiphered == null || hashCiphered.length() != 64) {
+			throw new IllegalArgumentException("Hash ciphered must be 64 characaters.");
+		}
+
+		var params = new HashMap<String, Object>();
+		params.put("ciphered_hash", hashCiphered);
+		request("fetch", HttpMethod.GET, params, new JsonCallback() {
+
+			public void run() {
+				if(getElement().isJsonPrimitive()) {
+					callback.setResponse(getResponse());
+					callback.setElement(getElement());
+					callback.run();
+				} else {
+					handleMalformedResponse(getResponse(), failCallback, "JSON primitive");
+				}
+			}
+
+		}, failCallback);
+	}
 
 	/**
 	 * <p>Update the given <code>File</code>'s <code>hashCiphered</code>

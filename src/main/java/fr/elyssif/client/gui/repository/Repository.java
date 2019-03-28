@@ -378,7 +378,7 @@ public abstract class Repository<T extends Model<T>> {
 
 	/**
 	 * Get a record by its id.
-	 * @param id the id of the requested record, msut be positive
+	 * @param id the id of the requested record, must be positive
 	 * @param callback the callback executed on success
 	 */
 	public void getById(int id, ModelCallback<T> callback) {
@@ -387,7 +387,7 @@ public abstract class Repository<T extends Model<T>> {
 
 	/**
 	 * Get a record by its id.
-	 * @param id the id of the requested record, msut be positive
+	 * @param id the id of the requested record, must be positive
 	 * @param callback the callback executed on success
 	 * @param failCallback the callback executed on failure, nullable
 	 * @throws IllegalArgumentException thrown if <code>id</code> isn't positive

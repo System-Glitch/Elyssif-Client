@@ -92,7 +92,6 @@ public final class SendController extends EncryptionController implements Lockab
 				public void run() {
 					Logger.getGlobal().info(fileModel.getId().asString().get());
 					Logger.getGlobal().info(fileModel.getPublicKey().get());
-					resetForm();
 
 					playAnimation();
 				}
