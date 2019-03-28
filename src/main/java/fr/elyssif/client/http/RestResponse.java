@@ -49,9 +49,6 @@ public class RestResponse {
 		this.response = response;
 		status = response.getStatusLine().getStatusCode();
 
-		if(status == 404)
-			Logger.getGlobal().log(Level.SEVERE, "Requested URL returned 404", new NotFoundException("Request returned status 404 NOT FOUND"));
-
 		if(status != 204) {
 			try {
 				raw = EntityUtils.toString(response.getEntity());
@@ -85,6 +82,14 @@ public class RestResponse {
 	 */
 	public boolean isSuccessful() {
 		return status < 300 && status != -1;
+	}
+
+	/**
+	 * Get if the request is invalid.<br>
+	 * @return true if the request status is an error 4xx
+	 */
+	public boolean isInvalid() {
+		return status >= 400 && status < 500;
 	}
 
 	/**
