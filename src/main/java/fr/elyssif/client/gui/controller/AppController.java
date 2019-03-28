@@ -94,6 +94,9 @@ public final class AppController extends FadeController implements Lockable {
 
 	@FXML
 	private void receiveClicked() {
+		Controller receiveViewController = containerController.getController("receive");
+		sideMenuController.getCurrentController().showNext(receiveViewController, true);
+		sideMenuController.setCurrentController(receiveViewController);
 		drawer.close();
 	}
 

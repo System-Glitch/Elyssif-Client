@@ -11,6 +11,7 @@ public final class AppContainerController extends ContainerController {
 
 	@FXML private HomeController homeController;
 	@FXML private SendController sendController;
+	@FXML private ReceiveController receiveController;
 
 	public void initialize(URL location, ResourceBundle resources) {
 		if(Config.getInstance().isVerbose())

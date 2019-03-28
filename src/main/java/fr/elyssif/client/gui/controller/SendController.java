@@ -1,16 +1,11 @@
 package fr.elyssif.client.gui.controller;
 
-import java.awt.Desktop;
-import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Random;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.validation.RequiredFieldValidator;
 
@@ -19,37 +14,22 @@ import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.model.File;
 import fr.elyssif.client.gui.model.ModelCallback;
 import fr.elyssif.client.gui.model.User;
-import fr.elyssif.client.gui.repository.FileRepository;
 import fr.elyssif.client.gui.repository.UserRepository;
-import fr.elyssif.client.gui.validation.ServerValidator;
 import fr.elyssif.client.gui.validation.StringMaxLengthValidator;
 import fr.elyssif.client.gui.validation.StringMinLengthValidator;
-import fr.elyssif.client.gui.view.ImageSlideTransition;
 import fr.elyssif.client.gui.view.LookupModal;
-import fr.elyssif.client.gui.view.TadaAnimation;
 import fr.elyssif.client.gui.view.UserListFactory;
-import fr.elyssif.client.gui.view.ViewUtils;
 import fr.elyssif.client.http.FailCallback;
 import fr.elyssif.client.http.FormCallback;
-import javafx.animation.FadeTransition;
-import javafx.application.Platform;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import javafx.util.Duration;
 
 /**
  * Controller for the "send file" view
  * @author Jérémy LAMBERT
  *
  */
-public final class SendController extends FadeController implements Lockable, Validatable {
-
-	@FXML private ImageView image;
-	@FXML private JFXSpinner spinner;
+public final class SendController extends EncryptionController implements Lockable, Validatable {
 
 	@FXML private JFXTextField nameInput;
 	@FXML private JFXTextField fileInput;
@@ -57,41 +37,20 @@ public final class SendController extends FadeController implements Lockable, Va
 
 	@FXML private JFXButton browseButton;
 	@FXML private JFXButton recipientButton;
-	@FXML private JFXButton encryptButton;
-
-	@FXML private VBox formContainer;
 
 	private java.io.File selectedFile;
-	private java.io.File destinationFile;
 	private User selectedUser;
-	private FileRepository fileRepository;
-
-	private HashMap<String, ServerValidator> serverValidators;
-	private SimpleBooleanProperty disableProperty;
-
-	private double progress = 0;
 
 	public void initialize(URL location, ResourceBundle resources) {
 		if(Config.getInstance().isVerbose())
 			Logger.getGlobal().info("Loading send controller.");
 		super.initialize(location, resources);
-
-		disableProperty = new SimpleBooleanProperty(false);
-		serverValidators = new HashMap<String, ServerValidator>();
-		bindControls();
-		setupValidators();
-
-		Platform.runLater(() -> fileRepository = new FileRepository());
-	}
-
-	protected java.io.File getSelectedFile() {
-		return selectedFile;
 	}
 
 	@FXML
 	public void browseClicked() {
 		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle(getBundle().getString("browse"));
+		fileChooser.setTitle(getBundle().getString("browse-encrypt"));
 		java.io.File file = fileChooser.showOpenDialog(getPane().getScene().getWindow());
 		if(file != null && file.isFile()) {
 			fileInput.setText(file.getName());
@@ -115,138 +74,61 @@ public final class SendController extends FadeController implements Lockable, Va
 		}
 	}
 
-	@FXML
-	public void encryptClicked() {
-		if(validateAll()) {
-			FileChooser fileChooser = new FileChooser();
-			fileChooser.setTitle(getBundle().getString("save"));
-			destinationFile = fileChooser.showSaveDialog(getPane().getScene().getWindow());
-			if(destinationFile != null) {
-				setLocked(true);
-				File fileModel = new File();
-				fileModel.setName(nameInput.getText());
-				fileModel.setRecipientId(selectedUser.getId().get());
-				fileModel.setHash("b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9"); // TODO hash
-				fileRepository.store(fileModel, new ModelCallback<File>() {
 
-					public void run() {
-						Logger.getGlobal().info(fileModel.getId().asString().get());
-						Logger.getGlobal().info(fileModel.getPublicKey().get());
-						resetForm();
+	public void onButtonClicked() {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle(getBundle().getString("save-encrypt"));
+		setDestinationFile(fileChooser.showSaveDialog(getPane().getScene().getWindow()));
+		if(getDestinationFile() != null) {
+			setLocked(true);
+			File fileModel = new File();
+			fileModel.setName(nameInput.getText());
+			fileModel.setRecipientId(selectedUser.getId().get());
+			fileModel.setHash("b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9"); // TODO hash
+			getFileRepository().store(fileModel, new ModelCallback<File>() {
 
-						playEncryptAnimation();
-					}
+				public void run() {
+					Logger.getGlobal().info(fileModel.getId().asString().get());
+					Logger.getGlobal().info(fileModel.getPublicKey().get());
+					resetForm();
 
-				}, new FormCallback() {
-
-					public void run() {
-						handleValidationErrors(getValidationErrors());
-						setLocked(false);
-					}
-
-				}, new FailCallback() {
-
-					public void run() {
-						SnackbarController.getInstance().message(getFullMessage(), SnackbarMessageType.ERROR, 4000);
-						setLocked(false);
-					}
-
-				});
-			}
-		}
-	}
-
-	private void playEncryptAnimation() {
-		spinner.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
-		FadeTransition ft = ViewUtils.createFadeOutTransition(formContainer, Duration.millis(750));
-		FadeTransition ft2 = ViewUtils.createFadeOutTransition(encryptButton, Duration.millis(750));
-		FadeTransition ft3 = ViewUtils.createFadeInTransition(spinner, Duration.millis(750));
-		ft3.setDelay(Duration.millis(1000));
-
-		ImageSlideTransition slide = new ImageSlideTransition(image, getFadePane().getHeight(), Duration.millis(750));
-		spinner.toFront();
-		ft.play();
-		ft2.play();
-		ft3.play();
-		slide.play();
-
-		slide.setOnFinished(e -> {
-			resetForm();
-			Thread t = new Thread(() -> {
-				// TODO encrypt
-				Random random = new Random();
-				while(progress < 1) {
-					progress += random.nextDouble() / 100;
-
-					Platform.runLater(() -> spinner.setProgress(progress));
-
-					try {
-						Thread.sleep(25);
-					} catch (InterruptedException ie) {
-						ie.printStackTrace();
-					}
+					playAnimation();
 				}
 
-				Platform.runLater(() -> {
-					TadaAnimation tada = new TadaAnimation(image);
-					tada.play();
-					tada.setOnFinished(e2 -> {
+			}, new FormCallback() {
 
-						openFile();
+				public void run() {
+					handleValidationErrors(getValidationErrors());
+					setLocked(false);
+				}
 
-						ft.setRate(-1);
-						ft2.setRate(-1);
-						ft3.setRate(-1);
-						slide.revert();
+			}, new FailCallback() {
 
-						ft3.setDelay(Duration.millis(0));
+				public void run() {
+					SnackbarController.getInstance().message(getFullMessage(), SnackbarMessageType.ERROR, 4000);
+					setLocked(false);
+				}
 
-						ft.setDelay(Duration.millis(1000));
-						ft2.setDelay(Duration.millis(1000));
-						slide.setDelay(Duration.millis(1000));
-
-						ft.play();
-						ft2.play();
-						ft3.play();
-						slide.play();
-						slide.setOnFinished(e3 -> {
-							spinner.toBack();
-							progress = 0;
-							setLocked(false);
-						});
-					});
-				});
 			});
-			t.start();
-		});
-	}
-
-	private void openFile() {
-		SnackbarController.getInstance().message(getBundle().getString("encrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
-		Desktop desktop = Desktop.getDesktop();
-		try {
-			desktop.open(destinationFile.getParentFile());
-		} catch (IOException e) {
-			Logger.getGlobal().log(Level.SEVERE, "Couldn't open file explorer.", e);
 		}
 	}
 
 	@Override
-	public void setLocked(boolean locked) {
-		disableProperty.set(locked);
-		MainController.getInstance().setCanExit(!locked);
-		((Lockable) MainController.getInstance().getController("app")).setLocked(locked);
-	}
+	protected final boolean process() {
+		// TODO encrypt
+		Random random = new Random();
+		while(getProgress() < 1) {
+			setProgress(getProgress() + random.nextDouble() / 100);
+			try {
+				Thread.sleep(25);
+			} catch (InterruptedException ie) {
+				ie.printStackTrace();
+				return false;
+			}
+		}
 
-	@Override
-	public void bindControls() {
-		formContainer.disableProperty().bind(disableProperty);
-		encryptButton.disableProperty().bind(disableProperty);
-	}
-
-	@Override
-	public HashMap<String, ServerValidator> getServerValidators() {
-		return serverValidators;
+		SnackbarController.getInstance().message(getBundle().getString("encrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
+		return true;
 	}
 
 	@Override

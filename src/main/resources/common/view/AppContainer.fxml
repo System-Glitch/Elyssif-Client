@@ -5,6 +5,7 @@
 <StackPane fx:id="pane" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.AppContainerController">
 	<children>
 		<fx:include fx:id="send" source="SendView.fxml" />
+		<fx:include fx:id="receive" source="ReceiveView.fxml" />
 		<fx:include fx:id="home" source="HomeView.fxml" />
 	</children>
 </StackPane>
