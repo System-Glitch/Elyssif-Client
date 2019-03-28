@@ -57,7 +57,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 	}
 
 	@Override
-	protected final boolean process() {
+	protected final void process(Runnable successCallback, Runnable failureCallback) {
 		// TODO encrypt
 		Random random = new Random();
 		while(getProgress() < 1) {
@@ -66,12 +66,12 @@ public final class ReceiveController extends EncryptionController implements Loc
 				Thread.sleep(25);
 			} catch (InterruptedException ie) {
 				ie.printStackTrace();
-				return false;
+				failureCallback.run();
 			}
 		}
 
 		SnackbarController.getInstance().message(getBundle().getString("decrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
-		return true;
+		successCallback.run();
 	}
 
 	@Override

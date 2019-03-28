@@ -21,6 +21,7 @@ import fr.elyssif.client.gui.view.LookupModal;
 import fr.elyssif.client.gui.view.UserListFactory;
 import fr.elyssif.client.http.FailCallback;
 import fr.elyssif.client.http.FormCallback;
+import fr.elyssif.client.http.RestCallback;
 import javafx.fxml.FXML;
 import javafx.stage.FileChooser;
 
@@ -40,6 +41,7 @@ public final class SendController extends EncryptionController implements Lockab
 
 	private java.io.File selectedFile;
 	private User selectedUser;
+	private File fileModel;
 
 	public void initialize(URL location, ResourceBundle resources) {
 		if(Config.getInstance().isVerbose())
@@ -81,7 +83,7 @@ public final class SendController extends EncryptionController implements Lockab
 		setDestinationFile(fileChooser.showSaveDialog(getPane().getScene().getWindow()));
 		if(getDestinationFile() != null) {
 			setLocked(true);
-			File fileModel = new File();
+			fileModel = new File();
 			fileModel.setName(nameInput.getText());
 			fileModel.setRecipientId(selectedUser.getId().get());
 			fileModel.setHash("b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9"); // TODO hash
@@ -100,6 +102,7 @@ public final class SendController extends EncryptionController implements Lockab
 				public void run() {
 					handleValidationErrors(getValidationErrors());
 					setLocked(false);
+					fileModel = null;
 				}
 
 			}, new FailCallback() {
@@ -107,6 +110,7 @@ public final class SendController extends EncryptionController implements Lockab
 				public void run() {
 					SnackbarController.getInstance().message(getFullMessage(), SnackbarMessageType.ERROR, 4000);
 					setLocked(false);
+					fileModel = null;
 				}
 
 			});
@@ -114,7 +118,7 @@ public final class SendController extends EncryptionController implements Lockab
 	}
 
 	@Override
-	protected final boolean process() {
+	protected final void process(Runnable successCallback, Runnable failureCallback) {
 		// TODO encrypt
 		Random random = new Random();
 		while(getProgress() < 1) {
@@ -123,12 +127,31 @@ public final class SendController extends EncryptionController implements Lockab
 				Thread.sleep(25);
 			} catch (InterruptedException ie) {
 				ie.printStackTrace();
-				return false;
 			}
 		}
 
-		SnackbarController.getInstance().message(getBundle().getString("encrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
-		return true;
+		fileModel.setHashCiphered("03454af1793ba7be41f7789f9c1cbaebbdf7d967f8e45a0f747f24bc1c84108d"); // TODO hash ciphered
+		getFileRepository().cipher(fileModel, new RestCallback() {
+
+			public void run() {
+				SnackbarController.getInstance().message(getBundle().getString("encrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
+				successCallback.run();
+				fileModel = null;
+			}
+
+		}, new FormCallback() {
+			public void run() {
+				SnackbarController.getInstance().message(String.join("\n", getValidationErrors().get("ciphered_hash")), SnackbarMessageType.ERROR, 4000);
+				failureCallback.run();
+				fileModel = null;
+			}
+		}, new FailCallback() {
+			public void run() {
+				SnackbarController.getInstance().message(getFullMessage(), SnackbarMessageType.ERROR, 4000);
+				failureCallback.run();
+				fileModel = null;
+			}
+		});
 	}
 
 	@Override

@@ -350,7 +350,7 @@ public abstract class Repository<T extends Model<T>> {
 
 				if(response.getStatus() == 401 && authenticator != null) { // Unauthenticated
 					authenticator.logout(new LogoutCallback());
-				} else if(!response.isSuccessful()) {
+				} else if(!response.isSuccessful() && response.getStatus() != 422) {
 					Logger.getGlobal().warning("Repository request failed: " + method.name() + " " + response.getStatus() + " " + failCallback.getMessage());
 				}
 			}
