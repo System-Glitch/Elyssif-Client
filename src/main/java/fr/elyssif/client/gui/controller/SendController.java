@@ -49,8 +49,14 @@ public final class SendController extends EncryptionController implements Lockab
 		super.initialize(location, resources);
 	}
 
+	@Override
+	public void show(boolean transition, Controller backController) {
+		super.show(transition, backController);
+		resetForm();
+	}
+
 	@FXML
-	public void browseClicked() {
+	private void browseClicked() {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle(getBundle().getString("browse-encrypt"));
 		java.io.File file = fileChooser.showOpenDialog(getPane().getScene().getWindow());
@@ -62,7 +68,7 @@ public final class SendController extends EncryptionController implements Lockab
 	}
 
 	@FXML
-	public void recipientClicked() {
+	private void recipientClicked() {
 		LookupModal<User> modal = new LookupModal<User>(new UserRepository());
 		modal.setTitle("recipient");
 		modal.setHeader("lookup-recipient");
@@ -77,7 +83,7 @@ public final class SendController extends EncryptionController implements Lockab
 	}
 
 
-	public void onButtonClicked() {
+	protected void onButtonClicked() {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle(getBundle().getString("save-encrypt"));
 		setDestinationFile(fileChooser.showSaveDialog(getPane().getScene().getWindow()));

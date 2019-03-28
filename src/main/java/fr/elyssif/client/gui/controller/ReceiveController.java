@@ -11,10 +11,17 @@ import com.jfoenix.validation.RequiredFieldValidator;
 
 import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
+import fr.elyssif.client.gui.model.File;
+import fr.elyssif.client.gui.model.ModelCallback;
+import fr.elyssif.client.gui.model.User;
+import fr.elyssif.client.gui.view.ViewUtils;
 import fr.elyssif.client.http.FailCallback;
-import fr.elyssif.client.http.JsonCallback;
+import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
 
 /**
  * Controller for the "receive file" view
@@ -26,8 +33,16 @@ public final class ReceiveController extends EncryptionController implements Loc
 	@FXML private JFXTextField fileInput;
 	@FXML private JFXButton browseButton;
 
+	@FXML private VBox form;
+	@FXML private VBox foundContainer;
+
+	@FXML private Label fileNameLabel;
+	@FXML private Label fromLabel;
+	@FXML private JFXButton saveButton;
+	@FXML private JFXButton cancelButton;
+
 	private java.io.File selectedFile;
-	private String privateKey;
+	private File fileModel;
 
 	public void initialize(URL location, ResourceBundle resources) {
 		if(Config.getInstance().isVerbose())
@@ -35,8 +50,20 @@ public final class ReceiveController extends EncryptionController implements Loc
 		super.initialize(location, resources);
 	}
 
+	@Override
+	public void show(boolean transition, Controller backController) {
+		super.show(transition, backController);
+		cancelButton.setDisable(true);
+		saveButton.setDisable(true);
+		resetForm();
+		form.toFront();
+		form.setDisable(false);
+		form.setOpacity(1);
+		foundContainer.setOpacity(0);
+	}
+
 	@FXML
-	public void browseClicked() {
+	private void browseClicked() {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle(getBundle().getString("browse-decrypt"));
 		java.io.File file = fileChooser.showOpenDialog(getPane().getScene().getWindow());
@@ -48,20 +75,29 @@ public final class ReceiveController extends EncryptionController implements Loc
 	}
 
 	@FXML
-	public void onButtonClicked() {
-		setLocked(true);
+	private void cancelClicked() {
+		showForm();
+	}
 
-		getFileRepository().fetch("03454af1793ba7be41f7789f9c1cbaebbdf7d967f8e45a0f747f24bc1c84108d", new JsonCallback() {
+	@FXML
+	private void saveClicked() {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle(getBundle().getString("save-decrypt"));
+		setDestinationFile(fileChooser.showSaveDialog(getPane().getScene().getWindow()));
+		if(getDestinationFile() != null) {
+			setLocked(true);
+			showForm();
+			playAnimation();
+		}
+	}
+
+	protected void onButtonClicked() {
+		form.setDisable(true);
+		// TODO use real hash
+		getFileRepository().fetch("03454af1793ba7be41f7789f9c1cbaebbdf7d967f8e45a0f747f24bc1c84108d", new ModelCallback<File>() {
 			public void run() {
-				privateKey = getElement().getAsString();
-
-				// TODO show popup
-				FileChooser fileChooser = new FileChooser();
-				fileChooser.setTitle(getBundle().getString("save-decrypt"));
-				setDestinationFile(fileChooser.showSaveDialog(getPane().getScene().getWindow()));
-				if(getDestinationFile() != null) {
-					playAnimation();
-				}
+				fileModel = getModel();
+				showFileFound();
 			}
 		}, new FailCallback() {
 			public void run() {
@@ -70,9 +106,50 @@ public final class ReceiveController extends EncryptionController implements Loc
 				} else {
 					SnackbarController.getInstance().message(getBundle().getString(getMessage()), SnackbarMessageType.ERROR, 4000);					
 				}
-				setLocked(false);
+				form.setDisable(false);
 			}
 		});
+	}
+
+	private void updateFileFound() {
+		fileNameLabel.setText(fileModel.getName().get());
+
+		User sender = fileModel.getSender().get();
+		fromLabel.setText(sender.getName().get() + "\n" + sender.getEmail().get());
+	}
+
+	private void showFileFound() {
+		updateFileFound();
+		FadeTransition ft = ViewUtils.createFadeOutTransition(form, Duration.millis(500));
+		FadeTransition ft2 = ViewUtils.createFadeInTransition(foundContainer, Duration.millis(500));
+
+		ft.setOnFinished(e -> {
+			foundContainer.toFront();
+			cancelButton.setDisable(false);
+			saveButton.setDisable(false);
+			ft2.play();
+		});
+
+		ft.play();
+	}
+
+	private void showForm() {
+		if(!saveButton.isDisable()) {
+			cancelButton.setDisable(true);
+			saveButton.setDisable(true);
+			resetForm();
+
+			FadeTransition ft = ViewUtils.createFadeOutTransition(foundContainer, Duration.millis(500));
+			FadeTransition ft2 = ViewUtils.createFadeInTransition(form, Duration.millis(500));
+
+			ft.setOnFinished(e -> {
+				form.toFront();
+				form.setDisable(false);
+				ft2.play();
+			});
+
+			ft.play();
+		}
 	}
 
 	@Override
@@ -121,7 +198,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 	public void resetForm() {
 		fileInput.setText(null);
 		selectedFile = null;
-		privateKey = null;
+		fileModel = null;
 	}
 
 }

@@ -103,7 +103,7 @@ public abstract class Repository<T extends Model<T>> {
 	/**
 	 * Create an instance of the reference model from generic type.
 	 */
-	private final T instantiateReferenceModel() {
+	protected final T instantiateReferenceModel() {
 		try {
 			ParameterizedType superClass = (ParameterizedType) getClass().getGenericSuperclass();
 

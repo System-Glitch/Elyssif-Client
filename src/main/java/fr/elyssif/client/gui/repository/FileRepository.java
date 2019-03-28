@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 
 import fr.elyssif.client.gui.model.File;
+import fr.elyssif.client.gui.model.ModelCallback;
 import fr.elyssif.client.http.FailCallback;
 import fr.elyssif.client.http.FormCallback;
 import fr.elyssif.client.http.HttpMethod;
@@ -26,7 +27,7 @@ public class FileRepository extends Repository<File> {
 	 * @throws IllegalArgumentException thrown if <code>hashCiphered</code> is null
 	 * or isn't 64 characters long
 	 */
-	public void fetch(String hashCiphered, JsonCallback callback, FailCallback failCallback) {
+	public void fetch(String hashCiphered, ModelCallback<File> callback, FailCallback failCallback) {
 		if(hashCiphered == null || hashCiphered.length() != 64) {
 			throw new IllegalArgumentException("Hash ciphered must be 64 characaters.");
 		}
@@ -36,12 +37,16 @@ public class FileRepository extends Repository<File> {
 		request("fetch", HttpMethod.GET, params, new JsonCallback() {
 
 			public void run() {
-				if(getElement().isJsonPrimitive()) {
-					callback.setResponse(getResponse());
-					callback.setElement(getElement());
-					callback.run();
-				} else {
-					handleMalformedResponse(getResponse(), failCallback, "JSON primitive");
+				File model = instantiateReferenceModel();
+				if(model != null) {
+					if(getElement().isJsonObject()) {
+						model.loadFromJsonObject(getElement().getAsJsonObject());
+						callback.setResponse(getResponse());
+						callback.setModel(model);
+						callback.run();
+					} else {
+						handleMalformedResponse(getResponse(), failCallback, "JSON object");
+					}
 				}
 			}
 

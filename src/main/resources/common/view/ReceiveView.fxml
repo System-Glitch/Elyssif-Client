@@ -3,8 +3,11 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXSpinner?>
 <?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
@@ -12,10 +15,44 @@
 
 <FlowPane fx:id="pane" alignment="CENTER" columnHalignment="CENTER" styleClass="white" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.ReceiveController">
    <children>
-      <StackPane>
+      <StackPane fx:id="fadePane">
          <children>
             <JFXSpinner fx:id="spinner" opacity="0.0" />
-            <VBox fx:id="fadePane" alignment="TOP_CENTER" spacing="40.0">
+            <VBox fx:id="foundContainer" alignment="TOP_CENTER" opacity="0.0" spacing="15.0">
+               <children>
+                  <Label fx:id="fileNameLabel" styleClass="title" text="%file-found" />
+                  <ImageView fitHeight="125.0" fitWidth="125.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@img/folder-file.png" />
+                     </image>
+                  </ImageView>
+                  <VBox spacing="5.0">
+                     <children>
+                        <Label style="-fx-font-weight: bold;" text="%from" />
+                        <Label fx:id="fromLabel" text="username" />
+                     </children>
+                  </VBox>
+                  <BorderPane>
+                     <right>
+                        <JFXButton fx:id="saveButton" disable="true" onAction="#saveClicked" styleClass="green-A700" text="%save" BorderPane.alignment="CENTER">
+                           <graphic>
+                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@img/save.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic></JFXButton>
+                     </right>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                     <left>
+                        <JFXButton fx:id="cancelButton" disable="true" maxHeight="1.7976931348623157E308" onAction="#cancelClicked" text="%cancel" BorderPane.alignment="CENTER" />
+                     </left>
+                  </BorderPane>
+               </children>
+            </VBox>
+            <VBox fx:id="form" alignment="TOP_CENTER" spacing="40.0">
                <children>
                   <ImageView fx:id="image" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                      <image>

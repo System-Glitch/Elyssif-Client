@@ -22,6 +22,9 @@ public class File extends Model<File> {
 
 	private SimpleIntegerProperty senderId;
 	private SimpleIntegerProperty recipientId;
+	
+	private SimpleObjectProperty<User> sender;
+	private SimpleObjectProperty<User> recipient;
 
 	/**
 	 * Create a new instance of File with a zero ID.
@@ -46,6 +49,8 @@ public class File extends Model<File> {
 		price        = new SimpleDoubleProperty();
 		senderId     = new SimpleIntegerProperty();
 		recipientId  = new SimpleIntegerProperty();
+		sender       = new SimpleObjectProperty<User>();
+		recipient    = new SimpleObjectProperty<User>();
 	}
 
 	/**
@@ -136,6 +141,22 @@ public class File extends Model<File> {
 
 	public final void setRecipientId(int recipientId) {
 		this.recipientId.set(recipientId);
+	}
+
+	public final SimpleObjectProperty<User> getSender() {
+		return sender;
+	}
+
+	public final void setSender(User sender) {
+		this.sender.set(sender);
+	}
+
+	public final SimpleObjectProperty<User> getRecipient() {
+		return recipient;
+	}
+
+	public final void setRecipient(User recipient) {
+		this.recipient.set(recipient);
 	}
 
 }
