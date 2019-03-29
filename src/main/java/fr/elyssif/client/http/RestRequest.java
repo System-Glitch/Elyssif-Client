@@ -244,10 +244,11 @@ public class RestRequest {
 
 			//Parameters
 			request.setURI(new URI(url + urlEncodeParameters()));
-			if(HttpEntityEnclosingRequestBase.class.isAssignableFrom(method.getClass()))
+			if(HttpEntityEnclosingRequestBase.class.isAssignableFrom(request.getClass())) {
 				((HttpEntityEnclosingRequestBase) request).setEntity(serializeParameters());
-			else if(method.equals(HttpMethod.GET) && parameters.size() > 0)
+			} else if(method.equals(HttpMethod.GET) && parameters.size() > 0) {
 				Logger.getGlobal().warning("GET request has " + parameters.size() + " non-URL parameters.");
+			}
 
 			return request;
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
