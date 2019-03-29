@@ -6,6 +6,8 @@ import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXDialog;
+import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.validation.RequiredFieldValidator;
 
@@ -16,10 +18,14 @@ import fr.elyssif.client.gui.model.ModelCallback;
 import fr.elyssif.client.gui.model.User;
 import fr.elyssif.client.gui.view.ViewUtils;
 import fr.elyssif.client.http.FailCallback;
+import fr.elyssif.client.http.RestCallback;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
@@ -60,6 +66,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 		form.setDisable(false);
 		form.setOpacity(1);
 		foundContainer.setOpacity(0);
+		fileModel = null;
 	}
 
 	@FXML
@@ -166,8 +173,64 @@ public final class ReceiveController extends EncryptionController implements Loc
 			}
 		}
 
-		SnackbarController.getInstance().message(getBundle().getString("decrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
-		successCallback.run();
+		fileModel.setHash("b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde8"); // TODO real hash
+		fileModel.setHashCiphered("03454af1793ba7be41f7789f9c1cbaebbdf7d967f8e45a0f747f24bc1c84108d"); // TODO real ciphered hash
+		getFileRepository().check(fileModel, new RestCallback() {
+			public void run() {
+				SnackbarController.getInstance().message(getBundle().getString("decrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
+				successCallback.run();
+				fileModel = null;
+			}
+		}, new FailCallback() {
+			public void run() {
+				if(getStatus() == 404) {
+					openFailDialog(successCallback, failureCallback);
+				} else {
+					SnackbarController.getInstance().message(getStatus() + ": " + getBundle().getString("server-error").replace("\\n", "\n"), SnackbarMessageType.ERROR, 4000);
+					failureCallback.run();
+					fileModel = null;
+				}
+			}
+		});
+	}
+
+	private void openFailDialog(Runnable successCallback, Runnable failureCallback) {
+		final JFXDialog dialog = new JFXDialog();
+		dialog.setDialogContainer((StackPane) MainController.getInstance().getPane());
+
+		JFXDialogLayout content = new JFXDialogLayout();
+		Label header = new Label(getBundle().getString("file-check-fail-header"), new ImageView("view/img/warning.png"));
+		header.getStyleClass().add("text-white");
+		content.setHeading(header);
+		content.setBody(new Text(getBundle().getString("file-check-fail").replace("\\n", "\n")));
+		content.getStyleClass().add("dialog-warning");
+
+		JFXButton acceptButton = new JFXButton(getBundle().getString("yes"));
+		acceptButton.getStyleClass().add("green-A700");
+		acceptButton.setOnAction(e -> {
+			fileModel = null;
+			dialog.close();
+			successCallback.run();
+		});
+		ImageView image = new ImageView("view/img/save.png");
+		image.setFitWidth(24);
+		image.setFitHeight(24);
+		acceptButton.setGraphic(image);
+
+		JFXButton cancelButton = new JFXButton(getBundle().getString("cancel"));
+		cancelButton.setMaxHeight(Double.MAX_VALUE);
+		cancelButton.setOnAction(e -> {
+			fileModel = null;
+			dialog.close();
+			failureCallback.run();
+		});
+
+		content.setActions(cancelButton, acceptButton);
+
+		dialog.setContent(content);
+		dialog.setTransitionType(JFXDialog.DialogTransition.CENTER);
+		dialog.setOverlayClose(false);
+		dialog.show();
 	}
 
 	@Override
@@ -198,7 +261,6 @@ public final class ReceiveController extends EncryptionController implements Loc
 	public void resetForm() {
 		fileInput.setText(null);
 		selectedFile = null;
-		fileModel = null;
 	}
 
 }

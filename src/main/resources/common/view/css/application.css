@@ -80,6 +80,18 @@
 	-fx-font-size: 50px;
 }
 
+.text-white {
+	-fx-text-fill: white;
+}
+
+.dialog-warning .jfx-layout-heading {
+	-fx-background-color: -orange-400;
+}
+
+.dialog-warning .jfx-layout-body {
+	-fx-padding: 24 24 24 24;
+}
+
 /* ------------------------------ */
 /* NAVIGATION                     */
 /* ------------------------------ */
