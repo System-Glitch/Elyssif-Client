@@ -5,8 +5,6 @@ import com.jfoenix.controls.JFXListView;
 
 import fr.elyssif.client.gui.model.User;
 import javafx.animation.FadeTransition;
-import javafx.animation.ScaleTransition;
-import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.image.Image;
@@ -52,8 +50,13 @@ public class UserListFactory implements ListFactory<User> {
 					super.updateItem(user, empty);
 
 					this.setOpacity(0);
-					FadeTransition ft = ViewUtils.createFadeInTransition(this, Duration.millis(500));
+					FadeTransition ft = ViewUtils.createFadeInTransition(this, Duration.millis(800));
 					ft.play();
+
+					this.setScaleX(0);
+					this.setScaleY(0);
+					CenterTransition animation = new CenterTransition(this);
+					animation.play();
 
 					if (empty) {
 						setText(null);
@@ -69,5 +72,4 @@ public class UserListFactory implements ListFactory<User> {
 			return cell;
 		});
 	}
-
 }
