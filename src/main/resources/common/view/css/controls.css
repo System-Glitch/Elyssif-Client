@@ -4,6 +4,7 @@
 
 .jfx-button {
 	-fx-cursor: hand;
+	-fx-font-size: 14px;
 }
 
 .welcome-btn {
@@ -26,6 +27,7 @@
 .jfx-text-field, .jfx-password-field {
 	-jfx-focus-color: -blue-700;
 	-jfx-unfocus-color: -blue-grey-400;
+	-fx-font-size: 13px;
 }
 
 .jfx-text-field:error, .jfx-password-field:error {
@@ -35,6 +37,7 @@
 .jfx-text-field:error .label, .jfx-password-field:error .label {
 	-fx-font-weight: BOLD;
 	-fx-font-fill: -red-700;
+	-fx-font-size: 12px;
 }
 
 /* ------------------------------ */

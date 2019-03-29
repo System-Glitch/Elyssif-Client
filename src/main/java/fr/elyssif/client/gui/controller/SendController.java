@@ -54,6 +54,7 @@ public final class SendController extends EncryptionController implements Lockab
 	public void show(boolean transition, Controller backController) {
 		super.show(transition, backController);
 		resetForm();
+		resetValidation();
 	}
 
 	@FXML

@@ -77,7 +77,7 @@
 	-fx-font-family: 'Roboto Light';
 	-fx-text-alignment: center;
 	-fx-text-fill: -blue-grey-50;
-	-fx-font-size: 50px;
+	-fx-font-size: 50px !important;
 }
 
 .text-white {
@@ -90,6 +90,10 @@
 
 .dialog-warning .jfx-layout-body {
 	-fx-padding: 24 24 24 24;
+}
+
+.text-md {
+	-fx-font-size: 14px;
 }
 
 /* ------------------------------ */

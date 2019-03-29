@@ -25,7 +25,6 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
@@ -62,6 +61,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 		cancelButton.setDisable(true);
 		saveButton.setDisable(true);
 		resetForm();
+		resetValidation();
 		form.toFront();
 		form.setDisable(false);
 		form.setOpacity(1);
@@ -202,7 +202,9 @@ public final class ReceiveController extends EncryptionController implements Loc
 		Label header = new Label(getBundle().getString("file-check-fail-header"), new ImageView("view/img/warning.png"));
 		header.getStyleClass().add("text-white");
 		content.setHeading(header);
-		content.setBody(new Text(getBundle().getString("file-check-fail").replace("\\n", "\n")));
+		Label body = new Label(getBundle().getString("file-check-fail").replace("\\n", "\n"));
+		body.getStyleClass().add("text-md");
+		content.setBody(body);
 		content.getStyleClass().add("dialog-warning");
 
 		JFXButton acceptButton = new JFXButton(getBundle().getString("yes"));

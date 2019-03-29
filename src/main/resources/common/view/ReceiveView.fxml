@@ -28,8 +28,8 @@
                   </ImageView>
                   <VBox spacing="5.0">
                      <children>
-                        <Label style="-fx-font-weight: bold;" text="%from" />
-                        <Label fx:id="fromLabel" text="username" />
+                        <Label style="-fx-font-weight: bold;" styleClass="text-md" text="%from" />
+                        <Label fx:id="fromLabel" styleClass="text-md" text="username" />
                      </children>
                   </VBox>
                   <BorderPane>
