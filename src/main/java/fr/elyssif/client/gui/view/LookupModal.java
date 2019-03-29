@@ -103,6 +103,7 @@ public class LookupModal<T extends Model<T>> {
 				callback.run();
 			});
 
+			dialog.setOnDialogOpened(e -> controller.focusInput());
 			dialog.show();
 
 		} catch (IOException e) {

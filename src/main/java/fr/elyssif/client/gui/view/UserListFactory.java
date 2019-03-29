@@ -4,11 +4,15 @@ import com.jfoenix.controls.JFXListCell;
 import com.jfoenix.controls.JFXListView;
 
 import fr.elyssif.client.gui.model.User;
+import javafx.animation.FadeTransition;
+import javafx.animation.ScaleTransition;
+import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.util.Duration;
 
 /**
  * List factory for users.
@@ -26,7 +30,7 @@ public class UserListFactory implements ListFactory<User> {
 	public void make(JFXListView<?> listView, ObservableList<User> list) {
 		make(listView, list, null);
 	}
-	
+
 	/**
 	 * Setup a table to be a user table. Sets the columns, formatting and coloring.
 	 * @param table the table to prepare
@@ -46,6 +50,11 @@ public class UserListFactory implements ListFactory<User> {
 				@Override
 				public void updateItem(User user, boolean empty) {
 					super.updateItem(user, empty);
+
+					this.setOpacity(0);
+					FadeTransition ft = ViewUtils.createFadeInTransition(this, Duration.millis(500));
+					ft.play();
+
 					if (empty) {
 						setText(null);
 						setGraphic(null);
@@ -55,7 +64,6 @@ public class UserListFactory implements ListFactory<User> {
 					}
 				}
 			};
-
 			cell.setOnMouseClicked(onMouseClicked);
 
 			return cell;

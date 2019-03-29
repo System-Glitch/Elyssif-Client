@@ -48,6 +48,9 @@ public final class LookupController extends Controller {
 
 		list = FXCollections.observableArrayList();
 		show(false);
+	}
+
+	public void focusInput() {
 		Platform.runLater(() -> input.requestFocus());
 	}
 
