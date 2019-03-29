@@ -23,6 +23,7 @@ import fr.elyssif.client.http.FailCallback;
 import fr.elyssif.client.http.FormCallback;
 import fr.elyssif.client.http.RestCallback;
 import javafx.fxml.FXML;
+import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 
 /**
@@ -74,12 +75,19 @@ public final class SendController extends EncryptionController implements Lockab
 		modal.setHeader("lookup-recipient");
 		modal.setTableFactory(new UserListFactory());
 
-		User user = modal.showDialog(getPane().getScene().getWindow());
-		if(user != null) {
-			selectedUser = user;
-			recipientInput.setText(selectedUser.getName().get());
-			recipientInput.validate();
-		}
+		modal.showDialog((StackPane) MainController.getInstance().getPane(), new ModelCallback<User>() {
+
+			@Override
+			public void run() {
+				User user = getModel();
+				if(user != null) {
+					selectedUser = user;
+					recipientInput.setText(selectedUser.getName().get());
+					recipientInput.validate();
+				}
+			}
+
+		});
 	}
 
 

@@ -30,7 +30,10 @@
             <JFXTextField fx:id="input" onKeyTyped="#search" prefWidth="200.0" promptText="Search..." />
          </children>
       </HBox>
-      <JFXListView fx:id="results" maxHeight="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
+      <JFXListView fx:id="results" maxHeight="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+         <VBox.margin>
+            <Insets left="-24.0" right="-24.0" />
+         </VBox.margin></JFXListView>
       <BorderPane>
          <right>
             <JFXButton onAction="#select" styleClass="green-A700" text="%select" BorderPane.alignment="CENTER" />
@@ -41,6 +44,6 @@
       </BorderPane>
    </children>
    <padding>
-      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+      <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
    </padding>
 </VBox>

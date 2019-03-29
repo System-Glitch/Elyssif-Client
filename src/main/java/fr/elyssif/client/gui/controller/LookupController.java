@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
+import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
 
@@ -21,7 +22,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
-import javafx.stage.Stage;
 
 /**
  * Controller for the custom lookup modal.
@@ -36,8 +36,10 @@ public final class LookupController extends Controller {
 	@FXML private JFXTextField input;
 	@FXML private JFXListView<?> results;
 
+	private JFXDialog parentDialog;
 	private ObservableList<Model<?>> list;
 	private Model<?> selected;
+	private Runnable callback;
 
 	public void initialize(URL location, ResourceBundle resources) {
 		if(Config.getInstance().isVerbose())
@@ -74,7 +76,7 @@ public final class LookupController extends Controller {
 	public final void setHeader(String title) {
 		this.title.setText(getBundle().getString(title));
 	}
-	
+
 	/**
 	 * Get the selected resource
 	 * @return the selected resource
@@ -83,19 +85,31 @@ public final class LookupController extends Controller {
 		return selected;
 	}
 
+	public final void setParentDialog(JFXDialog parentDialog) {
+		this.parentDialog = parentDialog;
+	}
+
+	/**
+	 * Set the callback executed when the dialog closes.
+	 * @param callback
+	 */
+	public final void setCallback(Runnable callback) {
+		this.callback = callback;
+	}
+
 	@FXML
 	private void search() {
 
 		String search = input.getText().trim();
-		
+
 		if(search.isEmpty()) {
 			list.clear();
 		} else {
 			repository.getWhere(search, new PaginateCallback<User>() {
-				
+
 				public void run() {
 					list.clear();
-					
+
 					if(!input.getText().trim().isEmpty()) {
 						for(Model<?> model : getPaginator().getItems()) {
 							list.add(model);
@@ -103,30 +117,36 @@ public final class LookupController extends Controller {
 					}
 				}
 			}, new FailCallback() {
-				
+
 				public void run() {
 					String message = getFullMessage();
 					if(message.startsWith("%")) {
-						message = getBundle().getString(message);
+						message = getBundle().getString(message.substring(1));
 					}
 					SnackbarController.getInstance().message(message, SnackbarMessageType.ERROR);
 				}
-				
+
 			});			
 		}
-		
+
 	}
-	
+
 	@FXML
 	private void cancel() {
 		selected = null;
-		((Stage)getPane().getScene().getWindow()).close();
+		if(callback != null) {
+			callback.run();
+		}
+		parentDialog.close();
 	}
-	
+
 	@FXML
 	private void select() {
 		selected = (Model<?>) results.getSelectionModel().getSelectedItem();
-		((Stage)getPane().getScene().getWindow()).close();
+		if(callback != null) {
+			callback.run();
+		}
+		parentDialog.close();
 	}
 
 	public void initList(ListFactory<? extends Model<?>> factory) {
@@ -135,7 +155,10 @@ public final class LookupController extends Controller {
 			ListCell<Model<?>> cell = (ListCell<Model<?>>) event.getTarget();
 			if (event.getClickCount() == 2 && !cell.isEmpty()) {
 				selected = cell.getItem();
-				((Stage)getPane().getScene().getWindow()).close();
+				if(callback != null) {
+					callback.run();
+				}
+				parentDialog.close();
 			}
 		});
 	}

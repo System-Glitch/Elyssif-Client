@@ -5,18 +5,16 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.jfoenix.controls.JFXDecorator;
+import com.jfoenix.controls.JFXDialog;
 
 import fr.elyssif.client.gui.controller.LookupController;
 import fr.elyssif.client.gui.controller.MainController;
 import fr.elyssif.client.gui.model.Model;
+import fr.elyssif.client.gui.model.ModelCallback;
 import fr.elyssif.client.gui.repository.Repository;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.Window;
 
 /**
  * Modal for generic lookup through REST API.
@@ -26,7 +24,7 @@ import javafx.stage.Window;
 public class LookupModal<T extends Model<T>> {
 
 	private static final int DEFAULT_WIDTH = 400;
-	private static final int DEFAULT_HEIGHT = 580;
+	private static final int DEFAULT_HEIGHT = 500;
 
 	private Repository<? extends Model<?>> repository;
 	private ListFactory<T> factory;
@@ -78,21 +76,12 @@ public class LookupModal<T extends Model<T>> {
 	 * Show a new lookup dialog. The method doesn't return until the displayed dialog is dismissed.
 	 * If the owner window for the dialog is set, input to all windows in the dialog's owner
 	 * chain is blocked while the dialog is being shown.
-	 * @param title the title of the modal
-	 * @param ownerWindow the owner window of the displayed dialog
-	 * @return the selected resource id or -1 if no resource has been selected
+	 * @param ownerPane the container pane on which the dialog will popup
+	 * @param callback the callback executed when the dialog closes. Contains a reference to
+	 * the selected record, accessible via <code>getModel()</code>
 	 */
 	@SuppressWarnings("unchecked")
-	public T showDialog(Window ownerWindow) {
-		Stage dialog = new Stage();
-
-		dialog.setTitle(title);
-		dialog.initOwner(ownerWindow);
-		dialog.initModality(Modality.APPLICATION_MODAL);
-		dialog.setMinHeight(DEFAULT_HEIGHT);
-		dialog.setMinWidth(DEFAULT_WIDTH);
-		dialog.setHeight(DEFAULT_HEIGHT);
-		dialog.setWidth(DEFAULT_WIDTH);
+	public void showDialog(StackPane ownerPane, ModelCallback<T> callback) {
 
 		try {
 			ResourceBundle bundle = MainController.getInstance().getBundle();
@@ -100,25 +89,24 @@ public class LookupModal<T extends Model<T>> {
 			loader.setResources(bundle);
 
 			VBox rootLayout = (VBox) loader.load();
+			rootLayout.setPrefWidth(DEFAULT_WIDTH);
+			rootLayout.setPrefHeight(DEFAULT_HEIGHT);
+			final JFXDialog dialog = new JFXDialog(ownerPane, rootLayout, JFXDialog.DialogTransition.CENTER);
+
 			controller = (LookupController) loader.getController();
 			controller.setRepository(repository);
 			controller.setHeader(header);
 			controller.initList(factory);
+			controller.setParentDialog(dialog);
+			controller.setCallback(() -> {
+				callback.setModel((T) controller.getSelected());
+				callback.run();
+			});
 
-			JFXDecorator decorator = new JFXDecorator(dialog, rootLayout, false, false, false);
-			Scene scene = new Scene(decorator);
-			scene.getStylesheets().addAll(ownerWindow.getScene().getStylesheets());
-			ViewUtils.disableContextMenu(scene);
+			dialog.show();
 
-			dialog.setResizable(false);
-			dialog.setScene(scene);
-			dialog.setTitle(bundle.getString(title));
-			dialog.showAndWait();
-
-			return (T) controller.getSelected();
 		} catch (IOException e) {
 			Logger.getGlobal().log(Level.SEVERE, "Couldn't load lookup dialog.", e);
-			return null;
 		}
 	}
 
