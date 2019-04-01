@@ -10,6 +10,7 @@ import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
 import javafx.util.Duration;
 
 /**
@@ -44,19 +45,27 @@ public class UserListFactory implements ListFactory<User> {
 		userListView.setCellFactory(param -> {
 			JFXListCell<User> cell = new JFXListCell<User>() {
 				private ImageView imageView = new ImageView(userIcon);
+				private boolean wasSelected = false;
 
 				@Override
 				public void updateItem(User user, boolean empty) {
 					super.updateItem(user, empty);
 
-					this.setOpacity(0);
-					FadeTransition ft = ViewUtils.createFadeInTransition(this, Duration.millis(800));
-					ft.play();
+					Background background = getBackground();
 
-					this.setScaleX(0);
-					this.setScaleY(0);
-					CenterTransition animation = new CenterTransition(this);
-					animation.play();
+					if((background == null || background.getFills().get(0).getFill().toString().equals("0xffffffff")) && !wasSelected) {
+						this.setOpacity(0);
+						FadeTransition ft = ViewUtils.createFadeInTransition(this, Duration.millis(800));
+						ft.play();
+
+						this.setScaleX(0);
+						this.setScaleY(0);
+						CenterTransition animation = new CenterTransition(this);
+						animation.play();
+
+					}
+
+					wasSelected = isSelected();
 
 					if (empty) {
 						setText(null);
