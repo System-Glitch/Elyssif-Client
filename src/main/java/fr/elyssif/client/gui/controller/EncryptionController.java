@@ -115,7 +115,9 @@ public abstract class EncryptionController extends FadeController implements Loc
 				}, () -> {
 					// On process failure
 					destinationFile.delete();
-					revertAnimation();
+					Platform.runLater(() -> {
+						revertAnimation();
+					});
 				});
 			});
 			t.start();
@@ -146,12 +148,18 @@ public abstract class EncryptionController extends FadeController implements Loc
 	}
 
 	private void openFile() {
-		Desktop desktop = Desktop.getDesktop();
-		try {
-			desktop.open(destinationFile.getParentFile());
-		} catch (IOException e) {
-			Logger.getGlobal().log(Level.SEVERE, "Couldn't open file explorer.", e);
-		}
+		new Thread(() -> {
+			Desktop desktop = Desktop.getDesktop();
+			try {
+				if(Desktop.isDesktopSupported() && desktop.isSupported(Desktop.Action.OPEN)) {
+					desktop.open(destinationFile.getParentFile());
+				} else {
+					Logger.getGlobal().warning("Desktop open action not supported.");
+				}
+			} catch (IOException e) {
+				Logger.getGlobal().log(Level.SEVERE, "Couldn't open file explorer.", e);
+			}
+		}).start();
 	}
 
 	@FXML
