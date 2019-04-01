@@ -44,7 +44,7 @@ public final class SideMenuController extends Controller {
 	/**
 	 * Set the currently active controller.
 	 * Clears the menu list selection.
-	 * @param controller
+	 * @param currentController
 	 */
 	protected void setCurrentController(Controller currentController) {
 		sideList.getSelectionModel().clearSelection();

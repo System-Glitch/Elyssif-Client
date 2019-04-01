@@ -21,8 +21,8 @@ public class UserListFactory implements ListFactory<User> {
 
 	/**
 	 * Setup a table to be a user table. Sets the columns, formatting and coloring.
-	 * @param table the table to prepare
-	 * @param userList the list containing the values to show in the table
+	 * @param listView the list to prepare
+	 * @param list the observable list containing the values to show in the table
 	 */
 	@Override
 	public void make(JFXListView<?> listView, ObservableList<User> list) {
@@ -31,7 +31,7 @@ public class UserListFactory implements ListFactory<User> {
 
 	/**
 	 * Setup a table to be a user table. Sets the columns, formatting and coloring.
-	 * @param table the table to prepare
+	 * @param listView the list to prepare
 	 * @param userList the list containing the values to show in the table
 	 * @param onMouseClicked the event handler executed on a list cell click
 	 */
