@@ -4,13 +4,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import fr.elyssif.client.callback.FailCallback;
+import fr.elyssif.client.callback.FormCallback;
+import fr.elyssif.client.callback.JsonCallback;
+import fr.elyssif.client.callback.ModelCallback;
+import fr.elyssif.client.callback.RestCallback;
 import fr.elyssif.client.gui.model.File;
-import fr.elyssif.client.gui.model.ModelCallback;
-import fr.elyssif.client.http.FailCallback;
-import fr.elyssif.client.http.FormCallback;
 import fr.elyssif.client.http.HttpMethod;
-import fr.elyssif.client.http.JsonCallback;
-import fr.elyssif.client.http.RestCallback;
 
 /**
  * Repository for the <code>File</code> model.

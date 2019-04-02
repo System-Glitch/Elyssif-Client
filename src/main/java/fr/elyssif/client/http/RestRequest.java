@@ -26,6 +26,7 @@ import org.apache.http.util.EntityUtils;
 import com.google.gson.Gson;
 
 import fr.elyssif.client.Config;
+import fr.elyssif.client.callback.RestCallback;
 import javafx.application.Platform;
 
 /**

@@ -12,13 +12,13 @@ import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.validation.RequiredFieldValidator;
 
 import fr.elyssif.client.Config;
+import fr.elyssif.client.callback.FailCallback;
+import fr.elyssif.client.callback.ModelCallback;
+import fr.elyssif.client.callback.RestCallback;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.model.File;
-import fr.elyssif.client.gui.model.ModelCallback;
 import fr.elyssif.client.gui.model.User;
 import fr.elyssif.client.gui.view.ViewUtils;
-import fr.elyssif.client.http.FailCallback;
-import fr.elyssif.client.http.RestCallback;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

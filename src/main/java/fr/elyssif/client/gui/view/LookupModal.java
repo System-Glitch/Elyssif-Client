@@ -7,9 +7,9 @@ import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXDialog;
 
+import fr.elyssif.client.callback.ModelCallback;
 import fr.elyssif.client.gui.controller.LookupController;
 import fr.elyssif.client.gui.model.Model;
-import fr.elyssif.client.gui.model.ModelCallback;
 import fr.elyssif.client.gui.repository.Repository;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.StackPane;

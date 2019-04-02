@@ -9,13 +9,13 @@ import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
 
 import fr.elyssif.client.Config;
+import fr.elyssif.client.callback.FailCallback;
+import fr.elyssif.client.callback.PaginateCallback;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.model.Model;
 import fr.elyssif.client.gui.model.User;
 import fr.elyssif.client.gui.repository.Repository;
 import fr.elyssif.client.gui.view.ListFactory;
-import fr.elyssif.client.http.FailCallback;
-import fr.elyssif.client.http.PaginateCallback;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

@@ -11,6 +11,7 @@ import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.validation.RequiredFieldValidator;
 
 import fr.elyssif.client.Config;
+import fr.elyssif.client.callback.FormCallback;
 import fr.elyssif.client.gui.controller.FadeController;
 import fr.elyssif.client.gui.controller.Lockable;
 import fr.elyssif.client.gui.controller.MainController;
@@ -21,7 +22,6 @@ import fr.elyssif.client.gui.controller.ValidationUtils;
 import fr.elyssif.client.gui.validation.ServerValidator;
 import fr.elyssif.client.gui.validation.StringMaxLengthValidator;
 import fr.elyssif.client.http.Authenticator;
-import fr.elyssif.client.http.FormCallback;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 

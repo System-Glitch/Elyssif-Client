@@ -1,4 +1,4 @@
-package fr.elyssif.client.http;
+package fr.elyssif.client.callback;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +7,8 @@ import java.util.Map.Entry;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import fr.elyssif.client.http.RestResponse;
 
 /**
  * Callback for form submission, handling validation errors.

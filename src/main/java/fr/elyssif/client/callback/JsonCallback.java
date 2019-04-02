@@ -1,4 +1,4 @@
-package fr.elyssif.client.http;
+package fr.elyssif.client.callback;
 
 import com.google.gson.JsonElement;
 

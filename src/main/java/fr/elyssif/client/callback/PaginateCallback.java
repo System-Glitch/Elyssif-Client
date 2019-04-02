@@ -1,4 +1,4 @@
-package fr.elyssif.client.http;
+package fr.elyssif.client.callback;
 
 import fr.elyssif.client.gui.model.Model;
 import fr.elyssif.client.gui.view.Paginator;

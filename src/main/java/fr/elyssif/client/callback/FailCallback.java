@@ -1,6 +1,8 @@
-package fr.elyssif.client.http;
+package fr.elyssif.client.callback;
 
 import com.google.gson.JsonElement;
+
+import fr.elyssif.client.http.RestResponse;
 
 /**
  * Custom Runnable used as callbacks for failed REST requests

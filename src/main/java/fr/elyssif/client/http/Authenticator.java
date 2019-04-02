@@ -7,6 +7,8 @@ import org.apache.http.client.HttpClient;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import fr.elyssif.client.callback.FormCallback;
+import fr.elyssif.client.callback.RestCallback;
 import fr.elyssif.client.gui.model.User;
 
 /**

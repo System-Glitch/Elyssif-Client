@@ -10,10 +10,10 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import com.jfoenix.controls.JFXSnackbar;
 
 import fr.elyssif.client.Config;
+import fr.elyssif.client.callback.RestCallback;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.controller.auth.AuthController;
 import fr.elyssif.client.http.Authenticator;
-import fr.elyssif.client.http.RestCallback;
 import javafx.fxml.FXML;
 
 /**

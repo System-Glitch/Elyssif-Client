@@ -1,4 +1,6 @@
-package fr.elyssif.client.http;
+package fr.elyssif.client.callback;
+
+import fr.elyssif.client.http.RestResponse;
 
 /**
  * Super class for REST responses callbacks.

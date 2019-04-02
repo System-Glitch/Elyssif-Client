@@ -1,6 +1,6 @@
-package fr.elyssif.client.gui.model;
+package fr.elyssif.client.callback;
 
-import fr.elyssif.client.http.RestCallback;
+import fr.elyssif.client.gui.model.Model;
 
 /**
  * Custom Runnable used as callbacks for json REST requests, returning a Model instance
