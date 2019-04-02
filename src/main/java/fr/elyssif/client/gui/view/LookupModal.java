@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 import com.jfoenix.controls.JFXDialog;
 
 import fr.elyssif.client.gui.controller.LookupController;
-import fr.elyssif.client.gui.controller.MainController;
 import fr.elyssif.client.gui.model.Model;
 import fr.elyssif.client.gui.model.ModelCallback;
 import fr.elyssif.client.gui.repository.Repository;
@@ -29,11 +28,19 @@ public class LookupModal<T extends Model<T>> {
 	private Repository<? extends Model<?>> repository;
 	private ListFactory<T> factory;
 	private LookupController controller;
+	private ResourceBundle bundle;
+
 	private String title = "lookup";
 	private String header = "lookup-header";
 
-	public LookupModal(Repository<T> repository) {
+	/**
+	 * Create a new instance of a lookup modal
+	 * @param repository the repository used for lookup
+	 * @param bundle the language bundle to use for this dialog
+	 */
+	public LookupModal(Repository<T> repository, ResourceBundle bundle) {
 		this.repository = repository;
+		this.bundle = bundle;
 	}
 
 	/**
@@ -73,18 +80,18 @@ public class LookupModal<T extends Model<T>> {
 	}
 
 	/**
-	 * Show a new lookup dialog. The method doesn't return until the displayed dialog is dismissed.
+	 * Show a new lookup dialog.
 	 * If the owner window for the dialog is set, input to all windows in the dialog's owner
-	 * chain is blocked while the dialog is being shown.
+	 * chain is blocked while the dialog is being shown. Clicking the overlay closes the dialog.
 	 * @param ownerPane the container pane on which the dialog will popup
-	 * @param callback the callback executed when the dialog closes. Contains a reference to
+	 * @param callback the callback executed when the dialog closes because an item
+	 * has been selected or the "Cancel" button has been clicked. Contains a reference to
 	 * the selected record, accessible via <code>getModel()</code>
 	 */
 	@SuppressWarnings("unchecked")
 	public void showDialog(StackPane ownerPane, ModelCallback<T> callback) {
 
 		try {
-			ResourceBundle bundle = MainController.getInstance().getBundle();
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/LookupView.fxml"));
 			loader.setResources(bundle);
 

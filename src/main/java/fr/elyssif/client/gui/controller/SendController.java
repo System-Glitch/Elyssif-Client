@@ -71,7 +71,7 @@ public final class SendController extends EncryptionController implements Lockab
 
 	@FXML
 	private void recipientClicked() {
-		LookupModal<User> modal = new LookupModal<User>(new UserRepository());
+		LookupModal<User> modal = new LookupModal<User>(new UserRepository(), getBundle());
 		modal.setTitle("recipient");
 		modal.setHeader("lookup-recipient");
 		modal.setTableFactory(new UserListFactory());
