@@ -27,6 +27,7 @@ import fr.elyssif.client.gui.view.UserListFactory;
 import fr.elyssif.client.security.Hash;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 
@@ -165,26 +166,37 @@ public final class SendController extends EncryptionController implements Lockab
 				}
 			}
 
-			fileModel.setHashCiphered("03454af1793ba7be41f7789f9c1cbaebbdf7d967f8e45a0f747f24bc1c84108d"); // TODO hash ciphered
-			getFileRepository().cipher(fileModel, new RestCallback() {
+			setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
 
+			Hash.sha256(getDestinationFile(), new HashCallback() {
 				public void run() {
-					SnackbarController.getInstance().message(getBundle().getString("encrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
-					successCallback.run();
-					fileModel = null;
-				}
+					fileModel.setHashCiphered(getDigestHex());
+					getFileRepository().cipher(fileModel, new RestCallback() {
 
-			}, new FormCallback() {
-				public void run() {
-					SnackbarController.getInstance().message(String.join("\n", getValidationErrors().get("ciphered_hash")), SnackbarMessageType.ERROR, 4000);
-					failureCallback.run();
-					fileModel = null;
+						public void run() {
+							SnackbarController.getInstance().message(getBundle().getString("encrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
+							successCallback.run();
+							fileModel = null;
+						}
+
+					}, new FormCallback() {
+						public void run() {
+							SnackbarController.getInstance().message(String.join("\n", getValidationErrors().get("ciphered_hash")), SnackbarMessageType.ERROR, 4000);
+							failureCallback.run();
+							fileModel = null;
+						}
+					}, new FailCallback() {
+						public void run() {
+							SnackbarController.getInstance().message(getFullMessage(), SnackbarMessageType.ERROR, 4000);
+							failureCallback.run();
+							fileModel = null;
+						}
+					});
 				}
-			}, new FailCallback() {
+			}, new ErrorCallback() {
 				public void run() {
-					SnackbarController.getInstance().message(getFullMessage(), SnackbarMessageType.ERROR, 4000);
+					SnackbarController.getInstance().message(getException().getMessage(), SnackbarMessageType.ERROR, 4000);
 					failureCallback.run();
-					fileModel = null;
 				}
 			});
 		}).start();
