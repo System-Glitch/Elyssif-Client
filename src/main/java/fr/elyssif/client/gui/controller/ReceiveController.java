@@ -54,6 +54,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 	@FXML private JFXSpinner hashSpinner;
 
 	private java.io.File selectedFile;
+	private String hashCiphered;
 	private File fileModel;
 
 	public void initialize(URL location, ResourceBundle resources) {
@@ -111,7 +112,8 @@ public final class ReceiveController extends EncryptionController implements Loc
 
 		Hash.sha256(selectedFile, new HashCallback() {
 			public void run() {
-				getFileRepository().fetch(getDigestHex(), new ModelCallback<File>() {
+				hashCiphered = getDigestHex();
+				getFileRepository().fetch(hashCiphered, new ModelCallback<File>() {
 					public void run() {
 						fileModel = getModel();
 						hideHashSpinner();
@@ -211,7 +213,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 		}
 
 		fileModel.setHash("b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde8"); // TODO real hash
-		fileModel.setHashCiphered("03454af1793ba7be41f7789f9c1cbaebbdf7d967f8e45a0f747f24bc1c84108d"); // TODO real ciphered hash
+		fileModel.setHashCiphered(hashCiphered);
 		getFileRepository().check(fileModel, new RestCallback() {
 			public void run() {
 				SnackbarController.getInstance().message(getBundle().getString("decrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
@@ -300,6 +302,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 	public void resetForm() {
 		fileInput.setText(null);
 		selectedFile = null;
+		hashCiphered = null;
 	}
 
 }
