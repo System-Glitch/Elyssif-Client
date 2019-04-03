@@ -8,18 +8,23 @@ import java.util.logging.Logger;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
+import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.validation.RequiredFieldValidator;
 
 import fr.elyssif.client.Config;
+import fr.elyssif.client.callback.ErrorCallback;
 import fr.elyssif.client.callback.FailCallback;
+import fr.elyssif.client.callback.HashCallback;
 import fr.elyssif.client.callback.ModelCallback;
 import fr.elyssif.client.callback.RestCallback;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.model.File;
 import fr.elyssif.client.gui.model.User;
 import fr.elyssif.client.gui.view.ViewUtils;
+import fr.elyssif.client.security.Hash;
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
@@ -45,6 +50,8 @@ public final class ReceiveController extends EncryptionController implements Loc
 	@FXML private Label fromLabel;
 	@FXML private JFXButton saveButton;
 	@FXML private JFXButton cancelButton;
+
+	@FXML private JFXSpinner hashSpinner;
 
 	private java.io.File selectedFile;
 	private File fileModel;
@@ -100,22 +107,52 @@ public final class ReceiveController extends EncryptionController implements Loc
 
 	protected void onButtonClicked() {
 		form.setDisable(true);
-		// TODO use real hash
-		getFileRepository().fetch("03454af1793ba7be41f7789f9c1cbaebbdf7d967f8e45a0f747f24bc1c84108d", new ModelCallback<File>() {
+		showHashSpinner();
+
+		Hash.sha256(selectedFile, new HashCallback() {
 			public void run() {
-				fileModel = getModel();
-				showFileFound();
+				getFileRepository().fetch(getDigestHex(), new ModelCallback<File>() {
+					public void run() {
+						fileModel = getModel();
+						hideHashSpinner();
+						showFileFound();
+					}
+				}, new FailCallback() {
+					public void run() {
+						if(getStatus() == 404) {
+							SnackbarController.getInstance().message(getBundle().getString("file-not-found"), SnackbarMessageType.ERROR, 4000);
+						} else {
+							SnackbarController.getInstance().message(getBundle().getString(getMessage()), SnackbarMessageType.ERROR, 4000);
+						}
+						form.setDisable(false);
+						hideHashSpinner();
+					}
+				});
 			}
-		}, new FailCallback() {
+		}, new ErrorCallback() {
 			public void run() {
-				if(getStatus() == 404) {
-					SnackbarController.getInstance().message(getBundle().getString("file-not-found"), SnackbarMessageType.ERROR, 4000);
-				} else {
-					SnackbarController.getInstance().message(getBundle().getString(getMessage()), SnackbarMessageType.ERROR, 4000);					
-				}
-				form.setDisable(false);
+				Platform.runLater(() -> {
+					SnackbarController.getInstance().message(getException().getMessage(), SnackbarMessageType.ERROR, 4000);
+					hideHashSpinner();
+					resetForm();
+					revertAnimation();
+				});
 			}
 		});
+	}
+
+	private void showHashSpinner() {
+		hashSpinner.setVisible(true);
+		FadeTransition ft = ViewUtils.createFadeInTransition(hashSpinner);
+		ft.play();
+	}
+
+	private void hideHashSpinner() {
+		FadeTransition ft = ViewUtils.createFadeOutTransition(hashSpinner);
+		ft.setOnFinished(e -> {
+			hashSpinner.setVisible(false);
+		});
+		ft.play();
 	}
 
 	private void updateFileFound() {

@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import org.bouncycastle.util.Arrays;
 
+import fr.elyssif.client.callback.ErrorCallback;
 import fr.elyssif.client.callback.HashCallback;
 
 /**
@@ -25,12 +26,13 @@ public abstract class Hash {
 	 * Asynchronous SHA-256 hash of the given source file.
 	 * @param source the source file to hash
 	 * @param callback the callback executed on success
+	 * @param failCallback the callback executed on error
 	 */
-	public static final void sha256(File source, HashCallback callback) {
-		hash("SHA-256", source, callback);
+	public static final void sha256(File source, HashCallback callback, ErrorCallback failCallback) {
+		hash("SHA-256", source, callback, failCallback);
 	}
 
-	private static final void hash(String method, File source, HashCallback callback) {
+	private static final void hash(String method, File source, HashCallback callback, ErrorCallback failCallback) {
 		new Thread(() -> { 
 
 			FileInputStream isr = null;
@@ -50,6 +52,8 @@ public abstract class Hash {
 
 			} catch (IOException | NoSuchAlgorithmException e) {
 				Logger.getGlobal().log(Level.SEVERE, "Error while hashing file.", e);
+				failCallback.setException(e);
+				failCallback.run();
 			} finally {
 				if(isr != null) {
 					try {

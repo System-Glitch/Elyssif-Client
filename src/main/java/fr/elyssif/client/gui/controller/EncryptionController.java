@@ -101,10 +101,10 @@ public abstract class EncryptionController extends FadeController implements Loc
 		slideTransition.play();
 
 		slideTransition.setOnFinished(e -> {
-			resetForm();
-			Thread t = new Thread(() -> {
+			new Thread(() -> {
 				process(() -> {
 					Platform.runLater(() -> {
+						resetForm();
 						TadaAnimation tada = new TadaAnimation(image);
 						tada.play();
 						tada.setOnFinished(e2 -> {
@@ -116,15 +116,15 @@ public abstract class EncryptionController extends FadeController implements Loc
 					// On process failure
 					destinationFile.delete();
 					Platform.runLater(() -> {
+						resetForm();
 						revertAnimation();
 					});
 				});
-			});
-			t.start();
+			}).start();
 		});
 	}
 
-	private void revertAnimation() {
+	protected void revertAnimation() {
 		formContainerTransition.setRate(-1);
 		buttonTransition.setRate(-1);
 		spinnerTransition.setRate(-1);

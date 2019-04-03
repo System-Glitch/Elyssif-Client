@@ -77,9 +77,9 @@
                         </HBox>
                      </children>
                   </VBox>
-                  <HBox alignment="TOP_RIGHT">
-                     <children>
-                        <JFXButton fx:id="button" onAction="#buttonClicked" styleClass="green-A700" text="%decrypt">
+                  <BorderPane>
+                     <right>
+                        <JFXButton fx:id="button" maxHeight="1.7976931348623157E308" onAction="#buttonClicked" styleClass="green-A700" text="%decrypt" BorderPane.alignment="CENTER">
                            <graphic>
                               <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -88,8 +88,11 @@
                               </ImageView>
                            </graphic>
                         </JFXButton>
-                     </children>
-                  </HBox>
+                     </right>
+                     <left>
+                        <JFXSpinner fx:id="hashSpinner" prefHeight="34.0" visible="false" BorderPane.alignment="CENTER" />
+                     </left>
+                  </BorderPane>
                </children>
             </VBox>
          </children>
