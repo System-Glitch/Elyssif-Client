@@ -101,26 +101,20 @@ public abstract class EncryptionController extends FadeController implements Loc
 		slideTransition.play();
 
 		slideTransition.setOnFinished(e -> {
-			new Thread(() -> {
-				process(() -> {
-					Platform.runLater(() -> {
-						resetForm();
-						TadaAnimation tada = new TadaAnimation(image);
-						tada.play();
-						tada.setOnFinished(e2 -> {
-							openFile();
-							revertAnimation();
-						});
-					});
-				}, () -> {
-					// On process failure
-					destinationFile.delete();
-					Platform.runLater(() -> {
-						resetForm();
-						revertAnimation();
-					});
+			process(() -> {
+				resetForm();
+				TadaAnimation tada = new TadaAnimation(image);
+				tada.play();
+				tada.setOnFinished(e2 -> {
+					openFile();
+					revertAnimation();
 				});
-			}).start();
+			}, () -> {
+				// On process failure
+				destinationFile.delete();
+				resetForm();
+				revertAnimation();
+			});
 		});
 	}
 

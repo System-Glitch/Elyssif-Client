@@ -3,6 +3,7 @@ package fr.elyssif.client.gui.controller;
 import java.net.URL;
 import java.util.Random;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXButton;
@@ -200,37 +201,41 @@ public final class ReceiveController extends EncryptionController implements Loc
 
 	@Override
 	protected final void process(Runnable successCallback, Runnable failureCallback) {
-		// TODO decrypt
-		Random random = new Random();
-		while(getProgress() < 1) {
-			setProgress(getProgress() + random.nextDouble() / 100);
-			try {
-				Thread.sleep(25);
-			} catch (InterruptedException ie) {
-				ie.printStackTrace();
-				failureCallback.run();
-			}
-		}
 
-		fileModel.setHash("b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde8"); // TODO real hash
-		fileModel.setHashCiphered(hashCiphered);
-		getFileRepository().check(fileModel, new RestCallback() {
-			public void run() {
-				SnackbarController.getInstance().message(getBundle().getString("decrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
-				successCallback.run();
-				fileModel = null;
-			}
-		}, new FailCallback() {
-			public void run() {
-				if(getStatus() == 404) {
-					openFailDialog(successCallback, failureCallback);
-				} else {
-					SnackbarController.getInstance().message(getStatus() + ": " + getBundle().getString("server-error").replace("\\n", "\n"), SnackbarMessageType.ERROR, 4000);
+		new Thread(() -> {
+			// TODO decrypt
+			Random random = new Random();
+			while(getProgress() < 1) {
+				setProgress(getProgress() + random.nextDouble() / 100);
+				try {
+					Thread.sleep(25);
+				} catch (InterruptedException ie) {
+					Logger.getGlobal().log(Level.SEVERE, "Error in fake process." , ie);
 					failureCallback.run();
-					fileModel = null;
+					return;
 				}
 			}
-		});
+
+			fileModel.setHash("b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde8"); // TODO real hash
+			fileModel.setHashCiphered(hashCiphered);
+			getFileRepository().check(fileModel, new RestCallback() {
+				public void run() {
+					SnackbarController.getInstance().message(getBundle().getString("decrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
+					successCallback.run();
+					fileModel = null;
+				}
+			}, new FailCallback() {
+				public void run() {
+					if(getStatus() == 404) {
+						openFailDialog(successCallback, failureCallback);
+					} else {
+						SnackbarController.getInstance().message(getStatus() + ": " + getBundle().getString("server-error").replace("\\n", "\n"), SnackbarMessageType.ERROR, 4000);
+						failureCallback.run();
+						fileModel = null;
+					}
+				}
+			});
+		}).start();
 	}
 
 	private void openFailDialog(Runnable successCallback, Runnable failureCallback) {

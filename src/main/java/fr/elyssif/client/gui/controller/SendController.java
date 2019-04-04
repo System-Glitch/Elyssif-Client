@@ -3,6 +3,7 @@ package fr.elyssif.client.gui.controller;
 import java.net.URL;
 import java.util.Random;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXButton;
@@ -130,13 +131,13 @@ public final class SendController extends EncryptionController implements Lockab
 				}, new FormCallback() {
 					public void run() {
 						handleValidationErrors(getValidationErrors());
-						setLocked(false);
+						revertAnimation();
 						fileModel = null;
 					}
 				}, new FailCallback() {
 					public void run() {
 						SnackbarController.getInstance().message(getFullMessage(), SnackbarMessageType.ERROR, 4000);
-						setLocked(false);
+						revertAnimation();
 						fileModel = null;
 					}
 				});
@@ -162,7 +163,9 @@ public final class SendController extends EncryptionController implements Lockab
 				try {
 					Thread.sleep(25);
 				} catch (InterruptedException ie) {
-					ie.printStackTrace();
+					Logger.getGlobal().log(Level.SEVERE, "Error in fake process." , ie);
+					failureCallback.run();
+					return;
 				}
 			}
 
