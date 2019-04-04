@@ -80,7 +80,7 @@ public final class SendController extends EncryptionController implements Lockab
 		LookupModal<User> modal = new LookupModal<User>(new UserRepository(), getBundle());
 		modal.setTitle("recipient");
 		modal.setHeader("lookup-recipient");
-		modal.setTableFactory(new UserListFactory());
+		modal.setListFactory(new UserListFactory());
 
 		modal.showDialog((StackPane) MainController.getInstance().getPane(), new ModelCallback<User>() {
 

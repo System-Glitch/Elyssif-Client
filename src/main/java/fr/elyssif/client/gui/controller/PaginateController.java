@@ -32,7 +32,7 @@ public final class PaginateController extends Controller {
 		if(Config.getInstance().isVerbose())
 			Logger.getGlobal().info("Loading paginate controller.");
 		super.initialize(location, resources);
-		
+
 		show(false);
 	}
 
@@ -46,7 +46,7 @@ public final class PaginateController extends Controller {
 		previousButton.setDisable(paginator.getCurrentPage() == 1);
 		nextButton.setDisable(paginator.getCurrentPage() == paginator.getMaxPage());
 	}
-	
+
 	public final void setOnPageChange(Runnable callback) {
 		this.callback = callback;
 	}
@@ -58,11 +58,11 @@ public final class PaginateController extends Controller {
 		}
 		callback.run();
 	}
-	
+
 	@FXML
 	private void onNextClicked() {
 		page++;
 		callback.run();
 	}
-	
+
 }

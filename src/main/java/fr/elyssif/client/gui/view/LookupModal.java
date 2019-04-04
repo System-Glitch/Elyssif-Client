@@ -75,7 +75,7 @@ public class LookupModal<T extends Model<T>> {
 		this.header = header;
 	}
 
-	public void setTableFactory(ListFactory<T> tableFactory) {
+	public void setListFactory(ListFactory<T> tableFactory) {
 		factory = tableFactory;
 	}
 

@@ -1,17 +1,13 @@
 package fr.elyssif.client.gui.view;
 
-import com.jfoenix.controls.JFXListCell;
 import com.jfoenix.controls.JFXListView;
 
 import fr.elyssif.client.gui.model.User;
-import javafx.animation.FadeTransition;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.util.Duration;
 
 /**
  * List factory for users.
@@ -21,7 +17,7 @@ import javafx.util.Duration;
 public class UserListFactory implements ListFactory<User> {
 
 	/**
-	 * Setup a table to be a user table. Sets the columns, formatting and coloring.
+	 * Setup a table to be a user table. Sets the text, icon, formatting and coloring.
 	 * @param listView the list to prepare
 	 * @param list the observable list containing the values to show in the table
 	 */
@@ -31,7 +27,7 @@ public class UserListFactory implements ListFactory<User> {
 	}
 
 	/**
-	 * Setup a table to be a user table. Sets the columns, formatting and coloring.
+	 * Setup a table to be a user table. Sets the text, icon, formatting and coloring.
 	 * @param listView the list to prepare
 	 * @param userList the list containing the values to show in the table
 	 * @param onMouseClicked the event handler executed on a list cell click
@@ -43,29 +39,12 @@ public class UserListFactory implements ListFactory<User> {
 		JFXListView<User> userListView = (JFXListView<User>) listView;
 		userListView.setItems(userList);
 		userListView.setCellFactory(param -> {
-			JFXListCell<User> cell = new JFXListCell<User>() {
+			JFXListCellAnimated<User> cell = new JFXListCellAnimated<User>() {
 				private ImageView imageView = new ImageView(userIcon);
-				private boolean wasSelected = false;
 
 				@Override
 				public void updateItem(User user, boolean empty) {
 					super.updateItem(user, empty);
-
-					Background background = getBackground();
-
-					if((background == null || background.getFills().get(0).getFill().toString().equals("0xffffffff")) && !wasSelected) {
-						this.setOpacity(0);
-						FadeTransition ft = ViewUtils.createFadeInTransition(this, Duration.millis(800));
-						ft.play();
-
-						this.setScaleX(0);
-						this.setScaleY(0);
-						CenterTransition animation = new CenterTransition(this);
-						animation.play();
-
-					}
-
-					wasSelected = isSelected();
 
 					if (empty) {
 						setText(null);
