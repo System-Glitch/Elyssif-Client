@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+
+
+<BorderPane fx:id="pane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/10.0.1" fx:controller="fr.elyssif.client.gui.controller.PaginateController">
+   <left>
+      <JFXButton fx:id="previousButton" BorderPane.alignment="CENTER">
+         <graphic>
+            <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@img/left.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </JFXButton>
+   </left>
+   <right>
+      <JFXButton fx:id="nextButton" BorderPane.alignment="CENTER">
+         <graphic>
+            <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@img/right.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </JFXButton>
+   </right>
+   <center>
+      <Label fx:id="pageLabel" maxHeight="1.7976931348623157E308" text="0/0" BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>
