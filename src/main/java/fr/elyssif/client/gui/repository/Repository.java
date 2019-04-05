@@ -435,7 +435,7 @@ public abstract class Repository<T extends Model<T>> {
 
 		var params = new HashMap<String, Integer>();
 		params.put("page", page);
-		get(params, callback, failCallback);
+		get("", params, callback, failCallback);
 	}
 
 	/**
@@ -456,17 +456,18 @@ public abstract class Repository<T extends Model<T>> {
 	public void getWhere(String search, PaginateCallback<? extends Model<?>> callback, FailCallback failCallback) {
 		var params = new HashMap<String, String>();
 		params.put("search", search);
-		get(params, callback, failCallback);
+		get("", params, callback, failCallback);
 	}
 
 	/**
 	 * Execute a generic GET request
+	 * @param action the action (last segment of the url)
 	 * @param params the URL params for the request
 	 * @param callback the callback executed on success
 	 * @param failCallback the callback executed on failure, nullable
 	 */
-	private void get(HashMap<String, ?> params, PaginateCallback<? extends Model<?>> callback, FailCallback failCallback) {
-		request("", HttpMethod.GET, params, new JsonCallback() { // Empty action for index
+	protected void get(String action, HashMap<String, ?> params, PaginateCallback<? extends Model<?>> callback, FailCallback failCallback) {
+		request(action, HttpMethod.GET, params, new JsonCallback() {
 
 			public void run() {
 				handlePaginateResponse(getResponse(), callback, failCallback);

@@ -1,5 +1,6 @@
 package fr.elyssif.client.gui.view;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.jfoenix.controls.JFXListView;
@@ -11,12 +12,13 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 
 /**
  * List factory for files.
@@ -24,6 +26,15 @@ import javafx.scene.layout.VBox;
  *
  */
 public class FileListFactory implements ListFactory<File> {
+
+	public static final int MODE_SEND = 0;
+	public static final int MODE_RECEIVE = 1;
+
+	private int mode = MODE_SEND;
+
+	public void setMode(int mode) {
+		this.mode = mode;
+	}
 
 	/**
 	 * Setup a table to be a file table. Sets the text, icon, formatting and coloring.
@@ -56,6 +67,7 @@ public class FileListFactory implements ListFactory<File> {
 						setText(null);
 						setGraphic(null);
 					} else {
+						setText(null);
 						setGraphic(createFileEntry(file));
 					}
 				}
@@ -69,30 +81,42 @@ public class FileListFactory implements ListFactory<File> {
 	private HBox createFileEntry(File file) {
 		HBox container = new HBox();
 		container.setSpacing(10);
-		container.setAlignment(Pos.CENTER);
+		container.setAlignment(Pos.CENTER_LEFT);
 
-		ImageView icon = new ImageView(file.getDecipheredAt() != null ? "view/img/checked.png" : "view/img/stopwatch.png");
-		Tooltip.install(icon, new Tooltip("test"));
+		Date sentDate = file.getCipheredAt().get();
+		Date receivedDate = file.getDecipheredAt().get();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd"); // TODO language file
+
+		ImageView icon = new ImageView(sentDate != null && receivedDate != null ? "view/img/checked.png" : "view/img/stopwatch.png");
+		icon.setFitHeight(42);
+		icon.setFitWidth(42);
+
 
 		VBox textContainer = new VBox();
-		
+
 		Label fileNameLabel = new Label(file.getName().get());
 		fileNameLabel.getStyleClass().add("text-lg");
 
-		User sender = file.getSender().get();
-		Label fromLabel = new Label("From: " + sender.getName().get() + "(" + sender.getEmail().get() + ")"); // TODO language file
-		
+		User user = mode == MODE_SEND ? file.getRecipient().get() : file.getSender().get();
+		Label fromLabel = new Label((mode == MODE_SEND ? "To: " : "From: ") + user.getName().get() + "(" + user.getEmail().get() + ")"); // TODO language file
+		fromLabel.getStyleClass().add("text-sm");
+
 		BorderPane datesContainer = new BorderPane();
-		Label sentLabel = new Label("Sent ");
+
+		Label sentLabel = new Label(sentDate != null ? "Sent " + format.format(sentDate) : "Pending"); // TODO language file + date format
+		sentLabel.getStyleClass().add("text-sm");
 		datesContainer.setLeft(sentLabel); // TODO language file
 		BorderPane.setMargin(sentLabel, new Insets(0, 15, 0, 0));
-		
-		Date receivedDate = file.getDecipheredAt().get();
-		datesContainer.setRight(new Label(receivedDate != null ? "Received " + receivedDate.toString() : "Pending")); // TODO language file + date format
-		
+
+		Label receivedLabel = new Label(receivedDate != null ? "Received " + format.format(receivedDate) : "Pending"); // TODO language file + date format
+		receivedLabel.getStyleClass().add("text-sm");
+		receivedLabel.setTextAlignment(TextAlignment.RIGHT);
+		datesContainer.setRight(receivedLabel);
+
 		textContainer.getChildren().addAll(fileNameLabel, fromLabel, datesContainer);
 
 		container.getChildren().addAll(icon, textContainer);
+		HBox.setHgrow(textContainer, Priority.ALWAYS);
 		return container;
 	}
 }

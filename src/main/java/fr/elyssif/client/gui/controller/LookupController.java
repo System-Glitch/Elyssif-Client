@@ -122,14 +122,10 @@ public final class LookupController extends Controller {
 			}, new FailCallback() {
 
 				public void run() {
-					String message = getFullMessage();
-					if(message.startsWith("%")) {
-						message = getBundle().getString(message.substring(1));
-					}
-					SnackbarController.getInstance().message(message, SnackbarMessageType.ERROR);
+					SnackbarController.getInstance().message(getBundle().getString(getFullMessage()), SnackbarMessageType.ERROR);
 				}
 
-			});			
+			});
 		}
 
 	}

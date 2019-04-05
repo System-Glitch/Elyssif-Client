@@ -92,6 +92,10 @@
 	-fx-padding: 24 24 24 24;
 }
 
+.text-sm {
+	-fx-font-size: 13px;
+}
+
 .text-md {
 	-fx-font-size: 14px;
 }

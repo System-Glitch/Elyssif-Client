@@ -8,6 +8,7 @@ import fr.elyssif.client.callback.FailCallback;
 import fr.elyssif.client.callback.FormCallback;
 import fr.elyssif.client.callback.JsonCallback;
 import fr.elyssif.client.callback.ModelCallback;
+import fr.elyssif.client.callback.PaginateCallback;
 import fr.elyssif.client.callback.RestCallback;
 import fr.elyssif.client.gui.model.File;
 import fr.elyssif.client.http.HttpMethod;
@@ -134,6 +135,36 @@ public class FileRepository extends Repository<File> {
 			}
 
 		});
+	}
+
+	/**
+	 * Get a paginate of all the sent files.
+	 * @param page the page number, must be positive
+	 * @param callback the callback executed on success
+	 * @param failCallback the callback executed on failure, nullable
+	 * @throws IllegalArgumentException thrown if <code>page</code> isn't positive
+	 */
+	public void getSent(int page, PaginateCallback<File> callback, FailCallback failCallback) {
+		if(page <= 0) throw new IllegalArgumentException("Page number must be positive, " + page + " given.");
+
+		var params = new HashMap<String, Integer>();
+		params.put("page", page);
+		get("sent", params, callback, failCallback);
+	}
+
+	/**
+	 * Get a paginate of all the received files.
+	 * @param page the page number, must be positive
+	 * @param callback the callback executed on success
+	 * @param failCallback the callback executed on failure, nullable
+	 * @throws IllegalArgumentException thrown if <code>page</code> isn't positive
+	 */
+	public void getReceived(int page, PaginateCallback<File> callback, FailCallback failCallback) {
+		if(page <= 0) throw new IllegalArgumentException("Page number must be positive, " + page + " given.");
+
+		var params = new HashMap<String, Integer>();
+		params.put("page", page);
+		get("received", params, callback, failCallback);
 	}
 
 }

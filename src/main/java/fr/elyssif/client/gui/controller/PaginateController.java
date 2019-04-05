@@ -26,7 +26,7 @@ public final class PaginateController extends Controller {
 
 	private Paginator<? extends Model<?>> paginator;
 	private Runnable callback;
-	private int page = 0;
+	private int page = 1;
 
 	public void initialize(URL location, ResourceBundle resources) {
 		if(Config.getInstance().isVerbose())
@@ -49,6 +49,10 @@ public final class PaginateController extends Controller {
 
 	public final void setOnPageChange(Runnable callback) {
 		this.callback = callback;
+	}
+
+	public final int getPage() {
+		return page;
 	}
 
 	@FXML

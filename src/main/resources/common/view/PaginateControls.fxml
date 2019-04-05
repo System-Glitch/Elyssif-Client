@@ -12,7 +12,7 @@
 	<children>
 	   <BorderPane>
 		   <left>
-		      <JFXButton fx:id="previousButton" prefWidth="24.0" BorderPane.alignment="CENTER">
+		      <JFXButton fx:id="previousButton" onAction="#onPreviousClicked" prefWidth="24.0" BorderPane.alignment="CENTER">
 		         <graphic>
 		            <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 		               <image>
@@ -23,7 +23,7 @@
 		      </JFXButton>
 		   </left>
 		   <right>
-		      <JFXButton fx:id="nextButton" prefWidth="24.0" BorderPane.alignment="CENTER">
+		      <JFXButton fx:id="nextButton" onAction="#onNextClicked" prefWidth="24.0" BorderPane.alignment="CENTER">
 		         <graphic>
 		            <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 		               <image>

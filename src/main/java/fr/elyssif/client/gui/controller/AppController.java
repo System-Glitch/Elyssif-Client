@@ -48,6 +48,7 @@ public final class AppController extends FadeController implements Lockable {
 		super.show(transition, backController);
 		drawer.close();
 		sideMenuController.selectIndex(0);
+		((HomeController) containerController.getController("home")).refresh();
 	}
 
 	private void initSideMenu() {
