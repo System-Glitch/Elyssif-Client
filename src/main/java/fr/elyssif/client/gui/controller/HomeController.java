@@ -43,10 +43,9 @@ public final class HomeController extends FadeController {
 			Logger.getGlobal().info("Loading home controller.");
 		super.initialize(location, resources);
 
-		show(false);
-
 		sentList = FXCollections.observableArrayList();
 		receivedList = FXCollections.observableArrayList();
+		show(false);
 
 		failCallback = new FailCallback() {
 			public void run() {
@@ -73,6 +72,8 @@ public final class HomeController extends FadeController {
 	@Override
 	protected void show(boolean transition, Controller backController) {
 		super.show(transition, backController);
+		sentList.clear();
+		receivedList.clear();
 		refresh();
 	}
 
