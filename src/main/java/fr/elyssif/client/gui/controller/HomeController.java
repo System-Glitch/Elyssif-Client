@@ -92,6 +92,7 @@ public final class HomeController extends FadeController {
 					sentList.add((File) model);
 				}
 
+				sentListView.scrollTo(0);
 				sentPaginateController.setPaginator(getPaginator());
 			}
 		}, failCallback);
@@ -106,6 +107,7 @@ public final class HomeController extends FadeController {
 					receivedList.add((File) model);
 				}
 
+				receivedListView.scrollTo(0);
 				receivedPaginateController.setPaginator(getPaginator());
 			}
 		}, failCallback);
