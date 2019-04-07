@@ -53,11 +53,11 @@ public final class HomeController extends FadeController {
 			}
 		};
 
-		var factory = new FileListFactory();
+		var factory = new FileListFactory(getBundle());
 		factory.setMode(FileListFactory.MODE_SEND);
 		factory.make(sentListView, sentList); // TODO handle on click
 
-		factory = new FileListFactory();
+		factory = new FileListFactory(getBundle());
 		factory.setMode(FileListFactory.MODE_RECEIVE);
 		factory.make(receivedListView, receivedList); // TODO handle on click
 

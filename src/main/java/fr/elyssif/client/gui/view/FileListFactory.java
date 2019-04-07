@@ -2,6 +2,7 @@ package fr.elyssif.client.gui.view;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.ResourceBundle;
 
 import com.jfoenix.controls.JFXListView;
 
@@ -31,6 +32,15 @@ public class FileListFactory implements ListFactory<File> {
 	public static final int MODE_RECEIVE = 1;
 
 	private int mode = MODE_SEND;
+	private ResourceBundle bundle;
+
+	/**
+	 * Create a new instance of File list factory.
+	 * @param bundle the language bundle to use for the list items
+	 */
+	public FileListFactory(ResourceBundle bundle) {
+		this.bundle = bundle;
+	}
 
 	public void setMode(int mode) {
 		this.mode = mode;
@@ -85,7 +95,7 @@ public class FileListFactory implements ListFactory<File> {
 
 		Date sentDate = file.getCipheredAt().get();
 		Date receivedDate = file.getDecipheredAt().get();
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd"); // TODO language file
+		SimpleDateFormat format = new SimpleDateFormat(bundle.getString("date-format"));
 
 		ImageView icon = new ImageView(sentDate != null && receivedDate != null ? "view/img/checked.png" : "view/img/stopwatch.png");
 		icon.setFitHeight(42);
@@ -98,17 +108,17 @@ public class FileListFactory implements ListFactory<File> {
 		fileNameLabel.getStyleClass().add("text-lg");
 
 		User user = mode == MODE_SEND ? file.getRecipient().get() : file.getSender().get();
-		Label fromLabel = new Label((mode == MODE_SEND ? "To: " : "From: ") + user.getName().get() + "(" + user.getEmail().get() + ")"); // TODO language file
+		Label fromLabel = new Label(bundle.getString(mode == MODE_SEND ? "to" : "from") + " " + user.getName().get() + "(" + user.getEmail().get() + ")");
 		fromLabel.getStyleClass().add("text-sm");
 
 		BorderPane datesContainer = new BorderPane();
 
-		Label sentLabel = new Label(sentDate != null ? "Sent " + format.format(sentDate) : "Pending"); // TODO language file + date format
+		Label sentLabel = new Label(sentDate != null ? bundle.getString("sent") + " " + format.format(sentDate) : bundle.getString("pending"));
 		sentLabel.getStyleClass().add("text-sm");
-		datesContainer.setLeft(sentLabel); // TODO language file
+		datesContainer.setLeft(sentLabel);
 		BorderPane.setMargin(sentLabel, new Insets(0, 15, 0, 0));
 
-		Label receivedLabel = new Label(receivedDate != null ? "Received " + format.format(receivedDate) : "Pending"); // TODO language file + date format
+		Label receivedLabel = new Label(receivedDate != null ? bundle.getString("received") + " " + format.format(receivedDate) : bundle.getString("pending"));
 		receivedLabel.getStyleClass().add("text-sm");
 		receivedLabel.setTextAlignment(TextAlignment.RIGHT);
 		datesContainer.setRight(receivedLabel);
