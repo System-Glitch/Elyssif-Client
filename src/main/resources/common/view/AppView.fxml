@@ -48,7 +48,7 @@
 								</ImageView>
 							</graphic>
 						</JFXButton>
-						<JFXButton alignment="CENTER" maxHeight="1.7976931348623157E308" ripplerFill="WHITE">
+						<JFXButton alignment="CENTER" maxHeight="1.7976931348623157E308" ripplerFill="WHITE" fx:id="refreshButton" onAction="#refreshClicked">
 							<graphic>
 								<ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
 									<image>

@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDrawer;
 import com.jfoenix.controls.JFXHamburger;
 
@@ -24,6 +25,8 @@ public final class AppController extends FadeController implements Lockable {
 	@FXML private StackPane titleBurgerContainer;
 	@FXML private JFXHamburger titleBurger;
 	@FXML private JFXDrawer drawer;
+
+	@FXML private JFXButton refreshButton;
 
 	@FXML private AppContainerController containerController;
 	@FXML private SideMenuController sideMenuController;
@@ -78,6 +81,7 @@ public final class AppController extends FadeController implements Lockable {
 	public void bindControls() {
 		getFadePane().disableProperty().bind(disableProperty);
 		drawer.disableProperty().bind(disableProperty);
+		refreshButton.disableProperty().bind(containerController.getController("home").getPane().disableProperty());
 		sideMenuController.getPane().disableProperty().bind(disableProperty);
 	}
 
@@ -99,6 +103,11 @@ public final class AppController extends FadeController implements Lockable {
 		sideMenuController.getCurrentController().showNext(receiveViewController, true);
 		sideMenuController.setCurrentController(receiveViewController);
 		drawer.close();
+	}
+
+	@FXML
+	private void refreshClicked() {
+		((HomeController) containerController.getController("home")).refresh();
 	}
 
 }
