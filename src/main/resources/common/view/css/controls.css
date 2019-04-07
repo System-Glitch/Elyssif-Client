@@ -44,14 +44,18 @@
 /* SPINNERS                       */
 /* ------------------------------ */
 
-.jfx-spinner:determinate .arc{
+.jfx-spinner:determinate .arc {
     -fx-stroke: #0F9D58;
 }
 
-.jfx-spinner:determinate .percentage{
+.jfx-spinner:determinate .percentage {
     -fx-fill: #4d4d4d;
 }
 
 .jfx-spinner .text {
 	-fx-translate-y: 145;
+}
+
+.jfx-spinner:indeterminate .text {
+	-fx-opacity: 0;
 }
