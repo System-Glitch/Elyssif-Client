@@ -53,17 +53,32 @@ public final class HomeController extends FadeController {
 			}
 		};
 
+		initLists();
+
+		sentPaginateController.setOnPageChange(() -> refreshSent());
+		receivedPaginateController.setOnPageChange(() -> refreshReceived());
+		Platform.runLater(() -> repository = new FileRepository());
+	}
+
+	private void initLists() {
 		var factory = new FileListFactory(getBundle());
 		factory.setMode(FileListFactory.MODE_SEND);
 		factory.make(sentListView, sentList); // TODO handle on click
 
 		factory = new FileListFactory(getBundle());
 		factory.setMode(FileListFactory.MODE_RECEIVE);
-		factory.make(receivedListView, receivedList); // TODO handle on click
-
-		sentPaginateController.setOnPageChange(() -> refreshSent());
-		receivedPaginateController.setOnPageChange(() -> refreshReceived());
-		Platform.runLater(() -> repository = new FileRepository());
+		factory.make(receivedListView, receivedList, event -> {
+			File file = receivedListView.getSelectionModel().getSelectedItem();
+			if (event.getClickCount() == 2 && file != null) {
+				if(file.getDecipheredAt().get() == null) {
+					Controller appController = MainController.getInstance().getController("app");
+					Controller receiveViewController = appController.getController("container").getController("receive");
+					SideMenuController sideMenuController = (SideMenuController) appController.getController("sideMenu");
+					sideMenuController.getCurrentController().showNext(receiveViewController, true);
+					sideMenuController.setCurrentController(receiveViewController);
+				}
+			}
+		});
 	}
 
 	/**

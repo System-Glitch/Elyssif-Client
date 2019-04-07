@@ -76,6 +76,8 @@ public final class ReceiveController extends EncryptionController implements Loc
 		form.setOpacity(1);
 		foundContainer.setOpacity(0);
 		fileModel = null;
+
+		browseButton.requestFocus();
 	}
 
 	@FXML
