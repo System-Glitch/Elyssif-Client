@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 import fr.elyssif.client.callback.ErrorCallback;
 import fr.elyssif.client.security.Crypter;
 
-public class CrypterTest {
+class CrypterTest {
 
 	@Test
 	public void testEncrypt() {
