@@ -1,6 +1,7 @@
 package fr.elyssif.client;
 
 
+import static fr.elyssif.client.TestUtils.asyncFail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -88,22 +89,6 @@ class CrypterTest {
 				throw failure.get();
 		} catch (InterruptedException e) {
 			fail(e);
-		}
-	}
-
-	private void asyncFail(String message, AtomicReference<AssertionError> failure) {
-		try {
-			fail(message);
-		} catch (AssertionError e) {
-			failure.set(e);
-		}
-	}
-
-	private void asyncFail(Throwable throwable, AtomicReference<AssertionError> failure) {
-		try {
-			fail(throwable);
-		} catch (AssertionError e) {
-			failure.set(e);
 		}
 	}
 
