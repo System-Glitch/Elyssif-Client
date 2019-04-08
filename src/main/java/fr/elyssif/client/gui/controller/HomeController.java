@@ -13,11 +13,13 @@ import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.model.File;
 import fr.elyssif.client.gui.model.Model;
 import fr.elyssif.client.gui.repository.FileRepository;
+import fr.elyssif.client.gui.view.FileDialog;
 import fr.elyssif.client.gui.view.FileListFactory;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.layout.StackPane;
 
 /**
  * Controller for the "home" view
@@ -76,6 +78,9 @@ public final class HomeController extends FadeController {
 					SideMenuController sideMenuController = (SideMenuController) appController.getController("sideMenu");
 					sideMenuController.getCurrentController().showNext(receiveViewController, true);
 					sideMenuController.setCurrentController(receiveViewController);
+				} else {
+					var dialog = new FileDialog(file, repository, getBundle());
+					dialog.showDialog((StackPane) MainController.getInstance().getPane());
 				}
 			}
 		});

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXDialogLayout?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.layout.VBox?>
+
+<JFXDialogLayout fx:id="pane" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.FileDialogController">
+	<heading>
+		<Label fx:id="title" styleClass="text-lg">FILE NAME</Label>
+	</heading>
+	<body>
+		<VBox spacing="5.0">
+			<Label fx:id="fromLabel">From: </Label>
+			<Label fx:id="toLabel">To: </Label>
+			<Label fx:id="sentLabel">Sent: </Label>
+			<Label fx:id="receivedLabel">Received: </Label>
+		</VBox>
+	</body>
+	<actions>
+		<JFXButton fx:id="saveButton" onAction="#saveClicked" styleClass="green-A700" text="%decrypt">
+			<graphic>
+				<ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+					<image>
+						<Image url="@img/padlock.png" />
+					</image>
+				</ImageView>
+			</graphic>
+		</JFXButton>
+		<JFXButton fx:id="saveButton" onAction="#deleteClicked" styleClass="red-A700" text="%delete">
+			<graphic>
+				<ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+					<image>
+						<Image url="@img/save.png" />
+					</image>
+				</ImageView>
+			</graphic>
+		</JFXButton>
+	</actions>
+</JFXDialogLayout>
