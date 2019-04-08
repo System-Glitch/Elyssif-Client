@@ -16,15 +16,6 @@ public class ServerValidator extends ValidatorBase {
 
 	private ArrayList<String> messages;
 
-	public ServerValidator() {
-		this(null);
-	}
-
-	public ServerValidator(ArrayList<String> messages) {
-		super();
-		this.messages = messages;
-	}
-
 	public final void setMessages(ArrayList<String> messages) {
 		this.messages = messages;
 	}

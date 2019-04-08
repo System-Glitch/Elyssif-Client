@@ -14,12 +14,12 @@ import javafx.scene.control.TextInputControl;
 public class TextMatchValidator extends ValidatorBase {
 
 	private TextInputControl field;
-	
+
 	public TextMatchValidator(String message, TextInputControl field) {
-        super(message);
-        this.field = field;
+		super(message);
+		this.field = field;
 	}
-	
+
 	protected void eval() {
 		TextInputControl textField = (TextInputControl) srcControl.get();
 		if (textField.getText() != null && !textField.getText().equals(field.getText())) {
@@ -27,13 +27,5 @@ public class TextMatchValidator extends ValidatorBase {
 		} else {
 			hasErrors.set(false);
 		}
-	}
-
-	public final TextInputControl getField() {
-		return field;
-	}
-
-	public final void setField(TextInputControl field) {
-		this.field = field;
 	}
 }
