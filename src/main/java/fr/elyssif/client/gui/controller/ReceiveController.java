@@ -134,7 +134,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 			});
 		}, exception -> {
 			Platform.runLater(() -> {
-				SnackbarController.getInstance().message(exception.getMessage(), SnackbarMessageType.ERROR, 4000);
+				SnackbarController.getInstance().message(exception.getMessage().replace("server-error", getBundle().getString("server-error")), SnackbarMessageType.ERROR, 4000);
 				hideHashSpinner();
 				resetForm();
 				revertAnimation();
