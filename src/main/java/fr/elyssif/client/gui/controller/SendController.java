@@ -1,9 +1,7 @@
 package fr.elyssif.client.gui.controller;
 
 import java.net.URL;
-import java.util.Random;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXButton;
@@ -25,6 +23,7 @@ import fr.elyssif.client.gui.validation.StringMaxLengthValidator;
 import fr.elyssif.client.gui.validation.StringMinLengthValidator;
 import fr.elyssif.client.gui.view.LookupModal;
 import fr.elyssif.client.gui.view.UserListFactory;
+import fr.elyssif.client.security.Crypter;
 import fr.elyssif.client.security.Hash;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -97,10 +96,10 @@ public final class SendController extends EncryptionController implements Lockab
 		});
 	}
 
-
 	protected void onButtonClicked() {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle(getBundle().getString("save-encrypt"));
+		// TODO check selected file is not same as destination file
 		setDestinationFile(fileChooser.showSaveDialog(getPane().getScene().getWindow()));
 		if(getDestinationFile() != null) {
 			setLocked(true);
@@ -122,9 +121,6 @@ public final class SendController extends EncryptionController implements Lockab
 				getFileRepository().store(fileModel, new ModelCallback<File>() {
 
 					public void run() {
-						Logger.getGlobal().info(fileModel.getId().asString().get());
-						Logger.getGlobal().info(fileModel.getPublicKey().get());
-
 						encrypt(successCallback, failureCallback);
 					}
 
@@ -155,20 +151,11 @@ public final class SendController extends EncryptionController implements Lockab
 	}
 
 	private void encrypt(Runnable successCallback, Runnable failureCallback) {
-		new Thread(() -> {
-			// TODO encrypt
-			Random random = new Random();
-			while(getProgress() < 1) {
-				setProgress(getProgress() + random.nextDouble() / 100);
-				try {
-					Thread.sleep(25);
-				} catch (InterruptedException ie) {
-					Logger.getGlobal().log(Level.SEVERE, "Error in fake process." , ie);
-					failureCallback.run();
-					return;
-				}
-			}
 
+		Crypter crypter = new Crypter(selectedFile);
+		crypter.encrypt(fileModel.getPublicKey().get(), getDestinationFile(), progress -> {
+			Platform.runLater(() -> setProgress(progress));
+		}, () -> {
 			setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
 
 			Hash.sha256(getDestinationFile(), new HashCallback() {
@@ -190,7 +177,11 @@ public final class SendController extends EncryptionController implements Lockab
 						}
 					}, new FailCallback() {
 						public void run() {
-							SnackbarController.getInstance().message(getFullMessage(), SnackbarMessageType.ERROR, 4000);
+							if(getStatus() == 403) {
+								SnackbarController.getInstance().message(getBundle().getString("forbidden"), SnackbarMessageType.ERROR, 4000);
+							} else {
+								SnackbarController.getInstance().message(getFullMessage(), SnackbarMessageType.ERROR, 4000);
+							}
 							failureCallback.run();
 							fileModel = null;
 						}
@@ -200,9 +191,16 @@ public final class SendController extends EncryptionController implements Lockab
 				public void run() {
 					SnackbarController.getInstance().message(getException().getMessage(), SnackbarMessageType.ERROR, 4000);
 					failureCallback.run();
+					fileModel = null;
 				}
 			});
-		}).start();
+		}, new ErrorCallback() {
+			public void run() {
+				SnackbarController.getInstance().message(getException().getMessage(), SnackbarMessageType.ERROR, 4000);
+				failureCallback.run();
+				fileModel = null;
+			}
+		});
 	}
 
 	@Override

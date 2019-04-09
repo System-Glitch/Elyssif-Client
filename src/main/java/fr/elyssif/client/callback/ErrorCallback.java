@@ -5,7 +5,7 @@ package fr.elyssif.client.callback;
  * @author Jérémy LAMBERT
  *
  */
-public abstract class ErrorCallback implements Runnable {
+public abstract class ErrorCallback implements Runnable { // TODO change to functionnal interface
 
 	private Exception exception;
 

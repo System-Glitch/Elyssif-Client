@@ -31,17 +31,18 @@ import org.bouncycastle.jce.spec.ECPrivateKeySpec;
 import org.bouncycastle.util.Arrays;
 
 import fr.elyssif.client.callback.ErrorCallback;
+import fr.elyssif.client.callback.ProgressCallback;
 
 /**
  * Handles asynchronous encryption and decryption using elliptic curves (ECIES).
  * @author Jérémy LAMBERT
- * @author Micka�l PROUST
+ * @author Mickaël PROUST
  *
  */
 public class Crypter {
 
 	private static final String CURVE = "secp256k1";
-	
+
 	private File source;
 	private static final int BUFFER_LENGTH = 2048;
 
@@ -54,7 +55,7 @@ public class Crypter {
 		Security.addProvider(new BouncyCastleProvider());
 	}
 
-	private void process(String keyHex, int cipherMode, File destination, Runnable callback, ErrorCallback failCallback) {
+	private void process(String keyHex, int cipherMode, File destination, ProgressCallback progressCallback, Runnable callback, ErrorCallback failCallback) {
 
 		new Thread(() -> {
 			try {
@@ -67,12 +68,16 @@ public class Crypter {
 				try {
 					var cipher = Cipher.getInstance("ECIES");
 					isr = new FileInputStream(source);
+					final int total = isr.available();
+					int totalRead = 0;
 
 					cipher.init(cipherMode, key);
 					output = new CipherOutputStream(new FileOutputStream(destination), cipher);
 
 					while((read = isr.read(buffer)) != -1) {
 						output.write(Arrays.copyOf(buffer, read));
+						totalRead += read;
+						progressCallback.progress((double)totalRead / total);
 					}
 
 					closeStream(output, failCallback);
@@ -131,11 +136,13 @@ public class Crypter {
 	 * the result to the given destination file.
 	 * @param publicKey a hex representation of the public key
 	 * @param destination the output file
+	 * @param progressCallback the callback executed multiple times
+	 * as the process progresses
 	 * @param callback the callback executed on success
 	 * @param failCallback the callback executed on error
 	 */
-	public void encrypt(String publicKey, File destination, Runnable callback, ErrorCallback failCallback) {
-		process(publicKey, Cipher.ENCRYPT_MODE, destination, callback, failCallback);
+	public void encrypt(String publicKey, File destination, ProgressCallback progressCallback, Runnable callback, ErrorCallback failCallback) {
+		process(publicKey, Cipher.ENCRYPT_MODE, destination, progressCallback, callback, failCallback);
 	}
 
 	/**
@@ -143,11 +150,13 @@ public class Crypter {
 	 * the result to the given destination file.
 	 * @param privateKey a hex representation of the private key
 	 * @param destination the output file
+	 * @param progressCallback the callback executed multiple times
+	 * as the process progresses
 	 * @param callback the callback executed on success
 	 * @param failCallback the callback executed on error
 	 */
-	public void decrypt(String privateKey, File destination, Runnable callback, ErrorCallback failCallback) {
-		process(privateKey, Cipher.DECRYPT_MODE, destination, callback, failCallback);
+	public void decrypt(String privateKey, File destination, ProgressCallback progressCallback, Runnable callback, ErrorCallback failCallback) {
+		process(privateKey, Cipher.DECRYPT_MODE, destination, progressCallback, callback, failCallback);
 	}
 
 }

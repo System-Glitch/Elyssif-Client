@@ -5,7 +5,7 @@ package fr.elyssif.client.callback;
  * @author Jérémy LAMBERT
  *
  */
-public abstract class HashCallback implements Runnable {
+public abstract class HashCallback implements Runnable { // TODO change to functionnal interface
 
 	private byte[] digest;
 

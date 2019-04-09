@@ -46,10 +46,10 @@ class CrypterTest {
 
 		CountDownLatch latch = new CountDownLatch(1);
 		AtomicReference<AssertionError> failure = new AtomicReference<>();
-		encrypter.encrypt(pubKey, destination, () -> {
+		encrypter.encrypt(pubKey, destination, progress -> {}, () -> {
 
 			var decrypter = new Crypter(destination);
-			decrypter.decrypt(privKey, decryptDestination, () -> {
+			decrypter.decrypt(privKey, decryptDestination, progress -> {}, () -> {
 
 				try {
 					var br = new BufferedReader(new FileReader(decryptDestination));

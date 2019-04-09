@@ -1,9 +1,7 @@
 package fr.elyssif.client.gui.controller;
 
 import java.net.URL;
-import java.util.Random;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXButton;
@@ -23,6 +21,7 @@ import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.model.File;
 import fr.elyssif.client.gui.model.User;
 import fr.elyssif.client.gui.view.ViewUtils;
+import fr.elyssif.client.security.Crypter;
 import fr.elyssif.client.security.Hash;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
@@ -69,6 +68,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 		super.show(transition, backController);
 		cancelButton.setDisable(true);
 		saveButton.setDisable(true);
+		reset();
 		resetForm();
 		resetValidation();
 		form.toFront();
@@ -94,6 +94,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 
 	@FXML
 	private void cancelClicked() {
+		reset();
 		showForm();
 	}
 
@@ -101,6 +102,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 	private void saveClicked() {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle(getBundle().getString("save-decrypt"));
+		// TODO check selected file is not same as destination file
 		setDestinationFile(fileChooser.showSaveDialog(getPane().getScene().getWindow()));
 		if(getDestinationFile() != null) {
 			setLocked(true);
@@ -204,40 +206,46 @@ public final class ReceiveController extends EncryptionController implements Loc
 	@Override
 	protected final void process(Runnable successCallback, Runnable failureCallback) {
 
-		new Thread(() -> {
-			// TODO decrypt
-			Random random = new Random();
-			while(getProgress() < 1) {
-				setProgress(getProgress() + random.nextDouble() / 100);
-				try {
-					Thread.sleep(25);
-				} catch (InterruptedException ie) {
-					Logger.getGlobal().log(Level.SEVERE, "Error in fake process." , ie);
+		Crypter crypter = new Crypter(selectedFile);
+		crypter.decrypt(fileModel.getPrivateKey().get(), getDestinationFile(), progress -> {
+			Platform.runLater(() -> setProgress(progress));
+		}, () -> {
+			Hash.sha256(getDestinationFile(), new HashCallback() {
+				public void run() {
+					fileModel.setHash(getDigestHex());
+					fileModel.setHashCiphered(hashCiphered);
+					getFileRepository().check(fileModel, new RestCallback() {
+						public void run() {
+							SnackbarController.getInstance().message(getBundle().getString("decrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
+							successCallback.run();
+							reset();
+						}
+					}, new FailCallback() {
+						public void run() {
+							if(getStatus() == 404) {
+								openFailDialog(successCallback, failureCallback);
+							} else {
+								SnackbarController.getInstance().message(getStatus() + ": " + getBundle().getString("server-error").replace("\\n", "\n"), SnackbarMessageType.ERROR, 4000);
+								failureCallback.run();
+								reset();
+							}
+						}
+					});
+				}
+			}, new ErrorCallback() {
+				public void run() {
+					SnackbarController.getInstance().message(getException().getMessage(), SnackbarMessageType.ERROR, 4000);
 					failureCallback.run();
-					return;
-				}
-			}
-
-			fileModel.setHash("b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde8"); // TODO real hash
-			fileModel.setHashCiphered(hashCiphered);
-			getFileRepository().check(fileModel, new RestCallback() {
-				public void run() {
-					SnackbarController.getInstance().message(getBundle().getString("decrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
-					successCallback.run();
-					fileModel = null;
-				}
-			}, new FailCallback() {
-				public void run() {
-					if(getStatus() == 404) {
-						openFailDialog(successCallback, failureCallback);
-					} else {
-						SnackbarController.getInstance().message(getStatus() + ": " + getBundle().getString("server-error").replace("\\n", "\n"), SnackbarMessageType.ERROR, 4000);
-						failureCallback.run();
-						fileModel = null;
-					}
+					reset();
 				}
 			});
-		}).start();
+		}, new ErrorCallback() {
+			public void run() {
+				SnackbarController.getInstance().message(getException().getMessage(), SnackbarMessageType.ERROR, 4000);
+				failureCallback.run();
+				reset();
+			}
+		});
 	}
 
 	private void openFailDialog(Runnable successCallback, Runnable failureCallback) {
@@ -308,6 +316,10 @@ public final class ReceiveController extends EncryptionController implements Loc
 	@Override
 	public void resetForm() {
 		fileInput.setText(null);
+	}
+
+	public void reset() {
+		fileModel = null;
 		selectedFile = null;
 		hashCiphered = null;
 	}
