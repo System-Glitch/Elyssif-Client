@@ -9,7 +9,6 @@ import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.validation.RequiredFieldValidator;
 
 import fr.elyssif.client.Config;
-import fr.elyssif.client.callback.ErrorCallback;
 import fr.elyssif.client.callback.FailCallback;
 import fr.elyssif.client.callback.FormCallback;
 import fr.elyssif.client.callback.HashCallback;
@@ -139,14 +138,12 @@ public final class SendController extends EncryptionController implements Lockab
 				});
 			}
 
-		}, new ErrorCallback() {
-			public void run() {
-				Platform.runLater(() -> {
-					SnackbarController.getInstance().message(getException().getMessage(), SnackbarMessageType.ERROR, 4000);
-					resetForm();
-					revertAnimation();
-				});
-			}
+		}, exception -> {
+			Platform.runLater(() -> {
+				SnackbarController.getInstance().message(exception.getMessage(), SnackbarMessageType.ERROR, 4000);
+				resetForm();
+				revertAnimation();
+			});
 		});
 	}
 
@@ -187,20 +184,14 @@ public final class SendController extends EncryptionController implements Lockab
 						}
 					});
 				}
-			}, new ErrorCallback() {
-				public void run() {
-					SnackbarController.getInstance().message(getException().getMessage(), SnackbarMessageType.ERROR, 4000);
-					failureCallback.run();
-					fileModel = null;
-				}
-			});
-		}, new ErrorCallback() {
-			public void run() {
-				SnackbarController.getInstance().message(getException().getMessage(), SnackbarMessageType.ERROR, 4000);
-				failureCallback.run();
-				fileModel = null;
-			}
-		});
+			}, exception -> handleException(exception, failureCallback));
+		}, exception -> handleException(exception, failureCallback));
+	}
+
+	private void handleException(Exception exception, Runnable failureCallback) {
+		SnackbarController.getInstance().message(exception.getMessage(), SnackbarMessageType.ERROR, 4000);
+		failureCallback.run();
+		fileModel = null;
 	}
 
 	@Override

@@ -14,12 +14,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
-import fr.elyssif.client.callback.ErrorCallback;
 import fr.elyssif.client.callback.HashCallback;
 import fr.elyssif.client.security.Hash;
 
 class HashTest {
-	
+
 	private File createInputFile() {
 		final String inputContent = "Hello world!";
 		var inputFile = new File("input.txt");
@@ -32,10 +31,10 @@ class HashTest {
 			fail(e);
 			return null;
 		}
-		
+
 		return inputFile;
 	}
-	
+
 	@Test
 	void testSha256() {
 
@@ -56,16 +55,11 @@ class HashTest {
 				latch.countDown();
 			}
 
-		}, new ErrorCallback() {
-
-			@Override
-			public void run() {
-				asyncFail("SHA-256 failure.", failure);
-				latch.countDown();
-			}
-
+		}, exception -> {
+			asyncFail("SHA-256 failure.", failure);
+			latch.countDown();
 		});
-		
+
 		try {
 			latch.await();
 
@@ -77,7 +71,7 @@ class HashTest {
 			fail(e);
 		}
 	}
-	
+
 	@Test
 	void testFileError() {
 		File inputFile = new File("doesntexist.bin");
@@ -97,16 +91,11 @@ class HashTest {
 				latch.countDown();
 			}
 
-		}, new ErrorCallback() {
-
-			@Override
-			public void run() {
-				assertTrue(getException() instanceof IOException);
-				latch.countDown();
-			}
-
+		}, exception -> {
+			assertTrue(exception instanceof IOException);
+			latch.countDown();
 		});
-		
+
 		try {
 			latch.await();
 

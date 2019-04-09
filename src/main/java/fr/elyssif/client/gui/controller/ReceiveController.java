@@ -12,7 +12,6 @@ import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.validation.RequiredFieldValidator;
 
 import fr.elyssif.client.Config;
-import fr.elyssif.client.callback.ErrorCallback;
 import fr.elyssif.client.callback.FailCallback;
 import fr.elyssif.client.callback.HashCallback;
 import fr.elyssif.client.callback.ModelCallback;
@@ -136,15 +135,13 @@ public final class ReceiveController extends EncryptionController implements Loc
 					}
 				});
 			}
-		}, new ErrorCallback() {
-			public void run() {
-				Platform.runLater(() -> {
-					SnackbarController.getInstance().message(getException().getMessage(), SnackbarMessageType.ERROR, 4000);
-					hideHashSpinner();
-					resetForm();
-					revertAnimation();
-				});
-			}
+		}, exception -> {
+			Platform.runLater(() -> {
+				SnackbarController.getInstance().message(exception.getMessage(), SnackbarMessageType.ERROR, 4000);
+				hideHashSpinner();
+				resetForm();
+				revertAnimation();
+			});
 		});
 	}
 
@@ -232,20 +229,14 @@ public final class ReceiveController extends EncryptionController implements Loc
 						}
 					});
 				}
-			}, new ErrorCallback() {
-				public void run() {
-					SnackbarController.getInstance().message(getException().getMessage(), SnackbarMessageType.ERROR, 4000);
-					failureCallback.run();
-					reset();
-				}
-			});
-		}, new ErrorCallback() {
-			public void run() {
-				SnackbarController.getInstance().message(getException().getMessage(), SnackbarMessageType.ERROR, 4000);
-				failureCallback.run();
-				reset();
-			}
-		});
+			}, exception -> handleException(exception, failureCallback));
+		}, exception -> handleException(exception, failureCallback));
+	}
+
+	private void handleException(Exception exception, Runnable failureCallback) {
+		SnackbarController.getInstance().message(exception.getMessage(), SnackbarMessageType.ERROR, 4000);
+		failureCallback.run();
+		reset();
 	}
 
 	private void openFailDialog(Runnable successCallback, Runnable failureCallback) {

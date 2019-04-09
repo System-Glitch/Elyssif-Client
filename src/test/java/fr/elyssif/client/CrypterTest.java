@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
-import fr.elyssif.client.callback.ErrorCallback;
 import fr.elyssif.client.security.Crypter;
 
 class CrypterTest {
@@ -64,18 +63,13 @@ class CrypterTest {
 					asyncFail(e, failure);
 				}
 				latch.countDown();
-			}, new ErrorCallback() {
-				public void run() {
-					asyncFail("Decryption has failed!", failure);
-					latch.countDown();
-				}
-
-			});
-		}, new ErrorCallback() {
-			public void run() {
-				asyncFail("Encryption has failed!", failure);
+			}, exception -> {
+				asyncFail("Decryption has failed!", failure);
 				latch.countDown();
-			}
+			});
+		}, exception -> {
+			asyncFail("Encryption has failed!", failure);
+			latch.countDown();
 		});
 
 		try {

@@ -52,16 +52,14 @@ public abstract class Hash {
 
 			} catch (IOException | NoSuchAlgorithmException e) {
 				Logger.getGlobal().log(Level.SEVERE, "Error while hashing file.", e);
-				failCallback.setException(e);
-				failCallback.run();
+				failCallback.run(e);
 			} finally {
 				if(isr != null) {
 					try {
 						isr.close();
 					} catch (IOException e) {
 						Logger.getGlobal().log(Level.SEVERE, "Couldn't close file input stream.", e);
-						failCallback.setException(e);
-						failCallback.run();
+						failCallback.run(e);
 					}
 				}
 			}

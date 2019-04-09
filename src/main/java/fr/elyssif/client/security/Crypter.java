@@ -86,16 +86,14 @@ public class Crypter {
 
 				} catch (IOException | NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException e) {
 					Logger.getGlobal().log(Level.SEVERE, "Error while encrypting or decrypting file.", e);
-					failCallback.setException(e);
-					failCallback.run();
+					failCallback.run(e);
 				} finally {
 					closeStream(isr, failCallback);
 					closeStream(output, failCallback);
 				}
 			} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
 				Logger.getGlobal().log(Level.SEVERE, "Couldn't retrieve key from hex string.", e);
-				failCallback.setException(e);
-				failCallback.run();
+				failCallback.run(e);
 			}
 		}).start();
 	}
@@ -106,8 +104,7 @@ public class Crypter {
 				stream.close();
 			} catch (IOException e) {
 				Logger.getGlobal().log(Level.SEVERE, "Couldn't close stream.", e);
-				failCallback.setException(e);
-				failCallback.run();
+				failCallback.run(e);
 			}
 		}
 	}
