@@ -47,8 +47,7 @@ public abstract class Hash {
 				}
 
 				var digest = md.digest();
-				callback.setDigest(digest);
-				callback.run();
+				callback.run(digest);
 
 			} catch (IOException | NoSuchAlgorithmException e) {
 				Logger.getGlobal().log(Level.SEVERE, "Error while hashing file.", e);
@@ -65,6 +64,18 @@ public abstract class Hash {
 			}
 
 		}).start();
+	}
+
+	/**
+	 * Convert the given digest bytes to a hex string.
+	 * @return a hex representation of the given digest
+	 */
+	public static final String toHex(byte[] digest) {
+		var builder = new StringBuilder();
+		for(byte b : digest) {
+			builder.append(String.format("%02x", b));
+		}
+		return builder.toString();
 	}
 
 }

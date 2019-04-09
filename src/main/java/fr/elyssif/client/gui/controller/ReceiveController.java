@@ -13,7 +13,6 @@ import com.jfoenix.validation.RequiredFieldValidator;
 
 import fr.elyssif.client.Config;
 import fr.elyssif.client.callback.FailCallback;
-import fr.elyssif.client.callback.HashCallback;
 import fr.elyssif.client.callback.ModelCallback;
 import fr.elyssif.client.callback.RestCallback;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
@@ -114,27 +113,25 @@ public final class ReceiveController extends EncryptionController implements Loc
 		form.setDisable(true);
 		showHashSpinner();
 
-		Hash.sha256(selectedFile, new HashCallback() {
-			public void run() {
-				hashCiphered = getDigestHex();
-				getFileRepository().fetch(hashCiphered, new ModelCallback<File>() {
-					public void run() {
-						fileModel = getModel();
-						hideHashSpinner();
-						showFileFound();
+		Hash.sha256(selectedFile, digest -> {
+			hashCiphered = Hash.toHex(digest);
+			getFileRepository().fetch(hashCiphered, new ModelCallback<File>() {
+				public void run() {
+					fileModel = getModel();
+					hideHashSpinner();
+					showFileFound();
+				}
+			}, new FailCallback() {
+				public void run() {
+					if(getStatus() == 404) {
+						SnackbarController.getInstance().message(getBundle().getString("file-not-found"), SnackbarMessageType.ERROR, 4000);
+					} else {
+						SnackbarController.getInstance().message(getBundle().getString(getMessage()), SnackbarMessageType.ERROR, 4000);
 					}
-				}, new FailCallback() {
-					public void run() {
-						if(getStatus() == 404) {
-							SnackbarController.getInstance().message(getBundle().getString("file-not-found"), SnackbarMessageType.ERROR, 4000);
-						} else {
-							SnackbarController.getInstance().message(getBundle().getString(getMessage()), SnackbarMessageType.ERROR, 4000);
-						}
-						form.setDisable(false);
-						hideHashSpinner();
-					}
-				});
-			}
+					form.setDisable(false);
+					hideHashSpinner();
+				}
+			});
 		}, exception -> {
 			Platform.runLater(() -> {
 				SnackbarController.getInstance().message(exception.getMessage(), SnackbarMessageType.ERROR, 4000);
@@ -207,28 +204,26 @@ public final class ReceiveController extends EncryptionController implements Loc
 		crypter.decrypt(fileModel.getPrivateKey().get(), getDestinationFile(), progress -> {
 			Platform.runLater(() -> setProgress(progress));
 		}, () -> {
-			Hash.sha256(getDestinationFile(), new HashCallback() {
-				public void run() {
-					fileModel.setHash(getDigestHex());
-					fileModel.setHashCiphered(hashCiphered);
-					getFileRepository().check(fileModel, new RestCallback() {
-						public void run() {
-							SnackbarController.getInstance().message(getBundle().getString("decrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
-							successCallback.run();
+			Hash.sha256(getDestinationFile(), digest -> {
+				fileModel.setHash(Hash.toHex(digest));
+				fileModel.setHashCiphered(hashCiphered);
+				getFileRepository().check(fileModel, new RestCallback() {
+					public void run() {
+						SnackbarController.getInstance().message(getBundle().getString("decrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
+						successCallback.run();
+						reset();
+					}
+				}, new FailCallback() {
+					public void run() {
+						if(getStatus() == 404) {
+							openFailDialog(successCallback, failureCallback);
+						} else {
+							SnackbarController.getInstance().message(getStatus() + ": " + getBundle().getString("server-error").replace("\\n", "\n"), SnackbarMessageType.ERROR, 4000);
+							failureCallback.run();
 							reset();
 						}
-					}, new FailCallback() {
-						public void run() {
-							if(getStatus() == 404) {
-								openFailDialog(successCallback, failureCallback);
-							} else {
-								SnackbarController.getInstance().message(getStatus() + ": " + getBundle().getString("server-error").replace("\\n", "\n"), SnackbarMessageType.ERROR, 4000);
-								failureCallback.run();
-								reset();
-							}
-						}
-					});
-				}
+					}
+				});
 			}, exception -> handleException(exception, failureCallback));
 		}, exception -> handleException(exception, failureCallback));
 	}

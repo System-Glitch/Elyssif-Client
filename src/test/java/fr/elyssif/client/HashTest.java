@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
-import fr.elyssif.client.callback.HashCallback;
 import fr.elyssif.client.security.Hash;
 
 class HashTest {
@@ -43,18 +42,13 @@ class HashTest {
 		CountDownLatch latch = new CountDownLatch(1);
 		AtomicReference<AssertionError> failure = new AtomicReference<>();
 
-		Hash.sha256(inputFile, new HashCallback() {
-
-			@Override
-			public void run() {
-				try {
-					assertEquals("c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a", getDigestHex());
-				} catch (AssertionError e) {
-					failure.set(e);
-				}
-				latch.countDown();
+		Hash.sha256(inputFile, digest -> {
+			try {
+				assertEquals("c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a", Hash.toHex(digest));
+			} catch (AssertionError e) {
+				failure.set(e);
 			}
-
+			latch.countDown();
 		}, exception -> {
 			asyncFail("SHA-256 failure.", failure);
 			latch.countDown();
@@ -79,18 +73,13 @@ class HashTest {
 		CountDownLatch latch = new CountDownLatch(1);
 		AtomicReference<AssertionError> failure = new AtomicReference<>();
 
-		Hash.sha256(inputFile, new HashCallback() {
-
-			@Override
-			public void run() {
-				try {
-					fail("Success callback on non-existing file");
-				} catch (AssertionError e) {
-					failure.set(e);
-				}
-				latch.countDown();
+		Hash.sha256(inputFile, digest -> {
+			try {
+				fail("Success callback on non-existing file");
+			} catch (AssertionError e) {
+				failure.set(e);
 			}
-
+			latch.countDown();
 		}, exception -> {
 			assertTrue(exception instanceof IOException);
 			latch.countDown();
