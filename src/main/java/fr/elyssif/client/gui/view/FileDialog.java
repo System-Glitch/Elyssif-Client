@@ -21,6 +21,9 @@ import javafx.scene.layout.VBox;
  */
 public class FileDialog {
 
+	public static final int MODE_SEND = 0;
+	public static final int MODE_RECEIVE = 1;
+
 	private FileRepository repository;
 	private FileDialogController controller;
 	private ResourceBundle bundle;
@@ -60,8 +63,11 @@ public class FileDialog {
 	 * If the owner window for the dialog is set, input to all windows in the dialog's owner
 	 * chain is blocked while the dialog is being shown. Clicking the overlay closes the dialog.
 	 * @param ownerPane the container pane on which the dialog will popup
+	 * @param mode specifies the fields visible on the dialog.
+	 * If MODE_SENT, the "decrypt" button is hidden.
+	 * If MODE_RECEIVE, the "delete" button is hidden.
 	 */
-	public void showDialog(StackPane ownerPane) {
+	public void showDialog(StackPane ownerPane, int mode) {
 
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/FileDialogView.fxml"));
@@ -73,7 +79,7 @@ public class FileDialog {
 			controller = (FileDialogController) loader.getController();
 			controller.setRepository(repository);
 			controller.setParentDialog(dialog);
-			controller.setFile(file);
+			controller.setFile(file, mode);
 
 			dialog.show();
 

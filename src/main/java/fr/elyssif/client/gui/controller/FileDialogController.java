@@ -1,16 +1,24 @@
 package fr.elyssif.client.gui.controller;
 
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
+import com.jfoenix.controls.JFXDialogLayout;
 
 import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.model.File;
+import fr.elyssif.client.gui.model.User;
 import fr.elyssif.client.gui.repository.FileRepository;
+import fr.elyssif.client.gui.view.FileDialog;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 
 /**
  * Controller for the file dialog.
@@ -27,6 +35,9 @@ public final class FileDialogController extends Controller {
 	@FXML private Label sentLabel;
 	@FXML private Label receivedLabel;
 
+	@FXML private JFXButton decryptButton;
+	@FXML private JFXButton deleteButton;
+
 	private JFXDialog parentDialog;
 	private File file;
 
@@ -36,6 +47,9 @@ public final class FileDialogController extends Controller {
 		super.initialize(location, resources);
 
 		show(false);
+
+		decryptButton.managedProperty().bind(decryptButton.visibleProperty());
+		deleteButton.managedProperty().bind(deleteButton.visibleProperty());
 	}
 
 	/**
@@ -57,10 +71,31 @@ public final class FileDialogController extends Controller {
 	/**
 	 * Set the file displayed in the view associated with this controller.
 	 * @param file the file displayed in the view associated with this controller
+	 * @param mode specifies the fields visible on the dialog.
+	 * If MODE_SENT, the "decrypt" button is hidden.
+	 * If MODE_RECEIVE, the "delete" button is hidden.
 	 */
-	public final void setFile(File file) {
+	public final void setFile(File file, int mode) {
 		this.file = file;
-		// TODO set controls values
+
+		ResourceBundle bundle = getBundle();
+
+		title.setText(file.getName().get());
+
+		User sender = mode == FileDialog.MODE_RECEIVE ? file.getSender().get() : MainController.getInstance().getAuthenticator().getUser();
+		fromLabel.setText(sender.getName().get() + " (" + sender.getEmail().get() + ")");
+		User recipient = mode == FileDialog.MODE_SEND ? file.getRecipient().get() : MainController.getInstance().getAuthenticator().getUser();
+		toLabel.setText(recipient.getName().get() + " (" + recipient.getEmail().get() + ")");
+
+		Date sentDate = file.getCipheredAt().get();
+		Date receivedDate = file.getDecipheredAt().get();
+		SimpleDateFormat format = new SimpleDateFormat(bundle.getString("date-format"));
+
+		sentLabel.setText(sentDate != null ? format.format(sentDate) : bundle.getString("pending"));
+		receivedLabel.setText(receivedDate != null ? format.format(receivedDate) : bundle.getString("pending"));
+
+		decryptButton.setVisible(mode == FileDialog.MODE_RECEIVE);
+		deleteButton.setVisible(mode == FileDialog.MODE_SEND);
 	}
 
 	/**
@@ -74,15 +109,58 @@ public final class FileDialogController extends Controller {
 	public final void setParentDialog(JFXDialog parentDialog) {
 		this.parentDialog = parentDialog;
 	}
-	
+
 	@FXML
-	private void saveClicked() {
-		
+	private void decryptClicked() {
+		parentDialog.close();
+		Controller appController = MainController.getInstance().getController("app");
+		Controller receiveViewController = appController.getController("container").getController("receive");
+		SideMenuController sideMenuController = (SideMenuController) appController.getController("sideMenu");
+		sideMenuController.getCurrentController().showNext(receiveViewController, true);
+		sideMenuController.setCurrentController(receiveViewController);
 	}
-	
+
 	@FXML
 	private void deleteClicked() {
-		
+		openConfirmDialog();
+	}
+
+	private void openConfirmDialog() {
+		final JFXDialog dialog = new JFXDialog();
+		dialog.setDialogContainer((StackPane) getPane().getParent());
+
+		JFXDialogLayout content = new JFXDialogLayout();
+		Label header = new Label(getBundle().getString("confirm"), new ImageView("view/img/warning.png"));
+		header.getStyleClass().add("text-white");
+		content.setHeading(header);
+		Label body = new Label(getBundle().getString("file-delete-notice").replace("\\n", "\n"));
+		body.getStyleClass().add("text-md");
+		content.setBody(body);
+		content.getStyleClass().add("dialog-warning");
+
+		JFXButton acceptButton = new JFXButton(getBundle().getString("yes"));
+		acceptButton.getStyleClass().add("red-A700");
+		acceptButton.setOnAction(e -> {
+			dialog.close();
+			// TODO delete
+		});
+		ImageView image = new ImageView("view/img/delete.png");
+		image.setFitWidth(24);
+		image.setFitHeight(24);
+		acceptButton.setGraphic(image);
+
+		JFXButton cancelButton = new JFXButton(getBundle().getString("cancel"));
+		cancelButton.setMaxHeight(Double.MAX_VALUE);
+		cancelButton.setOnAction(e -> {
+			dialog.close();
+		});
+
+		content.setActions(cancelButton, acceptButton);
+
+		dialog.setContent(content);
+		dialog.setTransitionType(JFXDialog.DialogTransition.CENTER);
+		dialog.setOverlayClose(false);
+		dialog.show();
 	}
 
 }

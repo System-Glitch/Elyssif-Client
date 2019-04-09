@@ -65,23 +65,21 @@ public final class HomeController extends FadeController {
 	private void initLists() {
 		var factory = new FileListFactory(getBundle());
 		factory.setMode(FileListFactory.MODE_SEND);
-		factory.make(sentListView, sentList); // TODO handle on click
+		factory.make(sentListView, sentList, event -> {
+			File file = sentListView.getSelectionModel().getSelectedItem();
+			if (event.getClickCount() == 2 && file != null) {
+				var dialog = new FileDialog(file, repository, getBundle());
+				dialog.showDialog((StackPane) MainController.getInstance().getPane(), FileDialog.MODE_SEND);
+			}
+		});
 
 		factory = new FileListFactory(getBundle());
 		factory.setMode(FileListFactory.MODE_RECEIVE);
 		factory.make(receivedListView, receivedList, event -> {
 			File file = receivedListView.getSelectionModel().getSelectedItem();
 			if (event.getClickCount() == 2 && file != null) {
-				if(file.getDecipheredAt().get() == null) {
-					Controller appController = MainController.getInstance().getController("app");
-					Controller receiveViewController = appController.getController("container").getController("receive");
-					SideMenuController sideMenuController = (SideMenuController) appController.getController("sideMenu");
-					sideMenuController.getCurrentController().showNext(receiveViewController, true);
-					sideMenuController.setCurrentController(receiveViewController);
-				} else {
-					var dialog = new FileDialog(file, repository, getBundle());
-					dialog.showDialog((StackPane) MainController.getInstance().getPane());
-				}
+				var dialog = new FileDialog(file, repository, getBundle());
+				dialog.showDialog((StackPane) MainController.getInstance().getPane(), FileDialog.MODE_RECEIVE);
 			}
 		});
 	}
