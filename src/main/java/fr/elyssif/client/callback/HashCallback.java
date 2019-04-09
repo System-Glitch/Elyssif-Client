@@ -1,5 +1,10 @@
 package fr.elyssif.client.callback;
 
+/**
+ * Callback for the asynchronous hash calculation.
+ * @author Jérémy LAMBERT
+ *
+ */
 public abstract class HashCallback implements Runnable {
 
 	private byte[] digest;
@@ -12,6 +17,10 @@ public abstract class HashCallback implements Runnable {
 		this.digest = digest;
 	}
 
+	/**
+	 * Convert the digest bytes to a hex string.
+	 * @return a hex representation of the digest
+	 */
 	public final String getDigestHex() {
 		var builder = new StringBuilder();
 		for(byte b : digest) {
