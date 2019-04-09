@@ -11,6 +11,8 @@ import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
 
 import fr.elyssif.client.Config;
+import fr.elyssif.client.callback.RestCallback;
+import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.model.File;
 import fr.elyssif.client.gui.model.User;
 import fr.elyssif.client.gui.repository.FileRepository;
@@ -126,6 +128,8 @@ public final class FileDialogController extends Controller {
 	}
 
 	private void openConfirmDialog() {
+		parentDialog.setOverlayClose(false);
+
 		final JFXDialog dialog = new JFXDialog();
 		dialog.setDialogContainer((StackPane) getPane().getParent());
 
@@ -138,29 +142,57 @@ public final class FileDialogController extends Controller {
 		content.setBody(body);
 		content.getStyleClass().add("dialog-warning");
 
-		JFXButton acceptButton = new JFXButton(getBundle().getString("yes"));
-		acceptButton.getStyleClass().add("red-A700");
-		acceptButton.setOnAction(e -> {
-			dialog.close();
-			// TODO delete
-		});
-		ImageView image = new ImageView("view/img/delete.png");
-		image.setFitWidth(24);
-		image.setFitHeight(24);
-		acceptButton.setGraphic(image);
-
 		JFXButton cancelButton = new JFXButton(getBundle().getString("cancel"));
 		cancelButton.setMaxHeight(Double.MAX_VALUE);
 		cancelButton.setOnAction(e -> {
 			dialog.close();
 		});
 
+		JFXButton acceptButton = new JFXButton(getBundle().getString("yes"));
+		acceptButton.getStyleClass().add("red-A700");
+		acceptButton.setOnAction(e -> {
+			deleteFile(dialog, acceptButton, cancelButton);
+		});
+		ImageView image = new ImageView("view/img/delete.png");
+		image.setFitWidth(24);
+		image.setFitHeight(24);
+		acceptButton.setGraphic(image);
+
+
 		content.setActions(cancelButton, acceptButton);
 
 		dialog.setContent(content);
 		dialog.setTransitionType(JFXDialog.DialogTransition.CENTER);
 		dialog.setOverlayClose(false);
+
+		dialog.setOnDialogClosed(event -> {
+			parentDialog.setOverlayClose(true);
+		});
+
 		dialog.show();
+	}
+
+	private void deleteFile(JFXDialog dialog, JFXButton acceptButton, JFXButton cancelButton) {
+		acceptButton.setDisable(true);
+		cancelButton.setDisable(true);
+		repository.destroy(file, new RestCallback() {
+
+			@Override
+			public void run() {
+				if(getStatus() == 204) {
+					dialog.close();
+					parentDialog.close();
+					((HomeController) MainController.getInstance().getController("app").getController("container").getController("home")).removeFile(file);
+				} else if(getStatus() == 403) {
+					SnackbarController.getInstance().message(getBundle().getString("forbidden"), SnackbarMessageType.ERROR);
+				} else {
+					SnackbarController.getInstance().message(getBundle().getString("error") + getResponse().getRawBody(), SnackbarMessageType.ERROR);
+				}
+				acceptButton.setDisable(false);
+				cancelButton.setDisable(false);
+			}
+
+		});
 	}
 
 }

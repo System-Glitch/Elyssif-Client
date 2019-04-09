@@ -132,4 +132,23 @@ public final class HomeController extends FadeController {
 		}, failCallback);
 	}
 
+	/**
+	 * Remove a file from the file lists. The file is not
+	 * deleted in the database.
+	 * @param file
+	 */
+	public void removeFile(File file) {
+		removeFromList(sentList, file);
+		removeFromList(receivedList, file);
+	}
+
+	private boolean removeFromList(ObservableList<File> list, File file) {
+		for(File f : list) {
+			if(f.getId() == file.getId()) {
+				return list.remove(f);
+			}
+		}
+		return false;
+	}
+
 }

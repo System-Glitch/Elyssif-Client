@@ -15,7 +15,7 @@
          <children>
             <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="15.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Label styleClass="title" text="%sent">
+                  <Label styleClass="title" text="%sent-header">
                      <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -29,7 +29,7 @@
             </VBox>
             <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="15.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Label styleClass="title" text="%received">
+                  <Label styleClass="title" text="%received-header">
                      <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                            <image>
