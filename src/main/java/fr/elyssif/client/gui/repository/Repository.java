@@ -19,13 +19,14 @@ import com.google.gson.JsonObject;
 import fr.elyssif.client.Config;
 import fr.elyssif.client.ReflectionUtils;
 import fr.elyssif.client.StringUtils;
-import fr.elyssif.client.callback.FailCallback;
-import fr.elyssif.client.callback.FormCallback;
-import fr.elyssif.client.callback.JsonCallback;
-import fr.elyssif.client.callback.ModelCallback;
-import fr.elyssif.client.callback.PaginateCallback;
+import fr.elyssif.client.callback.FailCallbackData;
+import fr.elyssif.client.callback.FormCallbackData;
+import fr.elyssif.client.callback.JsonCallbackData;
+import fr.elyssif.client.callback.LogoutCallback;
+import fr.elyssif.client.callback.ModelCallbackData;
+import fr.elyssif.client.callback.PaginateCallbackData;
 import fr.elyssif.client.callback.RestCallback;
-import fr.elyssif.client.gui.controller.LogoutCallback;
+import fr.elyssif.client.callback.RestCallbackData;
 import fr.elyssif.client.gui.controller.MainController;
 import fr.elyssif.client.gui.model.Model;
 import fr.elyssif.client.gui.view.Paginator;
@@ -140,10 +141,12 @@ public abstract class Repository<T extends Model<T>> {
 	/**
 	 * Handle a paginate response. Prepare and execute callbacks.
 	 * @param response the response
-	 * @param callback the callback to execute on success
-	 * @param failCallback the callback to execute if the response is invalid
+	 * @param callback the callback to execute on success.
+	 * Wrapped data is of type PaginateCallbackData.
+	 * @param failCallback the callback to execute if the response is invalid.
+	 * Wrapped data is of type FailCallbackData.
 	 */
-	private final void handlePaginateResponse(RestResponse response, PaginateCallback<? extends Model<?>> callback, FailCallback failCallback) {
+	private final void handlePaginateResponse(RestResponse response, RestCallback callback, RestCallback failCallback) {
 		JsonElement element = response.getJsonElement();
 		if(element.isJsonObject()) {
 
@@ -155,9 +158,7 @@ public abstract class Repository<T extends Model<T>> {
 					Paginator<? extends Model<?>> paginator = new Paginator<>(list);
 					paginator.loadFromJson(object);
 
-					callback.setResponse(response);
-					callback.setPaginator(paginator);
-					callback.run();
+					callback.run(new PaginateCallbackData<T>(response, paginator));
 
 				} else handleMalformedResponse(response, failCallback, "\"items\" attribute to be an array");
 			} else handleMalformedResponse(response, failCallback, "missing attribute \"data\"");
@@ -236,9 +237,12 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param action the action (last segment of the url)
 	 * @param method the method to use in the request
 	 * @param callback the callback to execute when the request is done, nullable.
+	 * Wrapped data is of type RestCallbackData or JsonCallbackData if the response contains JSON.
 	 *
 	 * @see HttpMethod
 	 * @see RestCallback
+	 * @see RestCallbackData
+	 * @see JsonCallbackData
 	 */
 	protected final void request(String action, HttpMethod method, RestCallback callback) {
 		request(action, method, null, callback, null);
@@ -251,13 +255,17 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param action the action (last segment of the url)
 	 * @param method the method to use in the request
 	 * @param callback the callback to execute when the request is done, nullable.
+	 * Wrapped data is of type RestCallbackData or JsonCallbackData if the response contains JSON.
 	 * @param failCallback the callback to execute if the request fails, nullable.
+	 * Wrapped data is of type FailCallbackData.
 	 *
 	 * @see HttpMethod
 	 * @see RestCallback
-	 * @see FailCallback
+	 * @see RestCallbackData
+	 * @see JsonCallbackData
+	 * @see FailCallbackData
 	 */
-	protected final void request(String action, HttpMethod method, RestCallback callback, FailCallback failCallback) {
+	protected final void request(String action, HttpMethod method, RestCallback callback, RestCallback failCallback) {
 		request(action, method, null, callback, failCallback);
 	}
 
@@ -285,9 +293,12 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param params a map of parameters. If <code>method</code> is <code>GET</code>, the parameters
 	 * will be URL parameters and body parameters otherwise. Nullable.
 	 * @param callback the callback to execute when the request is done, nullable.
+	 * Wrapped data is of type RestCallbackData or JsonCallbackData if the response contains JSON.
 	 *
 	 * @see HttpMethod
 	 * @see RestCallback
+	 * @see RestCallbackData
+	 * @see JsonCallbackData
 	 */
 	protected final void request(String action, HttpMethod method, HashMap<String, ?> params, RestCallback callback) {
 		request(action, method, params, callback, null);
@@ -302,13 +313,17 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param params a map of parameters. If <code>method</code> is <code>GET</code>, the parameters
 	 * will be URL parameters and body parameters otherwise. Nullable.
 	 * @param callback the callback to execute when the request is done, nullable.
+	 * Wrapped data is of type RestCallbackData or JsonCallbackData if the response contains JSON.
 	 * @param failCallback the callback to execute if the request fails, nullable.
+	 * Wrapped data is of type FailCallbackData.
 	 *
 	 * @see HttpMethod
 	 * @see RestCallback
-	 * @see FailCallback
+	 * @see RestCallbackData
+	 * @see JsonCallbackData
+	 * @see FailCallbackData
 	 */
-	protected final void request(String action, HttpMethod method, HashMap<String, ?> params, RestCallback callback, FailCallback failCallback) {
+	protected final void request(String action, HttpMethod method, HashMap<String, ?> params, RestCallback callback, RestCallback failCallback) {
 		RestRequest request = new RestRequest(httpClient, Config.getInstance().get("Host") + API_URL + model.getResourceName() + (action != "" ? "/" + action : ""));
 
 		if(params != null) { // Set params
@@ -327,32 +342,26 @@ public abstract class Repository<T extends Model<T>> {
 			request.setAuthorizationToken(authenticator.getToken());
 		}
 
-		request.asyncExecute(method, new RestCallback() {
+		request.asyncExecute(method, data -> {
 
-			@Override
-			public void run() {
-				RestResponse response = getResponse();
-				if(response.isSuccessful()) {
-					if(callback != null) {
+			RestResponse response = data.getResponse();
+			FailCallbackData failData = null;
 
-						callback.setResponse(response);
-						if(callback instanceof JsonCallback)
-							((JsonCallback) callback).setElement(response.getJsonElement());
-
-						callback.run();
-					}
-				} else {
-					if(failCallback != null) {
-						failCallback.setResponse(response);
-						failCallback.run();
-					}
+			if(response.isSuccessful()) {
+				if(callback != null) {
+					callback.run(response.getJsonElement() != null ? new JsonCallbackData(response) : new RestCallbackData(response));
 				}
-
-				if(response.getStatus() == 401 && authenticator != null) { // Unauthenticated
-					authenticator.logout(new LogoutCallback());
-				} else if(!response.isSuccessful() && !response.isInvalid()) {
-					Logger.getGlobal().warning("Repository request failed: " + method.name() + " " + response.getStatus() + " " + failCallback.getMessage());
+			} else {
+				if(failCallback != null) {
+					failData = new FailCallbackData(response);
+					failCallback.run(failData);
 				}
+			}
+
+			if(response.getStatus() == 401 && authenticator != null) { // Unauthenticated
+				authenticator.logout(new LogoutCallback());
+			} else if(!response.isSuccessful() && !response.isInvalid()) {
+				Logger.getGlobal().warning("Repository request failed: " + method.name() + " " + response.getStatus() + " " + failData.getMessage());
 			}
 
 		});
@@ -364,14 +373,15 @@ public abstract class Repository<T extends Model<T>> {
 	 * its response was malformed (missing attribute in response for example).
 	 *
 	 * @param response the response to pass to the fail callback
-	 * @param failCallback the fail callback to execute, nullable
+	 * @param failCallback the fail callback to execute, nullable.
+	 * Wrapped data is of type FailCallbackData.
 	 * @param expected the name of the expected element
 	 */
-	protected final void handleMalformedResponse(RestResponse response, FailCallback failCallback, String expected) {
+	protected final void handleMalformedResponse(RestResponse response, RestCallback failCallback, String expected) {
 		if(failCallback != null) {
-			failCallback.setResponse(response);
-			failCallback.setMessage("%malformed-response");
-			failCallback.run();
+			var failData = new FailCallbackData(response);
+			failData.setMessage("malformed-response");
+			failCallback.run(failData);
 		}
 		Logger.getGlobal().warning("Malformed response (expected " + expected + "):\n\t" + response.getRawBody());
 	}
@@ -379,34 +389,34 @@ public abstract class Repository<T extends Model<T>> {
 	/**
 	 * Get a record by its id.
 	 * @param id the id of the requested record, must be positive
-	 * @param callback the callback executed on success
+	 * @param callback the callback executed on success.
+	 * Wrapped data is of type ModelCallbackData.
 	 */
-	public void getById(int id, ModelCallback<T> callback) {
+	public void getById(int id, RestCallback callback) {
 		getById(id, callback, null);
 	}
 
 	/**
 	 * Get a record by its id.
 	 * @param id the id of the requested record, must be positive
-	 * @param callback the callback executed on success
-	 * @param failCallback the callback executed on failure, nullable
+	 * @param callback the callback executed on success.
+	 * Wrapped data is of type ModelCallbackData.
+	 * @param failCallback the callback executed on failure, nullable.
+	 * Wrapped data is of type FailCallbackData.
 	 * @throws IllegalArgumentException thrown if <code>id</code> isn't positive
 	 */
-	public void getById(int id, ModelCallback<T> callback, FailCallback failCallback) {
+	public void getById(int id, RestCallback callback, RestCallback failCallback) {
 		if(id <= 0) throw new IllegalArgumentException("ID must be positive, " + id + " given.");
-		request(String.valueOf(id), HttpMethod.GET, new JsonCallback() {
+		request(String.valueOf(id), HttpMethod.GET, data -> {
 
-			public void run() {
-				T model = instantiateReferenceModel();
-				if(model != null) {
-					if(getElement().isJsonObject()) {
-						model.loadFromJsonObject(getElement().getAsJsonObject());
-						callback.setResponse(getResponse());
-						callback.setModel(model);
-						callback.run();
-					} else {
-						handleMalformedResponse(getResponse(), failCallback, "JSON object");
-					}
+			var element = ((JsonCallbackData) data).getElement();
+			T model = instantiateReferenceModel();
+			if(model != null) {
+				if(element != null && element.isJsonObject()) {
+					model.loadFromJsonObject(element.getAsJsonObject());
+					callback.run(new ModelCallbackData<T>(data.getResponse(), model));
+				} else {
+					handleMalformedResponse(data.getResponse(), failCallback, "JSON object");
 				}
 			}
 
@@ -416,21 +426,24 @@ public abstract class Repository<T extends Model<T>> {
 	/**
 	 * Get a paginate of all the records.
 	 * @param page the page number, must be positive
-	 * @param callback the callback executed on success
+	 * @param callback the callback executed on success.
+	 * Wrapped data is of type PaginateCallbackData.
 	 * @throws IllegalArgumentException thrown if <code>page</code> isn't positive
 	 */
-	public void getAll(int page, PaginateCallback<T> callback) {
+	public void getAll(int page, RestCallback callback) {
 		getAll(page, callback, null);
 	}
 
 	/**
 	 * Get a paginate of all the records.
 	 * @param page the page number, must be positive
-	 * @param callback the callback executed on success
-	 * @param failCallback the callback executed on failure, nullable
+	 * @param callback the callback executed on success.
+	 * Wrapped data is of type PaginateCallbackData.
+	 * @param failCallback the callback executed on failure, nullable.
+	 * Wrapped data is of type FailCallbackData.
 	 * @throws IllegalArgumentException thrown if <code>page</code> isn't positive
 	 */
-	public void getAll(int page, PaginateCallback<T> callback, FailCallback failCallback) {
+	public void getAll(int page, RestCallback callback, RestCallback failCallback) {
 		if(page <= 0) throw new IllegalArgumentException("Page number must be positive, " + page + " given.");
 
 		var params = new HashMap<String, Integer>();
@@ -441,19 +454,22 @@ public abstract class Repository<T extends Model<T>> {
 	/**
 	 * Get a paginate of all the records matching the given <code>search</code>.
 	 * @param search the search keyword(s)
-	 * @param callback the callback executed on success
+	 * @param callback the callback executed on success.
+	 * Wrapped data is of type PaginateCallbackCallbackData.
 	 */
-	public void getWhere(String search, PaginateCallback<? extends Model<?>> callback) {
+	public void getWhere(String search, RestCallback callback) {
 		getWhere(search, callback, null);
 	}
 
 	/**
 	 * Get a paginate of all the records matching the given <code>search</code>.
 	 * @param search the search keyword(s)
-	 * @param callback the callback executed on success
-	 * @param failCallback the callback executed on failure, nullable
+	 * @param callback the callback executed on success.
+	 * Wrapped data is of type PaginateCallbackData.
+	 * @param failCallback the callback executed on failure, nullable.
+	 * Wrapped data is of type FailCallbackData.
 	 */
-	public void getWhere(String search, PaginateCallback<? extends Model<?>> callback, FailCallback failCallback) {
+	public void getWhere(String search, RestCallback callback, RestCallback failCallback) {
 		var params = new HashMap<String, String>();
 		params.put("search", search);
 		get("", params, callback, failCallback);
@@ -463,16 +479,14 @@ public abstract class Repository<T extends Model<T>> {
 	 * Execute a generic GET request
 	 * @param action the action (last segment of the url)
 	 * @param params the URL params for the request
-	 * @param callback the callback executed on success
-	 * @param failCallback the callback executed on failure, nullable
+	 * @param callback the callback executed on success.
+	 * Wrapped data is of type PaginateCallbackData.
+	 * @param failCallback the callback executed on failure, nullable.
+	 * Wrapped data is of type FailCallbackData.
 	 */
-	protected void get(String action, HashMap<String, ?> params, PaginateCallback<? extends Model<?>> callback, FailCallback failCallback) {
-		request(action, HttpMethod.GET, params, new JsonCallback() {
-
-			public void run() {
-				handlePaginateResponse(getResponse(), callback, failCallback);
-			}
-
+	protected void get(String action, HashMap<String, ?> params, RestCallback callback, RestCallback failCallback) {
+		request(action, HttpMethod.GET, params, data -> {
+			handlePaginateResponse(data.getResponse(), callback, failCallback);
 		}, failCallback);
 	}
 
@@ -485,10 +499,12 @@ public abstract class Repository<T extends Model<T>> {
 	 * The instance passed to the given <code>callback</code> equals
 	 * the given <code>model</code>.</p>
 	 * @param model the model to store on the server
-	 * @param callback the callback executed on success
-	 * @param formCallback the callback executed on validation error
+	 * @param callback the callback executed on success.
+	 * Wrapped data is of type ModelCallbackData.
+	 * @param formCallback the callback executed on validation error.
+	 * Wrapped data is of type FormCallbackData.
 	 */
-	public void store(T model, ModelCallback<T> callback, FormCallback formCallback) {
+	public void store(T model, RestCallback callback, RestCallback formCallback) {
 		store(model, callback, formCallback, null);
 	}
 
@@ -501,41 +517,35 @@ public abstract class Repository<T extends Model<T>> {
 	 * The instance passed to the given <code>callback</code> equals
 	 * the given <code>model</code>.</p>
 	 * @param model the model to store on the server
-	 * @param callback the callback executed on success
-	 * @param formCallback the callback executed on validation error
-	 * @param failCallback the callback executed on failure, nullable
+	 * @param callback the callback executed on success.
+	 * Wrapped data is of type ModelCallbackData.
+	 * @param formCallback the callback executed on validation error.
+	 * Wrapped data is of type FormCallbackData.
+	 * @param failCallback the callback executed on failure, nullable.
+	 * Wrapped data is of type FailCallbackData.
 	 */
-	public void store(T model, ModelCallback<T> callback, FormCallback formCallback, FailCallback failCallback) {
+	public void store(T model, RestCallback callback, RestCallback formCallback, RestCallback failCallback) {
 		HashMap<String, Object> attributes = getAttributes(model);
 
-		request("", HttpMethod.POST, attributes, new JsonCallback() {
+		request("", HttpMethod.POST, attributes, data -> {
 
-			public void run() {
-				if(getStatus() == 201) {
-					JsonElement element = getElement();
-					if(element != null) {
-						if(element.isJsonObject()) {
-							model.loadFromJsonObject(element.getAsJsonObject());
-							callback.setResponse(getResponse());
-							callback.setModel(model);
-							callback.run();
-						} else handleMalformedResponse(getResponse(), failCallback, "JSON object");
-					} else handleMalformedResponse(getResponse(), failCallback, "JSON element but was null");
-				} else {
-					Logger.getGlobal().warning("Store request returned status " + getStatus() + ", expected 201.");
-				}
+			if(data.getStatus() == 201) {
+				JsonElement element = ((JsonCallbackData) data).getElement();
+				if(element != null) {
+					if(element.isJsonObject()) {
+						model.loadFromJsonObject(element.getAsJsonObject());
+						callback.run(new ModelCallbackData<T>(data.getResponse(), model));
+					} else handleMalformedResponse(data.getResponse(), failCallback, "JSON object");
+				} else handleMalformedResponse(data.getResponse(), failCallback, "JSON element but was null");
+			} else {
+				Logger.getGlobal().warning("Store request returned status " + data.getStatus() + ", expected 201.");
 			}
 
-		}, new FailCallback() {
-
-			public void run() {
-				if(getStatus() == 422) { // Validation errors
-					formCallback.setResponse(getResponse());
-					formCallback.run();
-				} else if(failCallback != null) {
-					failCallback.setResponse(getResponse());
-					failCallback.run();
-				}
+		}, data -> {
+			if(data.getStatus() == 422) { // Validation errors
+				formCallback.run(new FormCallbackData(data.getResponse()));
+			} else if(failCallback != null) {
+				failCallback.run(new FailCallbackData(data.getResponse()));
 			}
 		});
 	}
@@ -546,26 +556,14 @@ public abstract class Repository<T extends Model<T>> {
 	 * <p>All fields given as parameter will be sent for update.
 	 * Lists and nested models are ignored.</p>
 	 * @param model the model to update on the server
-	 * @param formCallback the callback executed on validation error
+	 * @param callback the callback executed on success, nullable.
+	 * Wrapped data is of type RestCallbackData.
+	 * @param formCallback the callback executed on validation error.
+	 * Wrapped data is of type FormCallbackData.
 	 * @param fields the fields to update (in snake case)
 	 * @throws IllegalArgumentException thrown if no field is provided
 	 */
-	public void update(T model, FormCallback formCallback, String ... fields) {
-		update(model, null, formCallback, null, fields);
-	}
-
-	/**
-	 * <p>Update the given <code>model</code> on the server
-	 * based on its id.<p>
-	 * <p>All fields given as parameter will be sent for update.
-	 * Lists and nested models are ignored.</p>
-	 * @param model the model to update on the server
-	 * @param callback the callback executed on success, nullable
-	 * @param formCallback the callback executed on validation error
-	 * @param fields the fields to update (in snake case)
-	 * @throws IllegalArgumentException thrown if no field is provided
-	 */
-	public void update(T model, RestCallback callback, FormCallback formCallback, String ... fields) {
+	public void update(T model, RestCallback callback, RestCallback formCallback, String ... fields) {
 		update(model, callback, formCallback, null, fields);
 	}
 
@@ -575,27 +573,16 @@ public abstract class Repository<T extends Model<T>> {
 	 * <p>All fields given as parameter will be sent for update.
 	 * Lists and nested models are ignored.</p>
 	 * @param model the model to update on the server
+	 * @param callback the callback executed on success, nullable.
+	 * Wrapped data is of type RestCallbackData.
 	 * @param formCallback the callback executed on validation error
+	 * Wrapped data is of type FormCallbackData.
+	 * @param failCallback the callback executed on failure, nullable.
+	 * Wrapped data is of type FailCallbackData.
 	 * @param fields the fields to update (in snake case)
 	 * @throws IllegalArgumentException thrown if no field is provided
 	 */
-	public void update(T model, FormCallback formCallback, FailCallback failCallback, String ... fields) {
-		update(model, null, formCallback, failCallback, fields);
-	}
-
-	/**
-	 * <p>Update the given <code>model</code> on the server
-	 * based on its id.<p>
-	 * <p>All fields given as parameter will be sent for update.
-	 * Lists and nested models are ignored.</p>
-	 * @param model the model to update on the server
-	 * @param callback the callback executed on success, nullable
-	 * @param formCallback the callback executed on validation error
-	 * @param failCallback the callback executed on failure, nullable
-	 * @param fields the fields to update (in snake case)
-	 * @throws IllegalArgumentException thrown if no field is provided
-	 */
-	public void update(T model, RestCallback callback, FormCallback formCallback, FailCallback failCallback, String ... fields) {
+	public void update(T model, RestCallback callback, RestCallback formCallback, RestCallback failCallback, String ... fields) {
 		if(fields.length == 0) throw new IllegalArgumentException("At least one field must be given to update.");
 
 		var params = new HashMap<String, Object>();
@@ -609,32 +596,23 @@ public abstract class Repository<T extends Model<T>> {
 			}
 		}
 
-		request(String.valueOf(model.getId().get()), HttpMethod.PUT, attributes, new RestCallback() {
+		request(String.valueOf(model.getId().get()), HttpMethod.PUT, attributes, data -> {
 
-			public void run() {
-				if(getStatus() != 204) {
-					Logger.getGlobal().warning("Update request returned status " + getStatus() + ", expected 204.");
-				}
-
-				model.setUpdatedAt(new Date());
-				if(callback != null) {
-					callback.setResponse(getResponse());
-					callback.run();
-				}
+			if(data.getStatus() != 204) {
+				Logger.getGlobal().warning("Update request returned status " + data.getStatus() + ", expected 204.");
 			}
 
-		}, new FailCallback() {
-
-			public void run() {
-				if(getStatus() == 422) { // Validation errors
-					formCallback.setResponse(getResponse());
-					formCallback.run();
-				} else if(failCallback != null) {
-					failCallback.setResponse(getResponse());
-					failCallback.run();
-				}
+			model.setUpdatedAt(new Date());
+			if(callback != null) {
+				callback.run(data);
 			}
 
+		}, data -> {
+			if(data.getStatus() == 422) { // Validation errors
+				formCallback.run(new FormCallbackData(data.getResponse()));
+			} else if(failCallback != null) {
+				failCallback.run(new FailCallbackData(data.getResponse()));
+			}
 		});
 	}
 
@@ -650,17 +628,20 @@ public abstract class Repository<T extends Model<T>> {
 	/**
 	 * Destroy a record.
 	 * @param record the record to destroy
-	 * @param callback the callback executed on success
-	 * @param failCallback the callback executed on failure
+	 * @param callback the callback executed on success.
+	 * Wrapped data is of type RestCallbackData.
+	 * @param failCallback the callback executed on failure.
+	 * Wrapped data is of type FailCallbackData.
 	 */
-	public void destroy(T record, RestCallback callback, FailCallback failCallback) {
+	public void destroy(T record, RestCallback callback, RestCallback failCallback) {
 		destroy(record.getId().get(), callback, failCallback);
 	}
 
 	/**
 	 * Destroy a record by its id.
 	 * @param id the id of the record to destroy
-	 * @param callback the callback executed on success
+	 * @param callback the callback executed on success.
+	 * Wrapped data is of type RestCallbackData.
 	 */
 	public void destroy(int id, RestCallback callback) {
 		destroy(id, callback, null);
@@ -669,11 +650,13 @@ public abstract class Repository<T extends Model<T>> {
 	/**
 	 * Destroy a record by its id.
 	 * @param id the id of the record to destroy
-	 * @param callback the callback executed on success
-	 * @param failCallback the callback executed on failure
+	 * @param callback the callback executed on success.
+	 * Wrapped data is of type RestCallbackData.
+	 * @param failCallback the callback executed on failure.
+	 * Wrapped data is of type FailCallbackData.
 	 * @throws IllegalArgumentException thrown if <code>id</code> isn't positive
 	 */
-	public void destroy(int id, RestCallback callback, FailCallback failCallback) {
+	public void destroy(int id, RestCallback callback, RestCallback failCallback) {
 		if(id <= 0) throw new IllegalArgumentException("ID must be positive, " + id + " given.");
 		request(String.valueOf(id), HttpMethod.DELETE, callback, failCallback);
 	}

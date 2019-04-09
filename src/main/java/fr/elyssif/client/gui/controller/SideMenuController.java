@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import com.jfoenix.controls.JFXListView;
 
 import fr.elyssif.client.Config;
+import fr.elyssif.client.callback.LogoutCallback;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 

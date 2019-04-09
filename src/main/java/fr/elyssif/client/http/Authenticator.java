@@ -7,8 +7,8 @@ import org.apache.http.client.HttpClient;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import fr.elyssif.client.callback.FormCallback;
 import fr.elyssif.client.callback.RestCallback;
+import fr.elyssif.client.callback.RestCallbackData;
 import fr.elyssif.client.gui.model.User;
 
 /**
@@ -81,7 +81,7 @@ public final class Authenticator {
 	 * @param password
 	 * @param callback the callback to execute on success
 	 */
-	public final void login(String email, String password, FormCallback callback) {
+	public final void login(String email, String password, RestCallback callback) {
 		RestRequest request = new RestRequest(client, host + LOGIN_ENDPOINT)
 				.param("email", email.trim())
 				.param("password", password);
@@ -97,19 +97,16 @@ public final class Authenticator {
 		RestRequest request = new RestRequest(client, host + LOGOUT_ENDPOINT)
 				.setAuthorizationToken(token);
 
-		request.asyncExecute(HttpMethod.DELETE, new RestCallback() {
+		request.asyncExecute(HttpMethod.DELETE, data -> {
 
-			public void run() {
-				RestResponse response = getResponse();
-				if(response.getStatus() == 204 || response.getStatus() == 401) {
-					token = null;
-					user = null;
-				} else
-					Logger.getGlobal().warning("Logout request failed with state " + response.getStatus());
+			RestResponse response = data.getResponse();
+			if(response.getStatus() == 204 || response.getStatus() == 401) {
+				token = null;
+				user = null;
+			} else
+				Logger.getGlobal().warning("Logout request failed with state " + response.getStatus());
 
-				callback.setResponse(response);
-				callback.run();
-			}
+			callback.run(data);
 
 		});
 	}
@@ -122,7 +119,7 @@ public final class Authenticator {
 	 * @param name the name of the user to register
 	 * @param callback
 	 */
-	public final void register(String email, String password, String passwordConfirmation, String name, FormCallback callback) {
+	public final void register(String email, String password, String passwordConfirmation, String name, RestCallback callback) {
 		RestRequest request = new RestRequest(client, host + REGISTER_ENDPOINT)
 				.param("email", email.trim())
 				.param("password", password)
@@ -140,29 +137,26 @@ public final class Authenticator {
 		RestRequest request = new RestRequest(client, host + USER_INFO_ENDPOINT)
 				.setAuthorizationToken(token);
 
-		request.asyncExecute(HttpMethod.GET, new RestCallback() {
+		request.asyncExecute(HttpMethod.GET, data -> {
 
-			public void run() {
-				RestResponse response = getResponse();
-				if(response.getStatus() == 200) {
-					JsonElement element = response.getJsonElement();
-					if(element.isJsonObject()) {
-						user = new User(element.getAsJsonObject());
-						Logger.getGlobal().info("Authenticated user: " + user.getEmail().get() + " (" + user.getName().get() + ")");
-					} else {
-						Logger.getGlobal().severe("Malformed user info response. Returned element is not a JSON object: " + response.getRawBody());
-					}
-				} else if(response.getStatus() == 401) {
-					token = null;
-					user = null;
-					Logger.getGlobal().warning("Invalid authentication token, deleting.");
-				} else
-					Logger.getGlobal().warning("User info request failed with state " + response.getStatus());
-
-				if(callback != null) {
-					callback.setResponse(response);
-					callback.run();
+			RestResponse response = data.getResponse();
+			if(response.getStatus() == 200) {
+				JsonElement element = response.getJsonElement();
+				if(element.isJsonObject()) {
+					user = new User(element.getAsJsonObject());
+					Logger.getGlobal().info("Authenticated user: " + user.getEmail().get() + " (" + user.getName().get() + ")");
+				} else {
+					Logger.getGlobal().severe("Malformed user info response. Returned element is not a JSON object: " + response.getRawBody());
 				}
+			} else if(response.getStatus() == 401) {
+				token = null;
+				user = null;
+				Logger.getGlobal().warning("Invalid authentication token, deleting.");
+			} else
+				Logger.getGlobal().warning("User info request failed with state " + response.getStatus());
+
+			if(callback != null) {
+				callback.run(new RestCallbackData(response));
 			}
 
 		});
@@ -173,7 +167,7 @@ public final class Authenticator {
 	 *
 	 * @author Jérémy LAMBERT
 	 */
-	private class AuthenticationCallback extends RestCallback {
+	private class AuthenticationCallback implements RestCallback {
 
 		private RestCallback callback;
 
@@ -181,8 +175,8 @@ public final class Authenticator {
 			this.callback = callback;
 		}
 
-		public void run() {
-			RestResponse response = getResponse();
+		public void run(RestCallbackData data) {
+			RestResponse response = data.getResponse();
 			if(response.getStatus() == 200) {
 				JsonElement json = response.getJsonElement();
 				if(json.isJsonObject()) {
@@ -198,8 +192,7 @@ public final class Authenticator {
 					Logger.getGlobal().severe("Malformed authentication response. Returned element is not a JSON object: " + response.getRawBody());
 				}
 			}
-			callback.setResponse(response);
-			callback.run();
+			callback.run(data);
 		}
 
 	}

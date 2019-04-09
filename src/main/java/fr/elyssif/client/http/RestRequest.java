@@ -27,6 +27,7 @@ import com.google.gson.Gson;
 
 import fr.elyssif.client.Config;
 import fr.elyssif.client.callback.RestCallback;
+import fr.elyssif.client.callback.RestCallbackData;
 import javafx.application.Platform;
 
 /**
@@ -214,8 +215,10 @@ public class RestRequest {
 				result = new RestResponse(e.getMessage()); //Create a response with status code -1 and exception message.
 			}
 
-			callback.setResponse(result);
-			Platform.runLater(callback);
+			var data = new RestCallbackData(result);
+			Platform.runLater(() -> {
+				callback.run(data);
+			});
 		});
 		thread.setDaemon(true);
 		thread.start();

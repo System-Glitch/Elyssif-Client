@@ -12,9 +12,8 @@ import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.validation.RequiredFieldValidator;
 
 import fr.elyssif.client.Config;
-import fr.elyssif.client.callback.FailCallback;
-import fr.elyssif.client.callback.ModelCallback;
-import fr.elyssif.client.callback.RestCallback;
+import fr.elyssif.client.callback.FailCallbackData;
+import fr.elyssif.client.callback.ModelCallbackData;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.model.File;
 import fr.elyssif.client.gui.model.User;
@@ -53,6 +52,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 
 	private java.io.File selectedFile;
 	private String hashCiphered;
+
 	private File fileModel;
 
 	public void initialize(URL location, ResourceBundle resources) {
@@ -109,28 +109,26 @@ public final class ReceiveController extends EncryptionController implements Loc
 		}
 	}
 
+
+	@SuppressWarnings("unchecked")
 	protected void onButtonClicked() {
 		form.setDisable(true);
 		showHashSpinner();
 
 		Hash.sha256(selectedFile, digest -> {
 			hashCiphered = Hash.toHex(digest);
-			getFileRepository().fetch(hashCiphered, new ModelCallback<File>() {
-				public void run() {
-					fileModel = getModel();
-					hideHashSpinner();
-					showFileFound();
+			getFileRepository().fetch(hashCiphered, data -> {
+				fileModel = ((ModelCallbackData<File>) data).getModel();
+				hideHashSpinner();
+				showFileFound();
+			}, errorData -> {
+				if(errorData.getStatus() == 404) {
+					SnackbarController.getInstance().message(getBundle().getString("file-not-found"), SnackbarMessageType.ERROR, 4000);
+				} else {
+					SnackbarController.getInstance().message(getBundle().getString(((FailCallbackData) errorData).getMessage()), SnackbarMessageType.ERROR, 4000);
 				}
-			}, new FailCallback() {
-				public void run() {
-					if(getStatus() == 404) {
-						SnackbarController.getInstance().message(getBundle().getString("file-not-found"), SnackbarMessageType.ERROR, 4000);
-					} else {
-						SnackbarController.getInstance().message(getBundle().getString(getMessage()), SnackbarMessageType.ERROR, 4000);
-					}
-					form.setDisable(false);
-					hideHashSpinner();
-				}
+				form.setDisable(false);
+				hideHashSpinner();
 			});
 		}, exception -> {
 			Platform.runLater(() -> {
@@ -207,21 +205,17 @@ public final class ReceiveController extends EncryptionController implements Loc
 			Hash.sha256(getDestinationFile(), digest -> {
 				fileModel.setHash(Hash.toHex(digest));
 				fileModel.setHashCiphered(hashCiphered);
-				getFileRepository().check(fileModel, new RestCallback() {
-					public void run() {
-						SnackbarController.getInstance().message(getBundle().getString("decrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
-						successCallback.run();
+				getFileRepository().check(fileModel, data -> {
+					SnackbarController.getInstance().message(getBundle().getString("decrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
+					successCallback.run();
+					reset();
+				}, errorData -> {
+					if(errorData.getStatus() == 404) {
+						openFailDialog(successCallback, failureCallback);
+					} else {
+						SnackbarController.getInstance().message(errorData.getStatus() + ": " + getBundle().getString("server-error").replace("\\n", "\n"), SnackbarMessageType.ERROR, 4000);
+						failureCallback.run();
 						reset();
-					}
-				}, new FailCallback() {
-					public void run() {
-						if(getStatus() == 404) {
-							openFailDialog(successCallback, failureCallback);
-						} else {
-							SnackbarController.getInstance().message(getStatus() + ": " + getBundle().getString("server-error").replace("\\n", "\n"), SnackbarMessageType.ERROR, 4000);
-							failureCallback.run();
-							reset();
-						}
 					}
 				});
 			}, exception -> handleException(exception, failureCallback));

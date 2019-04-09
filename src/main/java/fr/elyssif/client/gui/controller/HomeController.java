@@ -7,8 +7,9 @@ import java.util.logging.Logger;
 import com.jfoenix.controls.JFXListView;
 
 import fr.elyssif.client.Config;
-import fr.elyssif.client.callback.FailCallback;
-import fr.elyssif.client.callback.PaginateCallback;
+import fr.elyssif.client.callback.FailCallbackData;
+import fr.elyssif.client.callback.PaginateCallbackData;
+import fr.elyssif.client.callback.RestCallback;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.model.File;
 import fr.elyssif.client.gui.model.Model;
@@ -35,7 +36,7 @@ public final class HomeController extends FadeController {
 	@FXML private PaginateController receivedPaginateController;
 
 	private FileRepository repository;
-	private FailCallback failCallback;
+	private RestCallback failCallback;
 
 	private ObservableList<File> sentList;
 	private ObservableList<File> receivedList;
@@ -49,12 +50,7 @@ public final class HomeController extends FadeController {
 		receivedList = FXCollections.observableArrayList();
 		show(false);
 
-		failCallback = new FailCallback() {
-			public void run() {
-				SnackbarController.getInstance().message(getBundle().getString(getFullMessage()), SnackbarMessageType.ERROR);
-			}
-		};
-
+		failCallback = data -> SnackbarController.getInstance().message(getBundle().getString(((FailCallbackData) data).getFullMessage()), SnackbarMessageType.ERROR);
 		initLists();
 
 		sentPaginateController.setOnPageChange(() -> refreshSent());
@@ -103,32 +99,32 @@ public final class HomeController extends FadeController {
 	}
 
 	private void refreshSent() {
-		repository.getSent(sentPaginateController.getPage(), new PaginateCallback<File>() {
-			public void run() {
+		repository.getSent(sentPaginateController.getPage(), data -> {
+				@SuppressWarnings("unchecked")
+				var paginator = ((PaginateCallbackData<File>) data).getPaginator();
 				sentList.clear();
 
-				for(Model<?> model : getPaginator().getItems()) {
+				for(Model<?> model : paginator.getItems()) {
 					sentList.add((File) model);
 				}
 
 				sentListView.scrollTo(0);
-				sentPaginateController.setPaginator(getPaginator());
-			}
+				sentPaginateController.setPaginator(paginator);
 		}, failCallback);
 	}
 
 	private void refreshReceived() {
-		repository.getReceived(receivedPaginateController.getPage(), new PaginateCallback<File>() {
-			public void run() {
+		repository.getReceived(receivedPaginateController.getPage(), data -> {
+				@SuppressWarnings("unchecked")
+				var paginator = ((PaginateCallbackData<File>) data).getPaginator();
 				receivedList.clear();
 
-				for(Model<?> model : getPaginator().getItems()) {
+				for(Model<?> model : paginator.getItems()) {
 					receivedList.add((File) model);
 				}
 
 				receivedListView.scrollTo(0);
-				receivedPaginateController.setPaginator(getPaginator());
-			}
+				receivedPaginateController.setPaginator(paginator);
 		}, failCallback);
 	}
 
@@ -144,7 +140,7 @@ public final class HomeController extends FadeController {
 
 	private boolean removeFromList(ObservableList<File> list, File file) {
 		for(File f : list) {
-			if(f.getId() == file.getId()) {
+			if(f.getId().get() == file.getId().get()) {
 				return list.remove(f);
 			}
 		}

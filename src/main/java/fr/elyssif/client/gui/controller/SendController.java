@@ -9,10 +9,8 @@ import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.validation.RequiredFieldValidator;
 
 import fr.elyssif.client.Config;
-import fr.elyssif.client.callback.FailCallback;
-import fr.elyssif.client.callback.FormCallback;
-import fr.elyssif.client.callback.ModelCallback;
-import fr.elyssif.client.callback.RestCallback;
+import fr.elyssif.client.callback.FailCallbackData;
+import fr.elyssif.client.callback.FormCallbackData;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.model.File;
 import fr.elyssif.client.gui.model.User;
@@ -79,18 +77,12 @@ public final class SendController extends EncryptionController implements Lockab
 		modal.setHeader("lookup-recipient");
 		modal.setListFactory(new UserListFactory());
 
-		modal.showDialog((StackPane) MainController.getInstance().getPane(), new ModelCallback<User>() {
-
-			@Override
-			public void run() {
-				User user = getModel();
-				if(user != null) {
-					selectedUser = user;
-					recipientInput.setText(selectedUser.getName().get());
-					recipientInput.validate();
-				}
+		modal.showDialog((StackPane) MainController.getInstance().getPane(), model -> {
+			if(model != null) {
+				selectedUser = model;
+				recipientInput.setText(selectedUser.getName().get());
+				recipientInput.validate();
 			}
-
 		});
 	}
 
@@ -114,25 +106,16 @@ public final class SendController extends EncryptionController implements Lockab
 
 		Hash.sha256(selectedFile, digest -> {
 			fileModel.setHash(Hash.toHex(digest));
-			getFileRepository().store(fileModel, new ModelCallback<File>() {
-
-				public void run() {
-					encrypt(successCallback, failureCallback);
-				}
-
-			}, new FormCallback() {
-				public void run() {
-					handleValidationErrors(getValidationErrors());
-					revertAnimation();
-					fileModel = null;
-				}
-			}, new FailCallback() {
-				public void run() {
-					SnackbarController.getInstance().message(getFullMessage(), SnackbarMessageType.ERROR, 4000);
-					revertAnimation();
-					fileModel = null;
-				}
-			});
+			getFileRepository().store(fileModel, e -> encrypt(successCallback, failureCallback),
+					data -> {
+						handleValidationErrors(((FormCallbackData) data).getValidationErrors());
+						revertAnimation();
+						fileModel = null;
+					}, errorData -> {
+						SnackbarController.getInstance().message(((FailCallbackData) errorData).getFullMessage(), SnackbarMessageType.ERROR, 4000);
+						revertAnimation();
+						fileModel = null;
+					});
 		}, exception -> {
 			Platform.runLater(() -> {
 				SnackbarController.getInstance().message(exception.getMessage(), SnackbarMessageType.ERROR, 4000);
@@ -152,30 +135,22 @@ public final class SendController extends EncryptionController implements Lockab
 
 			Hash.sha256(getDestinationFile(), digest -> {
 				fileModel.setHashCiphered(Hash.toHex(digest));
-				getFileRepository().cipher(fileModel, new RestCallback() {
-
-					public void run() {
-						SnackbarController.getInstance().message(getBundle().getString("encrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
-						successCallback.run();
-						fileModel = null;
+				getFileRepository().cipher(fileModel, data -> {
+					SnackbarController.getInstance().message(getBundle().getString("encrypt-success").replace("\\n", "\n"), SnackbarMessageType.SUCCESS, 10000);
+					successCallback.run();
+					fileModel = null;
+				}, data -> {
+					SnackbarController.getInstance().message(String.join("\n", ((FormCallbackData) data).getValidationErrors().get("ciphered_hash")), SnackbarMessageType.ERROR, 4000);
+					failureCallback.run();
+					fileModel = null;
+				}, errorData -> {
+					if(errorData.getStatus() == 403) {
+						SnackbarController.getInstance().message(getBundle().getString("forbidden"), SnackbarMessageType.ERROR, 4000);
+					} else {
+						SnackbarController.getInstance().message(((FailCallbackData) errorData).getFullMessage(), SnackbarMessageType.ERROR, 4000);
 					}
-
-				}, new FormCallback() {
-					public void run() {
-						SnackbarController.getInstance().message(String.join("\n", getValidationErrors().get("ciphered_hash")), SnackbarMessageType.ERROR, 4000);
-						failureCallback.run();
-						fileModel = null;
-					}
-				}, new FailCallback() {
-					public void run() {
-						if(getStatus() == 403) {
-							SnackbarController.getInstance().message(getBundle().getString("forbidden"), SnackbarMessageType.ERROR, 4000);
-						} else {
-							SnackbarController.getInstance().message(getFullMessage(), SnackbarMessageType.ERROR, 4000);
-						}
-						failureCallback.run();
-						fileModel = null;
-					}
+					failureCallback.run();
+					fileModel = null;
 				});
 			}, exception -> handleException(exception, failureCallback));
 		}, exception -> handleException(exception, failureCallback));

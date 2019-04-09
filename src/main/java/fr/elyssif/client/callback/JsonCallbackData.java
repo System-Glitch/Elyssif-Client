@@ -2,15 +2,21 @@ package fr.elyssif.client.callback;
 
 import com.google.gson.JsonElement;
 
+import fr.elyssif.client.http.RestResponse;
+
 /**
- * Custom Runnable used as callbacks for json REST requests.
+ * Callback data for REST requests returning JSON.
  * @author Jérémy LAMBERT
  *
- * @see Runnable
  */
-public abstract class JsonCallback extends RestCallback {
+public class JsonCallbackData extends RestCallbackData {
 
 	private JsonElement response;
+
+	public JsonCallbackData(RestResponse response) {
+		super(response);
+		setElement(response.getJsonElement());
+	}
 
 	/**
 	 * Set the json response.

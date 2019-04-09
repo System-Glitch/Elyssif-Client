@@ -5,14 +5,17 @@ import com.google.gson.JsonElement;
 import fr.elyssif.client.http.RestResponse;
 
 /**
- * Custom Runnable used as callbacks for failed REST requests
+ * Callback data for failed REST requests.
  * @author Jérémy LAMBERT
  *
- * @see Runnable
  */
-public abstract class FailCallback extends RestCallback {
+public final class FailCallbackData extends RestCallbackData {
 
 	private String message;
+
+	public FailCallbackData(RestResponse response) {
+		super(response);
+	}
 
 	public void setResponse(RestResponse response) {
 		super.setResponse(response);

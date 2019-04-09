@@ -11,15 +11,16 @@ import com.google.gson.JsonObject;
 import fr.elyssif.client.http.RestResponse;
 
 /**
- * Callback for form submission, handling validation errors.
+ * Callback data for form submission, handling validation errors.
  * @author Jérémy LAMBERT
  *
  */
-public abstract class FormCallback extends RestCallback implements Runnable {
+public final class FormCallbackData extends RestCallbackData {
 
 	private HashMap<String, ArrayList<String>> validationErrors;
 
-	public FormCallback() {
+	public FormCallbackData(RestResponse response) {
+		super(response);
 		validationErrors = new HashMap<String, ArrayList<String>>();
 	}
 

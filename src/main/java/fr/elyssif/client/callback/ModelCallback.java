@@ -3,26 +3,18 @@ package fr.elyssif.client.callback;
 import fr.elyssif.client.gui.model.Model;
 
 /**
- * Custom Runnable used as callbacks for json REST requests, returning a Model instance
+ * Functional interface for callbacks returning a model instance.
  * @author Jérémy LAMBERT
  *
- * @see Runnable
- * @see Model
+ * @param <T> the type of the model
  */
-public abstract class ModelCallback<T extends Model<T>> extends RestCallback {
-
-	private T model;
-
-	public void setModel(T model) {
-		this.model = model;
-	}
+@FunctionalInterface
+public interface ModelCallback<T extends Model<T>> {
 
 	/**
-	 * Get the response from the request.
-	 * @return the response, can be null
+	 * Execute the callback.
+	 * @param model
 	 */
-	public T getModel() {
-		return model;
-	}
-
+	void run(T model);
+	
 }

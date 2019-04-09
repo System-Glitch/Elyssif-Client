@@ -9,11 +9,10 @@ import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
 
 import fr.elyssif.client.Config;
-import fr.elyssif.client.callback.FailCallback;
-import fr.elyssif.client.callback.PaginateCallback;
+import fr.elyssif.client.callback.FailCallbackData;
+import fr.elyssif.client.callback.PaginateCallbackData;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.model.Model;
-import fr.elyssif.client.gui.model.User;
 import fr.elyssif.client.gui.repository.Repository;
 import fr.elyssif.client.gui.view.ListFactory;
 import javafx.application.Platform;
@@ -108,24 +107,15 @@ public final class LookupController extends Controller {
 		if(search.isEmpty()) {
 			list.clear();
 		} else {
-			repository.getWhere(search, new PaginateCallback<User>() {
+			repository.getWhere(search, data -> {
+				list.clear();
 
-				public void run() {
-					list.clear();
-
-					if(!input.getText().trim().isEmpty()) {
-						for(Model<?> model : getPaginator().getItems()) {
-							list.add(model);
-						}
+				if(!input.getText().trim().isEmpty()) {
+					for(Model<?> model : ((PaginateCallbackData<?>) data).getPaginator().getItems()) {
+						list.add(model);
 					}
 				}
-			}, new FailCallback() {
-
-				public void run() {
-					SnackbarController.getInstance().message(getBundle().getString(getFullMessage()), SnackbarMessageType.ERROR);
-				}
-
-			});
+			}, errorData -> SnackbarController.getInstance().message(getBundle().getString(((FailCallbackData) errorData).getFullMessage()), SnackbarMessageType.ERROR));
 		}
 
 	}

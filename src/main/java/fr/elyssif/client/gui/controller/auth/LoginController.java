@@ -11,7 +11,7 @@ import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.validation.RequiredFieldValidator;
 
 import fr.elyssif.client.Config;
-import fr.elyssif.client.callback.FormCallback;
+import fr.elyssif.client.callback.FormCallbackData;
 import fr.elyssif.client.gui.controller.FadeController;
 import fr.elyssif.client.gui.controller.Lockable;
 import fr.elyssif.client.gui.controller.MainController;
@@ -58,20 +58,18 @@ public final class LoginController extends FadeController implements Lockable, V
 		if(validateAll()) {
 			setLocked(true);
 			Authenticator authenticator = MainController.getInstance().getAuthenticator();
-			authenticator.login(emailField.getText(), passwordField.getText(), new FormCallback() {
+			authenticator.login(emailField.getText(), passwordField.getText(), data -> {
 
-				public void run() {
-					int status = getStatus();
-					if(status == 200) {
-						Config.getInstance().set("Token", authenticator.getToken());
-						Config.getInstance().save();
-						showNext(MainController.getInstance().getController("app"), true);
-					} else if(status == 422) { //Validation errors
-						handleValidationErrors(getValidationErrors());
-					} else if(status == -1)
-						SnackbarController.getInstance().message(getBundle().getString("error") + getResponse().getRawBody(), SnackbarMessageType.ERROR, 4000);
-					setLocked(false);
-				}
+				int status = data.getStatus();
+				if(status == 200) {
+					Config.getInstance().set("Token", authenticator.getToken());
+					Config.getInstance().save();
+					showNext(MainController.getInstance().getController("app"), true);
+				} else if(status == 422) { //Validation errors
+					handleValidationErrors(((FormCallbackData) data).getValidationErrors());
+				} else if(status == -1)
+					SnackbarController.getInstance().message(getBundle().getString("error") + data.getResponse().getRawBody(), SnackbarMessageType.ERROR, 4000);
+				setLocked(false);
 
 			});
 		}
@@ -131,7 +129,7 @@ public final class LoginController extends FadeController implements Lockable, V
 	public HashMap<String, ServerValidator> getServerValidators() {
 		return serverValidators;
 	}
-	
+
 	public void resetForm() {
 		emailField.setText(null);
 		passwordField.setText(null);

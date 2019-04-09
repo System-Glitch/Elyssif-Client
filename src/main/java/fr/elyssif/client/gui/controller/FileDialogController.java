@@ -11,7 +11,6 @@ import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
 
 import fr.elyssif.client.Config;
-import fr.elyssif.client.callback.RestCallback;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.model.File;
 import fr.elyssif.client.gui.model.User;
@@ -175,23 +174,18 @@ public final class FileDialogController extends Controller {
 	private void deleteFile(JFXDialog dialog, JFXButton acceptButton, JFXButton cancelButton) {
 		acceptButton.setDisable(true);
 		cancelButton.setDisable(true);
-		repository.destroy(file, new RestCallback() {
-
-			@Override
-			public void run() {
-				if(getStatus() == 204) {
-					dialog.close();
-					parentDialog.close();
-					((HomeController) MainController.getInstance().getController("app").getController("container").getController("home")).removeFile(file);
-				} else if(getStatus() == 403) {
-					SnackbarController.getInstance().message(getBundle().getString("forbidden"), SnackbarMessageType.ERROR);
-				} else {
-					SnackbarController.getInstance().message(getBundle().getString("error") + getResponse().getRawBody(), SnackbarMessageType.ERROR);
-				}
-				acceptButton.setDisable(false);
-				cancelButton.setDisable(false);
+		repository.destroy(file, data -> {
+			if(data.getStatus() == 204) {
+				dialog.close();
+				parentDialog.close();
+				((HomeController) MainController.getInstance().getController("app").getController("container").getController("home")).removeFile(file);
+			} else if(data.getStatus() == 403) {
+				SnackbarController.getInstance().message(getBundle().getString("forbidden"), SnackbarMessageType.ERROR);
+			} else {
+				SnackbarController.getInstance().message(getBundle().getString("error") + data.getResponse().getRawBody(), SnackbarMessageType.ERROR);
 			}
-
+			acceptButton.setDisable(false);
+			cancelButton.setDisable(false);
 		});
 	}
 

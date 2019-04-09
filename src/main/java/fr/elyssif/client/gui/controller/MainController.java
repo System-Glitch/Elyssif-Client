@@ -10,7 +10,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import com.jfoenix.controls.JFXSnackbar;
 
 import fr.elyssif.client.Config;
-import fr.elyssif.client.callback.RestCallback;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.controller.auth.AuthController;
 import fr.elyssif.client.http.Authenticator;
@@ -76,22 +75,18 @@ public final class MainController extends ContainerController {
 	public void ready() {
 		if(authenticator.getToken() != null) {
 			authController.getController("loader").show(true);
-			authenticator.requestUserInfo(new RestCallback() {
-
-				public void run() {
-					int status = getResponse().getStatus();
-					if(status == 200 && authenticator.getUser() != null) {
-						authController.getController("loader").showNext(appController, true);
-					} else if(status == 401) {
-						Config.getInstance().set("Token", null);
-						Config.getInstance().save();
-						authController.getController("loader").showNext(authController.getController("welcome"), true);
-					} else if(status == -1) {
-						SnackbarController.getInstance().message(getBundle().getString("error") + getResponse().getRawBody(), SnackbarMessageType.ERROR, 4000);
-						authController.getController("loader").showNext(authController.getController("welcome"), true);
-					}
+			authenticator.requestUserInfo(data -> {
+				int status = data.getResponse().getStatus();
+				if(status == 200 && authenticator.getUser() != null) {
+					authController.getController("loader").showNext(appController, true);
+				} else if(status == 401) {
+					Config.getInstance().set("Token", null);
+					Config.getInstance().save();
+					authController.getController("loader").showNext(authController.getController("welcome"), true);
+				} else if(status == -1) {
+					SnackbarController.getInstance().message(getBundle().getString("error") + data.getResponse().getRawBody(), SnackbarMessageType.ERROR, 4000);
+					authController.getController("loader").showNext(authController.getController("welcome"), true);
 				}
-
 			});
 		} else
 			authController.getController("welcome").show(true);

@@ -84,7 +84,7 @@ public class LookupModal<T extends Model<T>> {
 	 * If the owner window for the dialog is set, input to all windows in the dialog's owner
 	 * chain is blocked while the dialog is being shown. Clicking the overlay closes the dialog.
 	 * @param ownerPane the container pane on which the dialog will popup
-	 * @param callback the callback executed when the dialog closes because an item
+	 * @param callback the callback executed when the dialog closes because an item.
 	 * has been selected or the "Cancel" button has been clicked. Contains a reference to
 	 * the selected record, accessible via <code>getModel()</code>
 	 */
@@ -106,8 +106,7 @@ public class LookupModal<T extends Model<T>> {
 			controller.initList(factory);
 			controller.setParentDialog(dialog);
 			controller.setCallback(() -> {
-				callback.setModel((T) controller.getSelected());
-				callback.run();
+				callback.run((T) controller.getSelected());
 			});
 
 			dialog.setOnDialogOpened(e -> controller.focusInput());

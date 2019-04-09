@@ -1,7 +1,7 @@
 package fr.elyssif.client.callback;
 
 /**
- * Functionnal interface for asynchronous process progress.
+ * Functional interface for asynchronous process progress.
  * Mainly used to update the UI so the <code>process</code> method
  * should be called on the JavaFX thread using <code>Platform.runLater()</code>.
  * @author Jérémy LAMBERT
