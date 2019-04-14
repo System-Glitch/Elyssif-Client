@@ -100,12 +100,16 @@ public final class ReceiveController extends EncryptionController implements Loc
 	private void saveClicked() {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle(getBundle().getString("save-decrypt"));
-		// TODO check selected file is not same as destination file
-		setDestinationFile(fileChooser.showSaveDialog(getPane().getScene().getWindow()));
-		if(getDestinationFile() != null) {
-			setLocked(true);
-			showForm();
-			playAnimation();
+		java.io.File dest = fileChooser.showSaveDialog(getPane().getScene().getWindow());
+		if(dest != null) {
+			if(dest.getAbsolutePath().equals(selectedFile.getAbsolutePath())) {
+				SnackbarController.getInstance().message(getBundle().getString("invalid-file"), SnackbarMessageType.ERROR, 4000);
+			} else {
+				setDestinationFile(dest);
+				setLocked(true);
+				showForm();
+				playAnimation();
+			}
 		}
 	}
 

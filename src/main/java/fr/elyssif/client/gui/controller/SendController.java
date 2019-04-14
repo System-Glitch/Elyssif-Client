@@ -89,11 +89,16 @@ public final class SendController extends EncryptionController implements Lockab
 	protected void onButtonClicked() {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle(getBundle().getString("save-encrypt"));
-		// TODO check selected file is not same as destination file
-		setDestinationFile(fileChooser.showSaveDialog(getPane().getScene().getWindow()));
-		if(getDestinationFile() != null) {
-			setLocked(true);
-			playAnimation();
+
+		java.io.File dest = fileChooser.showSaveDialog(getPane().getScene().getWindow());
+		if(dest != null) {
+			if(dest.getAbsolutePath().equals(selectedFile.getAbsolutePath())) {
+				SnackbarController.getInstance().message(getBundle().getString("invalid-file"), SnackbarMessageType.ERROR, 4000);
+			} else {
+				setDestinationFile(dest);
+				setLocked(true);
+				playAnimation();
+			}
 		}
 	}
 
