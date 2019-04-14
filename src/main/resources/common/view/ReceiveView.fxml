@@ -17,7 +17,7 @@
    <children>
       <StackPane fx:id="fadePane">
          <children>
-            <JFXSpinner fx:id="spinner" opacity="0.0" />
+            <JFXSpinner fx:id="spinner" opacity="0.0" visible="false" />
             <VBox fx:id="foundContainer" alignment="TOP_CENTER" opacity="0.0" spacing="15.0">
                <children>
                   <Label fx:id="fileNameLabel" styleClass="title" text="%file-found" />

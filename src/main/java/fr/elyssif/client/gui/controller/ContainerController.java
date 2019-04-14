@@ -15,6 +15,7 @@ public abstract class ContainerController extends Controller {
 	public void initialize(URL location, ResourceBundle resources) {
 		super.initialize(location, resources);
 		getPane().setDisable(false);
+		getPane().setVisible(true);
 	}
 	
 }

@@ -33,8 +33,10 @@ public abstract class Controller implements Initializable {
 		this.location  = location;
 
 		registerControllers();
-		if(pane != null)
+		if(pane != null) {
 			pane.setDisable(true);
+			pane.setVisible(false);
+		}
 	}
 
 	/**
@@ -54,13 +56,16 @@ public abstract class Controller implements Initializable {
 		setBackController(backController);
 		if(parentController != null) {
 			for(Controller controller : parentController.controllers.values()) {
-				if(controller.pane != null)
+				if(controller.pane != null) {
 					controller.pane.setDisable(true);
+					controller.pane.setVisible(false);
+				}
 			}
 		}
 		pane.requestFocus();
 		pane.toFront();
 		pane.setDisable(false);
+		pane.setVisible(true);
 		SnackbarController.getInstance().updateZOrder();
 	}
 

@@ -14,7 +14,7 @@
    <children>
       <StackPane>
          <children>
-            <JFXSpinner fx:id="spinner" opacity="0.0" />
+            <JFXSpinner fx:id="spinner" opacity="0.0" visible="false" />
             <VBox fx:id="fadePane" alignment="TOP_CENTER" spacing="40.0">
                <children>
                   <ImageView fx:id="image" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">

@@ -87,6 +87,7 @@ public abstract class EncryptionController extends FadeController implements Loc
 	}
 
 	protected void playAnimation() {
+		spinner.setVisible(true);
 		spinner.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
 		formContainerTransition = ViewUtils.createFadeOutTransition(formContainer, Duration.millis(750));
 		buttonTransition = ViewUtils.createFadeOutTransition(button, Duration.millis(750));
@@ -138,6 +139,7 @@ public abstract class EncryptionController extends FadeController implements Loc
 			spinner.toBack();
 			progress = 0;
 			setLocked(false);
+			spinner.setVisible(false);
 		});
 	}
 

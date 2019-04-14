@@ -10,7 +10,7 @@
    <children>
       <VBox fx:id="fadePane" alignment="TOP_CENTER" layoutX="413.0" layoutY="190.0" spacing="40.0" styleClass="card">
          <children>
-            <JFXSpinner />
+            <JFXSpinner fx:id="spinner"/>
             <Label styleClass="title" text="%login-progress" />
          </children>
          <padding>

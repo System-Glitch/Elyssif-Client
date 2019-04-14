@@ -36,7 +36,7 @@ public abstract class FadeController extends Controller {
 		closeTransition.setInterpolator(Interpolator.EASE_IN);
 		closeTransition.setFromValue(1);
 		closeTransition.setToValue(0);
-		closeTransition.setOnFinished((e) -> getBackController().show(getBackController() instanceof FadeController));
+		closeTransition.setOnFinished(e -> onHide());
 
 		nextTransition = new FadeTransition(new Duration(FADE_DURATION), fadePane);
 		nextTransition.setInterpolator(Interpolator.EASE_IN);
@@ -76,6 +76,13 @@ public abstract class FadeController extends Controller {
 	public void showNext(Controller controller, boolean transition) {
 		setNextController(controller);
 		nextTransition.play();
+	}
+
+	/**
+	 * Executed when the view is hidden after the close animation transition end
+	 */
+	public void onHide() {
+		getBackController().show(getBackController() instanceof FadeController);
 	}
 
 	/**
