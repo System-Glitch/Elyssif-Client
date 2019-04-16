@@ -1,22 +1,27 @@
 package fr.elyssif.client.gui.controller;
 
 import java.net.URL;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.validation.RequiredFieldValidator;
 
 import fr.elyssif.client.Config;
+import fr.elyssif.client.callback.FailCallbackData;
 import fr.elyssif.client.callback.FormCallbackData;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.model.User;
 import fr.elyssif.client.gui.repository.UserRepository;
 import fr.elyssif.client.gui.validation.ServerValidator;
 import fr.elyssif.client.gui.validation.StringMaxLengthValidator;
+import fr.elyssif.client.gui.validation.StringMinLengthValidator;
+import fr.elyssif.client.gui.validation.TextMatchValidator;
 import fr.elyssif.client.gui.view.Language;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -33,9 +38,14 @@ public final class SettingsController extends FadeController implements Lockable
 	@FXML private JFXTextField emailField;
 	@FXML private JFXTextField nameField;
 
+	@FXML private JFXPasswordField passwordField;
+	@FXML private JFXPasswordField newPasswordField;
+	@FXML private JFXPasswordField passwordConfirmationField;
+
 	@FXML private JFXComboBox<Language> languageInput;
 
 	@FXML private JFXButton submitButton;
+	@FXML private JFXButton submitPasswordButton;
 
 	private HashMap<String, ServerValidator> serverValidators;
 	private SimpleBooleanProperty disableProperty;
@@ -88,6 +98,28 @@ public final class SettingsController extends FadeController implements Lockable
 	}
 
 	@FXML
+	private void submitPassword() {
+		if(validatePassword()) {
+			setLocked(true);
+
+			final User user = MainController.getInstance().getAuthenticator().getUser();
+
+			userRepository.updatePassword(passwordField.getText(), newPasswordField.getText(), passwordConfirmationField.getText(), data -> {
+				user.setUpdatedAt(new Date());
+				resetForm();
+				setLocked(false);
+				SnackbarController.getInstance().message(getBundle().getString("password-change-success"), SnackbarMessageType.SUCCESS, 4000);
+			}, errorData -> {
+				setLocked(false);
+				handleValidationErrors(((FormCallbackData) errorData).getValidationErrors());
+			}, failData -> {
+				setLocked(false);
+				SnackbarController.getInstance().message(getBundle().getString(((FailCallbackData) failData).getFullMessage()), SnackbarMessageType.ERROR);
+			});
+		}
+	}
+
+	@FXML
 	private void onLanguageChange() {
 		Config config = Config.getInstance();
 		String shortCode = languageInput.getSelectionModel().getSelectedItem().getShortCode();
@@ -115,13 +147,28 @@ public final class SettingsController extends FadeController implements Lockable
 	public void setupValidators() {
 		RequiredFieldValidator requiredValidator = new RequiredFieldValidator(getBundle().getString("required"));
 		StringMaxLengthValidator maxLengthValidator = new StringMaxLengthValidator(getBundle().getString("max-length").replace("%LENGTH%", "255"), 255);
+		StringMinLengthValidator minLengthValidator = new StringMinLengthValidator(getBundle().getString("min-length").replace("%LENGTH%", "6"), 6);
+		TextMatchValidator textMatchValidation = new TextMatchValidator(getBundle().getString("password-match"), newPasswordField);
 
 		emailField.getValidators().add(requiredValidator);
 		emailField.getValidators().add(maxLengthValidator);
 		nameField.getValidators().add(requiredValidator);
 		nameField.getValidators().add(maxLengthValidator);
+
+		passwordField.getValidators().add(requiredValidator);
+		newPasswordField.getValidators().add(requiredValidator);
+		newPasswordField.getValidators().add(maxLengthValidator);
+		newPasswordField.getValidators().add(minLengthValidator);
+		passwordConfirmationField.getValidators().add(requiredValidator);
+		passwordConfirmationField.getValidators().add(maxLengthValidator);
+		passwordConfirmationField.getValidators().add(minLengthValidator);
+		passwordConfirmationField.getValidators().add(textMatchValidation);
+
 		ValidationUtils.setValidationListener(emailField);
 		ValidationUtils.setValidationListener(nameField);
+		ValidationUtils.setValidationListener(passwordField);
+		ValidationUtils.setValidationListener(newPasswordField);
+		ValidationUtils.setValidationListener(passwordConfirmationField);
 
 		setupServerValidators();
 	}
@@ -130,6 +177,9 @@ public final class SettingsController extends FadeController implements Lockable
 	public void setupServerValidators() {
 		emailField.getValidators().add(createServerValidator("email"));
 		nameField.getValidators().add(createServerValidator("name"));
+		passwordField.getValidators().add(createServerValidator("old_password"));
+		newPasswordField.getValidators().add(createServerValidator("password"));
+		passwordConfirmationField.getValidators().add(createServerValidator("password_confirmation"));
 	}
 
 	@Override
@@ -139,10 +189,20 @@ public final class SettingsController extends FadeController implements Lockable
 		return ok;
 	}
 
+	private boolean validatePassword() {
+		boolean ok = passwordField.validate();
+		ok = newPasswordField.validate() && ok;
+		ok = passwordConfirmationField.validate() && ok;
+		return ok;
+	}
+
 	@Override
 	public void resetValidation() {
 		emailField.resetValidation();
 		nameField.resetValidation();
+		passwordField.resetValidation();
+		newPasswordField.resetValidation();
+		passwordConfirmationField.resetValidation();
 	}
 
 	@Override
@@ -150,13 +210,21 @@ public final class SettingsController extends FadeController implements Lockable
 		final User user = MainController.getInstance().getAuthenticator().getUser();
 		emailField.setText(user.getEmail().get());
 		nameField.setText(user.getName().get());
+
+		passwordField.setText(null);
+		newPasswordField.setText(null);
+		passwordConfirmationField.setText(null);
 	}
 
 	@Override
 	public void bindControls() {
 		emailField.disableProperty().bind(disableProperty);
 		nameField.disableProperty().bind(disableProperty);
+		passwordField.disableProperty().bind(disableProperty);
+		newPasswordField.disableProperty().bind(disableProperty);
+		passwordConfirmationField.disableProperty().bind(disableProperty);
 		submitButton.disableProperty().bind(disableProperty);
+		submitPasswordButton.disableProperty().bind(disableProperty);
 		languageInput.disableProperty().bind(disableProperty);
 	}
 

@@ -2,6 +2,7 @@
 
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXPasswordField?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
@@ -9,6 +10,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
 <FlowPane fx:id="pane" alignment="CENTER" columnHalignment="CENTER" styleClass="white" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.SettingsController">
@@ -27,8 +29,9 @@
                <children>
                   <VBox alignment="TOP_CENTER" spacing="32.0">
                      <children>
-                        <JFXTextField fx:id="emailField" labelFloat="true" promptText="%email" />
-                        <JFXTextField fx:id="nameField" labelFloat="true" promptText="%name" />
+                        <JFXTextField fx:id="emailField" labelFloat="true" prefWidth="180.0" promptText="%email" />
+                        <JFXTextField fx:id="nameField" labelFloat="true" prefWidth="180.0" promptText="%name" />
+                        <Pane VBox.vgrow="ALWAYS" />
                         <JFXButton fx:id="submitButton" onAction="#submit" styleClass="green-A700" text="%save">
                            <graphic>
                               <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
@@ -40,9 +43,25 @@
                         </JFXButton>
                      </children>
                   </VBox>
+                  <VBox alignment="TOP_CENTER" spacing="32.0">
+                     <children>
+                        <JFXPasswordField fx:id="passwordField" labelFloat="true" prefWidth="180.0" promptText="%password" />
+                        <JFXPasswordField fx:id="newPasswordField" labelFloat="true" prefWidth="180.0" promptText="%new-password" />
+                        <JFXPasswordField fx:id="passwordConfirmationField" labelFloat="true" prefWidth="180.0" promptText="%password-confirmation" />
+                        <JFXButton fx:id="submitPasswordButton" onAction="#submitPassword" styleClass="green-A700" text="%change-password">
+                           <graphic>
+                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@img/padlock.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </JFXButton>
+                     </children>
+                  </VBox>
                   <VBox>
                      <children>
-                        <JFXComboBox fx:id="languageInput" labelFloat="true" minWidth="146.0" onAction="#onLanguageChange" promptText="%language" />
+                        <JFXComboBox fx:id="languageInput" labelFloat="true" minWidth="180.0" onAction="#onLanguageChange" promptText="%language" />
                      </children>
                   </VBox>
                </children>
