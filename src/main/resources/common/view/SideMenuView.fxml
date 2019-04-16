@@ -18,16 +18,7 @@
 					<graphic>
 						<ImageView fitWidth="32" preserveRatio="true" smooth="true">
 							<image>
-								<Image url="@img/home.png"/>
-							</image>
-						</ImageView>
-					</graphic>
-				</Label>
-				<Label text="%profile">
-					<graphic>
-						<ImageView fitWidth="32" preserveRatio="true" smooth="true">
-							<image>
-								<Image url="@img/account.png"/>
+								<Image url="@img/home.png" />
 							</image>
 						</ImageView>
 					</graphic>
@@ -36,7 +27,7 @@
 					<graphic>
 						<ImageView fitWidth="32" preserveRatio="true" smooth="true">
 							<image>
-								<Image url="@img/contacts.png"/>
+								<Image url="@img/contacts.png" />
 							</image>
 						</ImageView>
 					</graphic>
@@ -45,7 +36,7 @@
 					<graphic>
 						<ImageView fitWidth="32" preserveRatio="true" smooth="true">
 							<image>
-								<Image url="@img/settings.png"/>
+								<Image url="@img/settings.png" />
 							</image>
 						</ImageView>
 					</graphic>
