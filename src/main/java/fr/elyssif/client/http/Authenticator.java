@@ -7,6 +7,7 @@ import org.apache.http.client.HttpClient;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import fr.elyssif.client.callback.FormCallbackData;
 import fr.elyssif.client.callback.RestCallback;
 import fr.elyssif.client.callback.RestCallbackData;
 import fr.elyssif.client.gui.model.User;
@@ -192,7 +193,12 @@ public final class Authenticator {
 					Logger.getGlobal().severe("Malformed authentication response. Returned element is not a JSON object: " + response.getRawBody());
 				}
 			}
-			callback.run(data);
+
+			if(response.getStatus() == 422) {
+				callback.run(new FormCallbackData(response));
+			} else {
+				callback.run(data);
+			}
 		}
 
 	}
