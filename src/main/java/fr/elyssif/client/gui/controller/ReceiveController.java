@@ -174,6 +174,8 @@ public final class ReceiveController extends EncryptionController implements Loc
 			foundContainer.toFront();
 			cancelButton.setDisable(false);
 			saveButton.setDisable(false);
+			cancelButton.setCancelButton(true);
+			saveButton.setDefaultButton(true);
 			ft2.play();
 		});
 
@@ -182,6 +184,8 @@ public final class ReceiveController extends EncryptionController implements Loc
 
 	private void showForm() {
 		if(!saveButton.isDisable()) {
+			cancelButton.setCancelButton(false);
+			saveButton.setDefaultButton(false);
 			cancelButton.setDisable(true);
 			saveButton.setDisable(true);
 			resetForm();

@@ -21,11 +21,12 @@ public final class FormCallbackData extends RestCallbackData {
 
 	public FormCallbackData(RestResponse response) {
 		super(response);
-		validationErrors = new HashMap<String, ArrayList<String>>();
 	}
 
 	public void setResponse(RestResponse response) {
 		super.setResponse(response);
+
+		validationErrors = new HashMap<String, ArrayList<String>>();
 
 		//Handle validation errors
 		JsonElement json = response.getJsonElement();
@@ -44,9 +45,7 @@ public final class FormCallbackData extends RestCallbackData {
 									messages.add(message.getAsString());
 							}
 							validationErrors.put(entry.getKey(), messages);
-
 						}
-
 					}
 				}
 			}

@@ -32,6 +32,9 @@ public final class SideMenuController extends Controller {
 		binding = new HashMap<Integer, Controller>();
 		registerListener();
 		selectIndex(0);
+		getPane().setVisible(true);
+
+		sideList.getItems().get(1).setDisable(true); // TODO enable contacts when ready
 	}
 
 	/**

@@ -81,7 +81,7 @@ public abstract class FadeController extends Controller {
 	/**
 	 * Executed when the view is hidden after the close animation transition end
 	 */
-	public void onHide() {
+	protected void onHide() {
 		getBackController().show(getBackController() instanceof FadeController);
 	}
 

@@ -108,7 +108,7 @@ public class FileListFactory implements ListFactory<File> {
 		fileNameLabel.getStyleClass().add("text-lg");
 
 		User user = mode == MODE_SEND ? file.getRecipient().get() : file.getSender().get();
-		Label fromLabel = new Label(bundle.getString(mode == MODE_SEND ? "to" : "from") + " " + user.getName().get() + "(" + user.getEmail().get() + ")");
+		Label fromLabel = new Label(bundle.getString(mode == MODE_SEND ? "to" : "from") + " " + user.getName().get() + " (" + user.getEmail().get() + ")");
 		fromLabel.getStyleClass().add("text-sm");
 
 		BorderPane datesContainer = new BorderPane();

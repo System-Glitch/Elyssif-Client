@@ -74,8 +74,8 @@ public final class AppController extends FadeController implements Lockable {
 			}
 		});
 
-		// TODO bind menus
 		sideMenuController.bind(0, containerController.getController("home"));
+		sideMenuController.bind(2, containerController.getController("settings"));
 	}
 
 	public void bindControls() {
