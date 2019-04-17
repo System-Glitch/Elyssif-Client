@@ -2,4 +2,7 @@
 <Config>
 	<Environment>testing</Environment>
 	<Host>http://localhost:4567</Host>
+	<Locale>en</Locale>
+	<Verbose>true</Verbose>
+	<Token></Token>
 </Config>

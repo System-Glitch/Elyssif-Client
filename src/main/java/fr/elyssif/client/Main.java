@@ -6,6 +6,14 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
+import fr.elyssif.client.gui.ElyssifClient;
+
+/**
+ * Main class. Sets up error handling and loads config
+ * @author Jérémy LAMBERT
+ * @see Config
+ *
+ */
 public final class Main {
 
 	private static void setup() {
@@ -48,7 +56,7 @@ public final class Main {
 		StreamHandler handlerInfo = createStreamHandler(System.out, formatter);
 		handlerInfo.setFilter((LogRecord record) -> { return record.getLevel().equals(Level.INFO) || record.getLevel().equals(Level.CONFIG); }); //Only show INFO logs
 		handlerInfo.setLevel(Level.ALL);
-		
+
 		logger.setLevel(Level.ALL);
 		logger.setUseParentHandlers(false);
 		logger.addHandler(handlerInfo);
@@ -78,14 +86,16 @@ public final class Main {
 	}
 
 	private static boolean checkConfig() {
-		return checkConfigField("Environment") && checkConfigField("Host");
+		boolean ok = checkConfigField("Environment");
+		ok = checkConfigField("Host") && ok;
+		return ok;
 	}
 
 	public static void main(String[] args) throws Exception {
 		setup();
 
 		if(checkConfig()) {
-			//TODO
+			ElyssifClient.run(args);
 		}
 	}
 

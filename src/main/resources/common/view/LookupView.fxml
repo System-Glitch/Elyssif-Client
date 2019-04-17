@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="pane" spacing="20.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.LookupController">
+   <children>
+      <BorderPane minWidth="200.0">
+         <left>
+            <Label fx:id="title" styleClass="title" text="Lookup" BorderPane.alignment="CENTER" />
+         </left>
+         <right>
+            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+               <image>
+                  <Image url="@img/search.png" />
+               </image>
+            </ImageView>
+         </right>
+      </BorderPane>
+      <HBox alignment="TOP_CENTER">
+         <children>
+            <JFXTextField fx:id="input" onKeyTyped="#search" prefWidth="200.0" promptText="Search..." />
+         </children>
+      </HBox>
+      <JFXListView fx:id="results" maxHeight="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+         <VBox.margin>
+            <Insets left="-24.0" right="-24.0" />
+         </VBox.margin></JFXListView>
+      <BorderPane>
+         <right>
+            <JFXButton onAction="#select" styleClass="green-A700" text="%select" BorderPane.alignment="CENTER" />
+         </right>
+         <left>
+            <JFXButton onAction="#cancel" text="%cancel" BorderPane.alignment="CENTER" />
+         </left>
+      </BorderPane>
+   </children>
+   <padding>
+      <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
+   </padding>
+</VBox>

@@ -1,0 +1,61 @@
+/* ------------------------------ */
+/* BUTTONS                        */
+/* ------------------------------ */
+
+.jfx-button {
+	-fx-cursor: hand;
+	-fx-font-size: 14px;
+}
+
+.welcome-btn {
+	-fx-font-weight: bold;
+	-fx-font-size: 18px !important;
+	-fx-padding: 8px 15px 8px 15px;
+	-fx-background-color: -green-A700;
+}
+
+.logout-btn {
+	-fx-padding: 10px 20px 10px 20px;
+	-fx-font-size: 15px;
+	-fx-font-family: 'Roboto Medium';
+}
+
+/* ------------------------------ */
+/* TEXT FIELDS                    */
+/* ------------------------------ */
+
+.jfx-text-field, .jfx-password-field {
+	-jfx-focus-color: -blue-700;
+	-jfx-unfocus-color: -blue-grey-400;
+	-fx-font-size: 13px;
+}
+
+.jfx-text-field:error, .jfx-password-field:error {
+	-jfx-focus-color: -red-700;
+}
+
+.jfx-text-field:error .label, .jfx-password-field:error .label {
+	-fx-font-weight: BOLD;
+	-fx-font-fill: -red-700;
+	-fx-font-size: 12px;
+}
+
+/* ------------------------------ */
+/* SPINNERS                       */
+/* ------------------------------ */
+
+.jfx-spinner:determinate .arc {
+    -fx-stroke: #0F9D58;
+}
+
+.jfx-spinner:determinate .percentage {
+    -fx-fill: #4d4d4d;
+}
+
+.jfx-spinner .text {
+	-fx-translate-y: 145;
+}
+
+.jfx-spinner:indeterminate .text {
+	-fx-opacity: 0;
+}

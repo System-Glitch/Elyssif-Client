@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXListView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="pane" maxWidth="1.7976931348623157E308" styleClass="white" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.HomeController">
+   <center>
+      <HBox fx:id="fadePane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="25.0" BorderPane.alignment="CENTER">
+         <children>
+            <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="15.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label styleClass="title" text="%sent-header">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@img/up-arrow.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Label>
+                  <JFXListView fx:id="sentListView" VBox.vgrow="ALWAYS" />
+                  <fx:include fx:id="sentPaginate" source="PaginateControls.fxml" />
+               </children>
+            </VBox>
+            <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="15.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label styleClass="title" text="%received-header">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@img/down-arrow.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Label>
+                  <JFXListView fx:id="receivedListView" VBox.vgrow="ALWAYS" />
+                  <fx:include fx:id="receivedPaginate" source="PaginateControls.fxml" />
+               </children>
+            </VBox>
+         </children>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <padding>
+            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+         </padding></HBox>
+   </center>
+</BorderPane>

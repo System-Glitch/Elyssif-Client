@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXDialogLayout?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+
+<JFXDialogLayout fx:id="pane" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.FileDialogController">
+	<heading>
+		<Label fx:id="title" styleClass="text-lg">
+			<graphic>
+				<ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+					<image>
+						<Image url="@img/folder-file.png" />
+					</image>
+				</ImageView>
+			</graphic>
+		</Label>
+	</heading>
+	<body>
+		<GridPane hgap="5" vgap="5">
+			<Label minWidth="-Infinity" style="-fx-font-weight: bold;" text="%from" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+			<Label fx:id="fromLabel" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+			<Label minWidth="-Infinity" style="-fx-font-weight: bold;" text="%to" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+			<Label fx:id="toLabel" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+			<Label minWidth="-Infinity" style="-fx-font-weight: bold;" text="%sent" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+			<Label fx:id="sentLabel" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+			<Label minWidth="-Infinity" style="-fx-font-weight: bold;" text="%received" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+			<Label fx:id="receivedLabel" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+		</GridPane>
+	</body>
+	<actions>
+		<JFXButton fx:id="decryptButton" onAction="#decryptClicked" styleClass="green-A700" text="%decrypt">
+			<graphic>
+				<ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+					<image>
+						<Image url="@img/padlock.png" />
+					</image>
+				</ImageView>
+			</graphic>
+		</JFXButton>
+		<JFXButton fx:id="deleteButton" onAction="#deleteClicked" styleClass="red-A700" text="%delete">
+			<graphic>
+				<ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+					<image>
+						<Image url="@img/delete.png" />
+					</image>
+				</ImageView>
+			</graphic>
+		</JFXButton>
+	</actions>
+</JFXDialogLayout>
