@@ -1,4 +1,4 @@
-<h1 height="256"><img align="left" width="41" height="41" src="https://raw.githubusercontent.com/Elyssif/Elyssif-Client/develop/src/main/resources/common/view/img/logo/logo48.png">&nbsp;Elyssif Client</h1>
+<h1 height="256"><img align="left" width="41" height="41" src="https://raw.githubusercontent.com/System-Glitch/Elyssif-Client/develop/src/main/resources/common/view/img/logo/logo48.png">&nbsp;Elyssif Client</h1>
 
 **E**lyssif **L**et's **Y**ou **S**ecurely **S**end **I**mportant **F**iles
 
