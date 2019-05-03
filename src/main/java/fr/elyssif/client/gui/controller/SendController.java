@@ -170,7 +170,7 @@ public final class SendController extends EncryptionController implements Lockab
 	@Override
 	public void setupValidators() {
 		RequiredFieldValidator requiredValidator = new RequiredFieldValidator(getBundle().getString("required"));
-		StringMaxLengthValidator maxLengthValidator = new StringMaxLengthValidator(getBundle().getString("max-length").replace("%LENGTH%", "255"), 255);
+		StringMaxLengthValidator maxLengthValidator = new StringMaxLengthValidator(getBundle().getString("max-length").replace("%LENGTH%", "40"), 40);
 		StringMinLengthValidator minLengthValidator = new StringMinLengthValidator(getBundle().getString("min-length").replace("%LENGTH%", "3"), 3);
 
 		nameInput.getValidators().add(requiredValidator);
