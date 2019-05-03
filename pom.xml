@@ -254,5 +254,12 @@
 			<version>1.61</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/io.socket/socket.io-client -->
+		<dependency>
+		    <groupId>io.socket</groupId>
+		    <artifactId>socket.io-client</artifactId>
+		    <version>1.0.0</version>
+		</dependency>
+
 	</dependencies>
 </project>
