@@ -22,7 +22,7 @@ public final class EchoOptions {
 
 	/**
 	 * Host endpoint.<br>
-	 * <b>Default : </b>/broadcasting/auth
+	 * <b>Default : </b>/api/broadcasting/auth
 	 */
 	public String authEndpoint;
 
@@ -43,7 +43,7 @@ public final class EchoOptions {
 	public EchoOptions() {
 		headers = new HashMap<>();
 		host = "http://localhost:6001";
-		authEndpoint = "api/broadcasting/auth";
+		authEndpoint = "/api/broadcasting/auth";
 		eventNamespace = "App.Events";
 	}
 
