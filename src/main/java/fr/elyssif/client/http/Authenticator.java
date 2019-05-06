@@ -13,6 +13,7 @@ import fr.elyssif.client.callback.RestCallbackData;
 import fr.elyssif.client.gui.model.User;
 import fr.elyssif.http.echo.Echo;
 import fr.elyssif.http.echo.EchoOptions;
+import fr.elyssif.http.echo.SocketIOConnector;
 
 /**
  * Utility class for authentication and token holding.
@@ -60,19 +61,24 @@ public final class Authenticator {
 	}
 
 	private final void initEcho() {
-		EchoOptions options = new EchoOptions();
-		options.host = this.socketHost;
-		options.headers.put("Authorization", "Bearer " + this.token);
 
-		this.echo = new Echo(options);
+		if(echo == null) {
+			EchoOptions options = new EchoOptions();
+			options.host = this.socketHost;
+			options.headers.put("Authorization", "Bearer " + this.token);
+
+			this.echo = new Echo(options);
+		}
+
+		SocketIOConnector.exiting = false;
 		echo.connect(messageSuccess -> {
 			// TODO on connect
 		}, messageError -> Logger.getGlobal().info("Error"),
-				subError -> {
-					for(Object o : subError) {
-						Logger.getGlobal().info(String.valueOf(o));
-					}
-				});
+		subError -> {
+			for(Object o : subError) {
+				Logger.getGlobal().info(String.valueOf(o));
+			}
+		});
 	}
 
 	/**
@@ -136,6 +142,7 @@ public final class Authenticator {
 				token = null;
 				user = null;
 				if(echo != null) {
+					SocketIOConnector.exiting = true;
 					echo.disconnect();
 				}
 			} else

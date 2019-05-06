@@ -87,7 +87,9 @@ public class SocketIOConnector {
 			}
 
 			socket.on(Socket.EVENT_DISCONNECT, o -> {
-				if(exiting) client.dispatcher().executorService().shutdown();
+				if(exiting) {
+					client.dispatcher().executorService().shutdown();
+				}
 			});
 
 		} catch (URISyntaxException e) {
