@@ -11,6 +11,8 @@ import fr.elyssif.client.callback.FormCallbackData;
 import fr.elyssif.client.callback.RestCallback;
 import fr.elyssif.client.callback.RestCallbackData;
 import fr.elyssif.client.gui.model.User;
+import fr.elyssif.http.echo.Echo;
+import fr.elyssif.http.echo.EchoOptions;
 
 /**
  * Utility class for authentication and token holding.
@@ -27,16 +29,19 @@ public final class Authenticator {
 	private HttpClient client;
 	private String token;
 	private String host;
+	private String socketHost;
 	private User user; //The authenticated user
+	private Echo echo;
 
 	/**
 	 * Create a new instance of Authenticator.
 	 * 
 	 * @param client the client to use for the authentication and user info queries
 	 * @param host the url of the host (without trailing slash)
+	 * @param socketHost the url of the socket host (without trailing slash)
 	 */
-	public Authenticator(HttpClient client, String host) {
-		this(client, host, null);
+	public Authenticator(HttpClient client, String host, String socketHost) {
+		this(client, host, socketHost, null);
 	}
 
 	/**
@@ -44,12 +49,30 @@ public final class Authenticator {
 	 * 
 	 * @param client the client to use for the authentication and user info queries
 	 * @param host the url of the host (without trailing slash)
+	 * @param socketHost the url of the socket host (without trailing slash)
 	 * @param token access token if you have it, nullable
 	 */
-	public Authenticator(HttpClient client, String host, String token) {
+	public Authenticator(HttpClient client, String host, String socketHost, String token) {
 		this.client = client;
 		this.host = host;
+		this.socketHost = socketHost;
 		this.token = token;
+	}
+
+	private final void initEcho() {
+		EchoOptions options = new EchoOptions();
+		options.host = this.socketHost;
+		options.headers.put("Authorization", "Bearer " + this.token);
+
+		this.echo = new Echo(options);
+		echo.connect(messageSuccess -> {
+			// TODO on connect
+		}, messageError -> Logger.getGlobal().info("Error"),
+				subError -> {
+					for(Object o : subError) {
+						Logger.getGlobal().info(String.valueOf(o));
+					}
+				});
 	}
 
 	/**
@@ -74,6 +97,14 @@ public final class Authenticator {
 	 */
 	public final User getUser() {
 		return user;
+	}
+
+	/**
+	 * Get the Echo socket currently in use.
+	 * @return echo
+	 */
+	public final Echo getEcho() {
+		return echo;
 	}
 
 	/**
@@ -104,6 +135,9 @@ public final class Authenticator {
 			if(response.getStatus() == 204 || response.getStatus() == 401) {
 				token = null;
 				user = null;
+				if(echo != null) {
+					echo.disconnect();
+				}
 			} else
 				Logger.getGlobal().warning("Logout request failed with state " + response.getStatus());
 
@@ -149,6 +183,8 @@ public final class Authenticator {
 				} else {
 					Logger.getGlobal().severe("Malformed user info response. Returned element is not a JSON object: " + response.getRawBody());
 				}
+
+				initEcho();
 			} else if(response.getStatus() == 401) {
 				token = null;
 				user = null;

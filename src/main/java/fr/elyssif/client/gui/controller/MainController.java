@@ -37,7 +37,7 @@ public final class MainController extends ContainerController {
 			Logger.getGlobal().info("Loading main controller.");
 		super.initialize(location, resources);
 		client = HttpClientBuilder.create().build();
-		authenticator = new Authenticator(client, Config.getInstance().get("Host"), Config.getInstance().get("Token"));
+		authenticator = new Authenticator(client, Config.getInstance().get("Host"), Config.getInstance().get("SocketHost"), Config.getInstance().get("Token"));
 		instance = this;
 
 		SnackbarController.getInstance().setSnackbar(new JFXSnackbar(getPane()));

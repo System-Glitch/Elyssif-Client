@@ -11,6 +11,8 @@ import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.controller.MainController;
 import fr.elyssif.client.gui.view.ViewUtils;
 import fr.elyssif.client.http.RestRequest;
+import fr.elyssif.http.echo.Echo;
+import fr.elyssif.http.echo.SocketIOConnector;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -54,6 +56,12 @@ public final class ElyssifClient extends Application {
 				public void handle(WindowEvent event) {
 					if(!MainController.getInstance().canExit()) {
 						event.consume();
+					} else {
+						Echo echo = MainController.getInstance().getAuthenticator().getEcho();
+						if(echo != null) {
+							SocketIOConnector.exiting = true;
+							echo.disconnect();
+						}
 					}
 				}
 			});

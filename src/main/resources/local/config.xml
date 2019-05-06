@@ -2,6 +2,7 @@
 <Config>
 	<Environment>local</Environment>
 	<Host>http://localhost:4567</Host>
+	<SocketHost>http://localhost:6001</SocketHost>
 	<Locale>en</Locale>
 	<Verbose>true</Verbose>
 	<Token></Token>

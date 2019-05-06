@@ -1,22 +1,33 @@
 package fr.elyssif.http.echo;
 
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
+import fr.elyssif.client.Config;
 import fr.elyssif.http.echo.channel.SocketIOChannel;
 import fr.elyssif.http.echo.channel.SocketIOPrivateChannel;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+import okhttp3.OkHttpClient;
 
 /**
  * This class creates a connector to a Socket.io server.
  */
 public class SocketIOConnector {
 
+	private static final String EVENT_SUBSCRIPTION_ERROR = "subscription_error";
+
+	/**
+	 * If set to true, <code>System.exit(0)</code> will be called when
+	 * the socket is disconnected.
+	 */
+	public static boolean exiting = false;
 
 	private EchoOptions options;
 	private Socket socket;
@@ -25,6 +36,8 @@ public class SocketIOConnector {
 	 * All of the subscribed channel names.
 	 */
 	private Map<String, SocketIOChannel> channels;
+
+	private OkHttpClient client;
 
 	/**
 	 * Create a new Socket.IO connector.
@@ -38,7 +51,11 @@ public class SocketIOConnector {
 
 	public void connect(Emitter.Listener success, Emitter.Listener error, Emitter.Listener subscriptionError) {
 		try {
-			socket = IO.socket(this.options.host);
+			client = new OkHttpClient();
+			var options = new IO.Options();
+			options.webSocketFactory = client;
+			options.callFactory = client;
+			socket = IO.socket(this.options.host, options);
 			socket.connect();
 
 			if (success != null) {
@@ -48,16 +65,45 @@ public class SocketIOConnector {
 			if (error != null) {
 				socket.on(Socket.EVENT_CONNECT_ERROR, error);
 			}
-			
+
 			if (subscriptionError != null) {
-				socket.on("subscription_error", subscriptionError);
+				socket.on(EVENT_SUBSCRIPTION_ERROR, subscriptionError);
 			}
+
+			if(Config.getInstance().isVerbose()) {
+				socket.on(Socket.EVENT_CONNECT, o -> Logger.getGlobal().info("Socket connected."));
+				socket.on(Socket.EVENT_DISCONNECT, o -> Logger.getGlobal().info("Socket disconnected."));
+				socket.on(Socket.EVENT_CONNECTING, o -> Logger.getGlobal().info("Connecting to socket..."));
+				socket.on(Socket.EVENT_MESSAGE, o -> Logger.getGlobal().info("Socket message: " + buildMessage(o)));
+
+				socket.on(Socket.EVENT_CONNECT_ERROR, o -> Logger.getGlobal().warning("Connecting to socket failed: " + buildMessage(o)));
+				socket.on(Socket.EVENT_CONNECT_TIMEOUT, o -> Logger.getGlobal().warning("Socket connection timeout!"));
+				socket.on(Socket.EVENT_ERROR, o -> Logger.getGlobal().warning("Socket error: " + buildMessage(o)));
+				socket.on(Socket.EVENT_RECONNECTING, o -> Logger.getGlobal().info("Socket reconnecting..."));
+				socket.on(Socket.EVENT_RECONNECT_ATTEMPT, o -> Logger.getGlobal().info("Socket reconnect attempt."));
+				socket.on(Socket.EVENT_RECONNECT_ERROR, o -> Logger.getGlobal().warning("Socket reconnect error: " + buildMessage(o)));
+				socket.on(Socket.EVENT_RECONNECT_FAILED, o -> Logger.getGlobal().warning("Socket reconnect failed: " + buildMessage(o)));
+				socket.on(EVENT_SUBSCRIPTION_ERROR, o -> Logger.getGlobal().warning("Socket subscription error: " + buildMessage(o)));
+			}
+
+			socket.on(Socket.EVENT_DISCONNECT, o -> {
+				if(exiting) client.dispatcher().executorService().shutdown();
+			});
 
 		} catch (URISyntaxException e) {
 			if (error != null) {
 				error.call();
 			}
 		}
+	}
+
+	/**
+	 *
+	 * @param args the callback message
+	 * @return a joined string of the message
+	 */
+	private String buildMessage(Object...args) {
+		return Arrays.asList(args).stream().map(o -> String.valueOf(o)).collect(Collectors.joining(", "));
 	}
 
 	/**
@@ -140,5 +186,6 @@ public class SocketIOConnector {
 
 		channels.clear();
 		socket.disconnect();
+		if(exiting && !socket.connected()) client.dispatcher().executorService().shutdown();
 	}
 }
