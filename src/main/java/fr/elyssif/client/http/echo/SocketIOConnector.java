@@ -23,11 +23,7 @@ public class SocketIOConnector {
 
 	private static final String EVENT_SUBSCRIPTION_ERROR = "subscription_error";
 
-	/**
-	 * If set to true, <code>System.exit(0)</code> will be called when
-	 * the socket is disconnected.
-	 */
-	public static boolean exiting = false;
+	private static boolean exiting = false;
 
 	private EchoOptions options;
 	private Socket socket;
@@ -190,4 +186,25 @@ public class SocketIOConnector {
 		socket.disconnect();
 		if(exiting && !socket.connected()) client.dispatcher().executorService().shutdown();
 	}
+
+	/**
+	 * If true, the socket thread pool will be terminated when
+	 * the socket is disconnected. Can be true even if the program
+	 * is not exiting but the socket has to be closed.
+	 * @return exiting
+	 */
+	public static final boolean isExiting() {
+		return exiting;
+	}
+
+	/**
+	 * If set to true, the socket thread pool will be terminated when
+	 * the socket is disconnected. Can be set to true even if the program
+	 * is not exiting but the socket has to be closed.
+	 * @param exiting
+	 */
+	public static final void setExiting(boolean exiting) {
+		SocketIOConnector.exiting = exiting;
+	}
+
 }

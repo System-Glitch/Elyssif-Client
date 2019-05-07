@@ -70,7 +70,7 @@ public final class Authenticator {
 			this.echo = new Echo(options);
 		}
 
-		SocketIOConnector.exiting = false;
+		SocketIOConnector.setExiting(false);
 		echo.connect(messageSuccess -> {
 			// TODO on connect
 		}, messageError -> Logger.getGlobal().info("Error"),
@@ -142,7 +142,7 @@ public final class Authenticator {
 				token = null;
 				user = null;
 				if(echo != null) {
-					SocketIOConnector.exiting = true;
+					SocketIOConnector.setExiting(true);
 					echo.disconnect();
 				}
 			} else

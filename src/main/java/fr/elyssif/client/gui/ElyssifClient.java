@@ -59,7 +59,7 @@ public final class ElyssifClient extends Application {
 					} else {
 						Echo echo = MainController.getInstance().getAuthenticator().getEcho();
 						if(echo != null) {
-							SocketIOConnector.exiting = true;
+							SocketIOConnector.setExiting(true);
 							echo.disconnect();
 						}
 					}
