@@ -2,7 +2,7 @@
  * EchoOptions.java
  * MrBin99 © 2018
  */
-package fr.elyssif.http.echo;
+package fr.elyssif.client.http.echo;
 
 import org.json.JSONObject;
 

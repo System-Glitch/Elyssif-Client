@@ -11,9 +11,9 @@ import fr.elyssif.client.callback.FormCallbackData;
 import fr.elyssif.client.callback.RestCallback;
 import fr.elyssif.client.callback.RestCallbackData;
 import fr.elyssif.client.gui.model.User;
-import fr.elyssif.http.echo.Echo;
-import fr.elyssif.http.echo.EchoOptions;
-import fr.elyssif.http.echo.SocketIOConnector;
+import fr.elyssif.client.http.echo.Echo;
+import fr.elyssif.client.http.echo.EchoOptions;
+import fr.elyssif.client.http.echo.SocketIOConnector;
 
 /**
  * Utility class for authentication and token holding.

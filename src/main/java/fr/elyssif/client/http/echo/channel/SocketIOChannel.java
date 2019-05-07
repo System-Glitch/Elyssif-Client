@@ -1,4 +1,4 @@
-package fr.elyssif.http.echo.channel;
+package fr.elyssif.client.http.echo.channel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,8 +10,8 @@ import java.util.logging.Logger;
 
 import org.json.JSONObject;
 
-import fr.elyssif.http.echo.EchoOptions;
-import fr.elyssif.http.echo.EventFormatter;
+import fr.elyssif.client.http.echo.EchoOptions;
+import fr.elyssif.client.http.echo.EventFormatter;
 import io.socket.client.Ack;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;

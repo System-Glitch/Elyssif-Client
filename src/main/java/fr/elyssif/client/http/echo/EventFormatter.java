@@ -1,4 +1,4 @@
-package fr.elyssif.http.echo;
+package fr.elyssif.client.http.echo;
 
 /**
  * Event name formatter.

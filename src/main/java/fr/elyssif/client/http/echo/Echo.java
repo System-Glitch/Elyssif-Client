@@ -1,7 +1,7 @@
-package fr.elyssif.http.echo;
+package fr.elyssif.client.http.echo;
 
-import fr.elyssif.http.echo.channel.SocketIOChannel;
-import fr.elyssif.http.echo.channel.SocketIOPrivateChannel;
+import fr.elyssif.client.http.echo.channel.SocketIOChannel;
+import fr.elyssif.client.http.echo.channel.SocketIOPrivateChannel;
 import io.socket.emitter.Emitter;
 
 /**

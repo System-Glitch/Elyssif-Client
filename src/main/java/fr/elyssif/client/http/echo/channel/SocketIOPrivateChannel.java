@@ -1,8 +1,8 @@
-package fr.elyssif.http.echo.channel;
+package fr.elyssif.client.http.echo.channel;
 
 import org.json.JSONObject;
 
-import fr.elyssif.http.echo.EchoOptions;
+import fr.elyssif.client.http.echo.EchoOptions;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 

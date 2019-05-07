@@ -1,4 +1,4 @@
-package fr.elyssif.http.echo;
+package fr.elyssif.client.http.echo;
 
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -9,8 +9,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import fr.elyssif.client.Config;
-import fr.elyssif.http.echo.channel.SocketIOChannel;
-import fr.elyssif.http.echo.channel.SocketIOPrivateChannel;
+import fr.elyssif.client.http.echo.channel.SocketIOChannel;
+import fr.elyssif.client.http.echo.channel.SocketIOPrivateChannel;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
