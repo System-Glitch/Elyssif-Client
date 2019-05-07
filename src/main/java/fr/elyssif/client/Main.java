@@ -88,6 +88,7 @@ public final class Main {
 	private static boolean checkConfig() {
 		boolean ok = checkConfigField("Environment");
 		ok = checkConfigField("Host") && ok;
+		ok = checkConfigField("SocketHost") && ok;
 		return ok;
 	}
 
