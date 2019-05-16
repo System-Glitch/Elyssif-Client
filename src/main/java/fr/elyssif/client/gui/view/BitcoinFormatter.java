@@ -58,7 +58,7 @@ public final class BitcoinFormatter {
 				unit += 's';
 			}
 
-			return (amount * 1e8) + " " + unit;
+			return (int)(amount * 1e8) + " " + unit;
 		case MODE_BTC:
 			return (amount * 1) + " " + UNIT_BTC;
 		default: throw new IllegalArgumentException("Invalid format mode.");
