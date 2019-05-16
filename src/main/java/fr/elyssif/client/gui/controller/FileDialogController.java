@@ -15,6 +15,7 @@ import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.model.File;
 import fr.elyssif.client.gui.model.User;
 import fr.elyssif.client.gui.repository.FileRepository;
+import fr.elyssif.client.gui.view.BitcoinFormatter;
 import fr.elyssif.client.gui.view.FileDialog;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -33,6 +34,7 @@ public final class FileDialogController extends Controller {
 	@FXML private Label title;
 	@FXML private Label fromLabel;
 	@FXML private Label toLabel;
+	@FXML private Label priceLabel;
 	@FXML private Label sentLabel;
 	@FXML private Label receivedLabel;
 
@@ -87,6 +89,9 @@ public final class FileDialogController extends Controller {
 		fromLabel.setText(sender.getName().get() + " (" + sender.getEmail().get() + ")");
 		User recipient = mode == FileDialog.MODE_SEND ? file.getRecipient().get() : MainController.getInstance().getAuthenticator().getUser();
 		toLabel.setText(recipient.getName().get() + " (" + recipient.getEmail().get() + ")");
+
+		double price = file.getPrice().get();
+		priceLabel.setText(price > 0 ? new BitcoinFormatter(price).format() : bundle.getString("free"));
 
 		Date sentDate = file.getCipheredAt().get();
 		Date receivedDate = file.getDecipheredAt().get();

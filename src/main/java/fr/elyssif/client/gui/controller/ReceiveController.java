@@ -17,6 +17,7 @@ import fr.elyssif.client.callback.ModelCallbackData;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.model.File;
 import fr.elyssif.client.gui.model.User;
+import fr.elyssif.client.gui.view.BitcoinFormatter;
 import fr.elyssif.client.gui.view.ViewUtils;
 import fr.elyssif.client.security.Crypter;
 import fr.elyssif.client.security.Hash;
@@ -45,6 +46,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 
 	@FXML private Label fileNameLabel;
 	@FXML private Label fromLabel;
+	@FXML private Label priceLabel;
 	@FXML private JFXButton saveButton;
 	@FXML private JFXButton cancelButton;
 
@@ -163,6 +165,9 @@ public final class ReceiveController extends EncryptionController implements Loc
 
 		User sender = fileModel.getSender().get();
 		fromLabel.setText(sender.getName().get() + "\n" + sender.getEmail().get());
+
+		double price = fileModel.getPrice().get();
+		priceLabel.setText(price > 0 ? new BitcoinFormatter(price).format() : getBundle().getString("free"));
 	}
 
 	private void showFileFound() {

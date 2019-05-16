@@ -30,6 +30,8 @@
                      <children>
                         <Label style="-fx-font-weight: bold;" styleClass="text-md" text="%from" />
                         <Label fx:id="fromLabel" styleClass="text-md" text="username" />
+                        <Label style="-fx-font-weight: bold;" styleClass="text-md" text="%price" />
+                        <Label fx:id="priceLabel" alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="text-price" text="0.0 BTC" />
                      </children>
                   </VBox>
                   <BorderPane>
@@ -52,7 +54,7 @@
                   </BorderPane>
                </children>
             </VBox>
-            <VBox fx:id="form" alignment="TOP_CENTER" spacing="40.0">
+            <VBox fx:id="form" alignment="CENTER" spacing="40.0">
                <children>
                   <ImageView fx:id="image" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                      <image>
