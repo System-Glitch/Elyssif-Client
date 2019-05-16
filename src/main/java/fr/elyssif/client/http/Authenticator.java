@@ -11,6 +11,7 @@ import fr.elyssif.client.callback.FormCallbackData;
 import fr.elyssif.client.callback.RestCallback;
 import fr.elyssif.client.callback.RestCallbackData;
 import fr.elyssif.client.gui.model.User;
+import fr.elyssif.client.gui.notification.NotificationCenter;
 import fr.elyssif.client.http.echo.Echo;
 import fr.elyssif.client.http.echo.EchoOptions;
 import fr.elyssif.client.http.echo.SocketIOConnector;
@@ -33,6 +34,7 @@ public final class Authenticator {
 	private String socketHost;
 	private User user; //The authenticated user
 	private Echo echo;
+	private NotificationCenter notificationCenter;
 
 	/**
 	 * Create a new instance of Authenticator.
@@ -73,6 +75,8 @@ public final class Authenticator {
 		SocketIOConnector.setExiting(false);
 		echo.connect(messageSuccess -> {
 			// TODO on connect
+			notificationCenter = new NotificationCenter(echo);
+			notificationCenter.listen("user." + user.getId().get(), "UserNotification");
 		}, messageError -> Logger.getGlobal().info("Error"),
 		subError -> {
 			for(Object o : subError) {

@@ -1,5 +1,9 @@
 package fr.elyssif.client.gui;
 
+import java.awt.AWTException;
+import java.awt.SystemTray;
+import java.awt.Toolkit;
+import java.awt.TrayIcon;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -33,6 +37,9 @@ public final class ElyssifClient extends Application {
 	private static final int DEFAULT_WIDTH = 1050;
 	private static final int DEFAULT_HEIGHT = 635;
 
+	private SystemTray tray;
+	private TrayIcon trayIcon;
+
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		try {
@@ -51,6 +58,7 @@ public final class ElyssifClient extends Application {
 			primaryStage.setTitle("Elyssif");
 
 			setupIcons(primaryStage);
+			setupTray();
 
 			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 				public void handle(WindowEvent event) {
@@ -61,6 +69,9 @@ public final class ElyssifClient extends Application {
 						if(echo != null) {
 							SocketIOConnector.setExiting(true);
 							echo.disconnect();
+							if(tray != null) {
+								tray.remove(trayIcon);
+							}
 						}
 					}
 				}
@@ -90,6 +101,25 @@ public final class ElyssifClient extends Application {
 		primaryStage.getIcons().add(new Image(getClass().getResource("/view/img/logo/logo64.png").toExternalForm()));
 		primaryStage.getIcons().add(new Image(getClass().getResource("/view/img/logo/logo128.png").toExternalForm()));
 		primaryStage.getIcons().add(new Image(getClass().getResource("/view/img/logo/logo256.png").toExternalForm()));
+	}
+
+	private void setupTray() {
+		if (!SystemTray.isSupported()) {
+			Logger.getGlobal().warning("System tray not supported!");
+		} else {
+			try {
+				tray = SystemTray.getSystemTray();
+				java.awt.Image image = Toolkit.getDefaultToolkit().createImage(getClass().getResource("/view/img/logo/logo64.png"));
+				trayIcon = new TrayIcon(image, "Elyssif");
+				trayIcon.setImageAutoSize(true);
+				trayIcon.setToolTip("Elyssif");
+				tray.add(trayIcon);
+			} catch (AWTException e) {
+				Logger.getGlobal().log(Level.SEVERE, "Couldn't add tray icon.", e);
+				tray = null;
+				trayIcon = null;
+			}
+		}
 	}
 
 	private void setupLanguage(FXMLLoader loader) {
