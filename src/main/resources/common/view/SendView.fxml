@@ -26,7 +26,7 @@
                   <VBox fx:id="formContainer" spacing="35.0">
                      <children>
                         <JFXTextField fx:id="nameInput" labelFloat="true" promptText="%filename" />
-                        <JFXNumberField fx:id="priceInput" labelFloat="true" promptText="%price" />
+                        <JFXNumberField fx:id="priceInput" labelFloat="true" promptText="%price-input" />
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                            <children>
                               <JFXTextField fx:id="fileInput" editable="false" labelFloat="true" prefWidth="150.0" promptText="%file-encrypt" />
