@@ -14,6 +14,7 @@ import fr.elyssif.client.gui.model.User;
 import fr.elyssif.client.gui.notification.NotificationCenter;
 import fr.elyssif.client.http.echo.Echo;
 import fr.elyssif.client.http.echo.EchoOptions;
+import fr.elyssif.client.http.echo.EchoSubscriptionException;
 import fr.elyssif.client.http.echo.SocketIOConnector;
 
 /**
@@ -79,9 +80,7 @@ public final class Authenticator {
 			notificationCenter.listen("user." + user.getId().get(), "UserNotification");
 		}, messageError -> Logger.getGlobal().info("Error"),
 		subError -> {
-			for(Object o : subError) {
-				Logger.getGlobal().info(String.valueOf(o));
-			}
+			throw new EchoSubscriptionException(subError);
 		});
 	}
 
