@@ -26,6 +26,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -61,6 +62,16 @@ public final class ReceiveController extends EncryptionController implements Loc
 		if(Config.getInstance().isVerbose())
 			Logger.getGlobal().info("Loading receive controller.");
 		super.initialize(location, resources);
+
+		initInputKeyListeners();
+	}
+
+	private void initInputKeyListeners() {
+		fileInput.setOnKeyPressed(e -> {
+			if(e.getCode().equals(KeyCode.ENTER)) {
+				browseClicked();
+			}
+		});
 	}
 
 	@Override
