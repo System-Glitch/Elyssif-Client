@@ -1,6 +1,8 @@
 package fr.elyssif.client.gui;
 
 import java.awt.AWTException;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
@@ -39,6 +41,7 @@ public final class ElyssifClient extends Application {
 
 	private SystemTray tray;
 	private TrayIcon trayIcon;
+	private ResourceBundle resourcesBundle;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -58,7 +61,7 @@ public final class ElyssifClient extends Application {
 			primaryStage.setTitle("Elyssif");
 
 			setupIcons(primaryStage);
-			setupTray();
+			setupTray(primaryStage);
 
 			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 				public void handle(WindowEvent event) {
@@ -103,7 +106,7 @@ public final class ElyssifClient extends Application {
 		primaryStage.getIcons().add(new Image(getClass().getResource("/view/img/logo/logo256.png").toExternalForm()));
 	}
 
-	private void setupTray() {
+	private void setupTray(Stage primaryStage) {
 		if (!SystemTray.isSupported()) {
 			Logger.getGlobal().warning("System tray not supported!");
 		} else {
@@ -113,6 +116,9 @@ public final class ElyssifClient extends Application {
 				trayIcon = new TrayIcon(image, "Elyssif");
 				trayIcon.setImageAutoSize(true);
 				trayIcon.setToolTip("Elyssif");
+
+				trayIcon.setPopupMenu(createTrayPopupMenu(primaryStage));
+
 				tray.add(trayIcon);
 			} catch (AWTException e) {
 				Logger.getGlobal().log(Level.SEVERE, "Couldn't add tray icon.", e);
@@ -122,11 +128,26 @@ public final class ElyssifClient extends Application {
 		}
 	}
 
+	private PopupMenu createTrayPopupMenu(Stage primaryStage) {
+		var menu = new PopupMenu();
+
+		var quit = new MenuItem(resourcesBundle.getString("quit"));
+		quit.addActionListener(e -> {
+			Platform.runLater(() -> {
+				primaryStage.fireEvent(new WindowEvent(primaryStage, WindowEvent.WINDOW_CLOSE_REQUEST));
+			});
+		});
+		menu.add(quit);
+
+		return menu;
+	}
+
 	private void setupLanguage(FXMLLoader loader) {
 		Locale locale = getLocale();
 		Logger.getGlobal().info("Language: " + locale.getLanguage());
 
-		loader.setResources(ResourceBundle.getBundle("bundles.lang", locale));
+		resourcesBundle = ResourceBundle.getBundle("bundles.lang", locale);
+		loader.setResources(resourcesBundle);
 		RestRequest.setGlobalLocale(locale);
 	}
 
