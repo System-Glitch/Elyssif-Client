@@ -170,6 +170,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 				} else {
 					hideHashSpinner();
 					showFileFound();
+					saveButton.setDisable(false);
 					paymentPane.setVisible(false);
 					paymentPane.setManaged(false);
 				}
@@ -206,8 +207,13 @@ public final class ReceiveController extends EncryptionController implements Loc
 			updateRemaining();
 		});
 
+		paymentState.getConfirmed().addListener((e, o, n) -> {
+			updateSaveButton();
+		});
+
 		paymentPriceLabel.setText(new BitcoinFormatter(fileModel.getPrice().get()).format());
 		updateRemaining();
+		updateSaveButton();
 
 		listenSocketChannel();
 	}
@@ -231,6 +237,10 @@ public final class ReceiveController extends EncryptionController implements Loc
 
 	private void updateRemaining() {
 		remainingLabel.setText(new BitcoinFormatter(fileModel.getPrice().get() - paymentState.getConfirmed().get() - paymentState.getPending().get()).format());
+	}
+
+	private void updateSaveButton() {
+		saveButton.setDisable(fileModel.getPrice().get() > 0 && paymentState != null && fileModel.getPrice().get() > paymentState.getConfirmed().get());
 	}
 
 	private void showHashSpinner() {
@@ -268,9 +278,9 @@ public final class ReceiveController extends EncryptionController implements Loc
 		ft.setOnFinished(e -> {
 			foundContainer.toFront();
 			cancelButton.setDisable(false);
-			saveButton.setDisable(false);
 			cancelButton.setCancelButton(true);
 			saveButton.setDefaultButton(true);
+			updateSaveButton();
 			ft2.play();
 		});
 
@@ -278,7 +288,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 	}
 
 	private void showForm() {
-		if(!saveButton.isDisable()) {
+		if(!cancelButton.isDisable()) {
 			cancelButton.setCancelButton(false);
 			saveButton.setDefaultButton(false);
 			cancelButton.setDisable(true);
