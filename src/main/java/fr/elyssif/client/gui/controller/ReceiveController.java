@@ -208,6 +208,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 		});
 
 		paymentState.getConfirmed().addListener((e, o, n) -> {
+			updateRemaining();
 			updateSaveButton();
 		});
 
