@@ -1,5 +1,8 @@
 package fr.elyssif.client.gui.view;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 /**
  * Text formatter for Bitcoin amounts.
  * @author Jérémy LAMBERT
@@ -60,7 +63,9 @@ public final class BitcoinFormatter {
 
 			return (int)(amount * 1e8) + " " + unit;
 		case MODE_BTC:
-			return amount + " " + UNIT_BTC;
+			DecimalFormat df = new DecimalFormat("#.########");
+			df.setRoundingMode(RoundingMode.CEILING);
+			return df.format(amount) + " " + UNIT_BTC;
 		default: throw new IllegalArgumentException("Invalid format mode.");
 		}
 	}
