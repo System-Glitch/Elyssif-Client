@@ -225,13 +225,15 @@ public final class ReceiveController extends EncryptionController implements Loc
 				Logger.getGlobal().info("Received file payment state update on channel \"" + data[0] + "\": " + data[1]);
 			}
 
-			JSONObject obj = (JSONObject) data[1];
-			try {
-				paymentState.setConfirmed(((Number) obj.get("confirmed")).doubleValue());
-				paymentState.setPending(((Number) obj.get("pending")).doubleValue());
-			} catch (JSONException e) {
-				Logger.getGlobal().log(Level.SEVERE, "Couldn't update payment state.", e);
-			}
+			Platform.runLater(() -> {
+				JSONObject obj = (JSONObject) data[1];
+				try {
+					paymentState.setConfirmed(((Number) obj.get("confirmed")).doubleValue());
+					paymentState.setPending(((Number) obj.get("pending")).doubleValue());
+				} catch (JSONException e) {
+					Logger.getGlobal().log(Level.SEVERE, "Couldn't update payment state.", e);
+				}
+			});
 		});
 	}
 
