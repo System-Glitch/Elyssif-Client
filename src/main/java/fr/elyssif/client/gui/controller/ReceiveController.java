@@ -229,8 +229,17 @@ public final class ReceiveController extends EncryptionController implements Loc
 			Platform.runLater(() -> {
 				JSONObject obj = (JSONObject) data[1];
 				try {
-					paymentState.setConfirmed(((Number) obj.get("confirmed")).doubleValue());
-					paymentState.setPending(((Number) obj.get("pending")).doubleValue());
+					double confirmed = ((Number) obj.get("confirmed")).doubleValue();
+					double pending = ((Number) obj.get("pending")).doubleValue();
+
+					if(paymentState.getConfirmed().get() != confirmed) {
+						ViewUtils.blinkUpdateLabel(paidLabel, () -> paymentState.setConfirmed(confirmed));
+					}
+
+					if(paymentState.getPending().get() != pending) {
+						ViewUtils.blinkUpdateLabel(unconfirmedLabel, () -> paymentState.setPending(pending));
+					}
+
 				} catch (JSONException e) {
 					Logger.getGlobal().log(Level.SEVERE, "Couldn't update payment state.", e);
 				}
@@ -239,7 +248,11 @@ public final class ReceiveController extends EncryptionController implements Loc
 	}
 
 	private void updateRemaining() {
-		remainingLabel.setText(new BitcoinFormatter(fileModel.getPrice().get() - paymentState.getConfirmed().get() - paymentState.getPending().get()).format());
+		String value = new BitcoinFormatter(fileModel.getPrice().get() - paymentState.getConfirmed().get() - paymentState.getPending().get()).format();
+
+		if(!value.equals(remainingLabel.getText())) {
+			ViewUtils.blinkUpdateLabel(remainingLabel, () -> remainingLabel.setText(value));
+		}
 	}
 
 	private void updateSaveButton() {
