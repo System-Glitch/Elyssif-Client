@@ -89,6 +89,7 @@ public final class Config {
 		Logger.getGlobal().info("Loaded config");
 		Logger.getGlobal().info("Current environment: " + get("Environment"));
 		Logger.getGlobal().info("Remote host: " + get("Host"));
+		Logger.getGlobal().info("Socket host: " + get("SocketHost"));
 		Logger.getGlobal().info("Verbose: " + isVerbose());
 
 		return true;
