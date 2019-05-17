@@ -40,7 +40,7 @@ public final class BitcoinFormatter {
 	public String format() {
 		return format(MODE_AUTO);
 	}
-	
+
 	/**
 	 * Format the amount, automatically selecting
 	 * the most appropriated unit (Sat or BTC).
@@ -62,7 +62,7 @@ public final class BitcoinFormatter {
 		case MODE_BTC:
 			return (amount * 1) + " " + UNIT_BTC;
 		default: throw new IllegalArgumentException("Invalid format mode.");
-		}		
+		}
 	}
 
 	/**
@@ -83,7 +83,7 @@ public final class BitcoinFormatter {
 	}
 
 	private void checkAmount(double amount) {
-		if(amount < 1e-8) throw new IllegalArgumentException("Bitcoin amount must be at least one Satoshi, " + amount + " BTC given.");
+		if(amount < 1e-8 && amount > 0) throw new IllegalArgumentException("Bitcoin amount must be at least one Satoshi, " + amount + " BTC given.");
 	}	
 
 }

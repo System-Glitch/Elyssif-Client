@@ -3,6 +3,7 @@ package fr.elyssif.client.http.echo;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -160,7 +161,9 @@ public class SocketIOConnector {
 		String privateChannel = "private-" + channel;
 		String presenceChannel = "presence-" + channel;
 
-		for (String subscribed : channels.keySet()) {
+		Iterator<String> it = channels.keySet().iterator();
+		while (it.hasNext()) {
+			String subscribed = it.next();
 			if (subscribed.equals(channel) || subscribed.equals(privateChannel) || subscribed.equals(presenceChannel)) {
 				try {
 					channels.get(subscribed).unsubscribe(null);
@@ -168,7 +171,7 @@ public class SocketIOConnector {
 					Logger.getGlobal().log(Level.SEVERE, "Couldn't unsubscribe from channel.", e);
 				}
 
-				channels.remove(subscribed);
+				it.remove();
 			}
 		}
 	}

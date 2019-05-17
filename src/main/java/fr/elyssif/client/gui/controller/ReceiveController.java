@@ -2,7 +2,11 @@ package fr.elyssif.client.gui.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
@@ -14,15 +18,19 @@ import com.jfoenix.validation.RequiredFieldValidator;
 import fr.elyssif.client.Config;
 import fr.elyssif.client.callback.FailCallbackData;
 import fr.elyssif.client.callback.ModelCallbackData;
+import fr.elyssif.client.callback.PaymentStateCallbackData;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.model.File;
+import fr.elyssif.client.gui.model.PaymentState;
 import fr.elyssif.client.gui.model.User;
 import fr.elyssif.client.gui.view.BitcoinFormatter;
 import fr.elyssif.client.gui.view.ViewUtils;
+import fr.elyssif.client.http.echo.channel.SocketIOPrivateChannel;
 import fr.elyssif.client.security.Crypter;
 import fr.elyssif.client.security.Hash;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
@@ -44,17 +52,26 @@ public final class ReceiveController extends EncryptionController implements Loc
 
 	@FXML private VBox form;
 	@FXML private VBox foundContainer;
+	@FXML private VBox paymentPane;
 
 	@FXML private Label fileNameLabel;
 	@FXML private Label fromLabel;
 	@FXML private Label priceLabel;
+	@FXML private Label priceLabelStatic;
 	@FXML private JFXButton saveButton;
 	@FXML private JFXButton cancelButton;
 
 	@FXML private JFXSpinner hashSpinner;
 
+	@FXML private Label paymentPriceLabel;
+	@FXML private Label paidLabel;
+	@FXML private Label unconfirmedLabel;
+	@FXML private Label remainingLabel;
+
 	private java.io.File selectedFile;
 	private String hashCiphered;
+	private PaymentState paymentState;
+	private SocketIOPrivateChannel paymentStateChannel;
 
 	private File fileModel;
 
@@ -136,8 +153,26 @@ public final class ReceiveController extends EncryptionController implements Loc
 			hashCiphered = Hash.toHex(digest);
 			getFileRepository().fetch(hashCiphered, data -> {
 				fileModel = ((ModelCallbackData<File>) data).getModel();
-				hideHashSpinner();
-				showFileFound();
+
+				if(fileModel.getPrice().get() > 0) {
+					getFileRepository().getPaymentState(fileModel, paymentStateData -> {
+						bindPaymentState(((PaymentStateCallbackData) paymentStateData).getState());
+						hideHashSpinner();
+						showFileFound();
+					}, errorData -> {
+						if(errorData.getStatus() == 403) {
+							SnackbarController.getInstance().message(getBundle().getString("forbidden"), SnackbarMessageType.ERROR, 4000);
+						} else {
+							SnackbarController.getInstance().message(getBundle().getString(((FailCallbackData) errorData).getMessage()), SnackbarMessageType.ERROR, 4000);
+						}
+						hideHashSpinner();
+					});
+				} else {
+					hideHashSpinner();
+					showFileFound();
+					paymentPane.setVisible(false);
+					paymentPane.setManaged(false);
+				}
 			}, errorData -> {
 				if(errorData.getStatus() == 404) {
 					SnackbarController.getInstance().message(getBundle().getString("file-not-found"), SnackbarMessageType.ERROR, 4000);
@@ -149,12 +184,53 @@ public final class ReceiveController extends EncryptionController implements Loc
 			});
 		}, exception -> {
 			Platform.runLater(() -> {
-				SnackbarController.getInstance().message(exception.getMessage().replace("server-error", getBundle().getString("server-error")), SnackbarMessageType.ERROR, 4000);
+				SnackbarController.getInstance().message(exception.getMessage(), SnackbarMessageType.ERROR, 4000);
 				hideHashSpinner();
 				resetForm();
 				revertAnimation();
 			});
 		});
+	}
+
+	private void bindPaymentState(PaymentState state) {
+		paymentState = state;
+		paidLabel.textProperty().unbind();
+		unconfirmedLabel.textProperty().unbind();
+		paymentPane.setVisible(true);
+		paymentPane.setManaged(true);
+
+		paidLabel.textProperty().bind(Bindings.createStringBinding(() -> new BitcoinFormatter(paymentState.getConfirmed().get()).format(), paymentState.getConfirmed()));
+		unconfirmedLabel.textProperty().bind(Bindings.createStringBinding(() -> new BitcoinFormatter(paymentState.getPending().get()).format(), paymentState.getPending()));
+
+		paymentState.getPending().addListener((e, o, n) -> {
+			updateRemaining();
+		});
+
+		paymentPriceLabel.setText(new BitcoinFormatter(fileModel.getPrice().get()).format());
+		updateRemaining();
+
+		listenSocketChannel();
+	}
+
+	private void listenSocketChannel() {
+		paymentStateChannel = MainController.getInstance().getAuthenticator().getEcho().privateChannel("file." + fileModel.getId().get());
+		paymentStateChannel.listen("TransactionNotification", data -> {
+			if(Config.getInstance().isVerbose()) {
+				Logger.getGlobal().info("Received file payment state update on channel \"" + data[0] + "\": " + data[1]);
+			}
+
+			JSONObject obj = (JSONObject) data[1];
+			try {
+				paymentState.setConfirmed(((Number) obj.get("confirmed")).doubleValue());
+				paymentState.setPending(((Number) obj.get("pending")).doubleValue());
+			} catch (JSONException e) {
+				Logger.getGlobal().log(Level.SEVERE, "Couldn't update payment state.", e);
+			}
+		});
+	}
+
+	private void updateRemaining() {
+		remainingLabel.setText(new BitcoinFormatter(fileModel.getPrice().get() - paymentState.getConfirmed().get() - paymentState.getPending().get()).format());
 	}
 
 	private void showHashSpinner() {
@@ -177,8 +253,11 @@ public final class ReceiveController extends EncryptionController implements Loc
 		User sender = fileModel.getSender().get();
 		fromLabel.setText(sender.getName().get() + "\n" + sender.getEmail().get());
 
-		double price = fileModel.getPrice().get();
-		priceLabel.setText(price > 0 ? new BitcoinFormatter(price).format() : getBundle().getString("free"));
+		boolean visible = fileModel.getPrice().get() <= 0;
+		priceLabel.setVisible(visible);
+		priceLabel.setManaged(visible);
+		priceLabelStatic.setVisible(visible);
+		priceLabelStatic.setManaged(visible);
 	}
 
 	private void showFileFound() {
@@ -323,6 +402,10 @@ public final class ReceiveController extends EncryptionController implements Loc
 	}
 
 	public void reset() {
+		if(fileModel != null) {
+			MainController.getInstance().getAuthenticator().getEcho().leave("file." + fileModel.getId().get());
+			paymentStateChannel = null;
+		}
 		fileModel = null;
 		selectedFile = null;
 		hashCiphered = null;
