@@ -148,6 +148,10 @@ public class SocketIOConnector {
 
 		if (!channels.containsKey(name)) {
 			channels.put(name, new SocketIOPrivateChannel(socket, name, options));
+
+			if(Config.getInstance().isVerbose()) {
+				Logger.getGlobal().info("Created new private channel: " + name);
+			}
 		}
 		return channels.get(name);
 	}

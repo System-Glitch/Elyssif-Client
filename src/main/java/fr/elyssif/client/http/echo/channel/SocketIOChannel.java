@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import org.json.JSONObject;
 
+import fr.elyssif.client.Config;
 import fr.elyssif.client.http.echo.EchoOptions;
 import fr.elyssif.client.http.echo.EventFormatter;
 import io.socket.client.Ack;
@@ -87,6 +88,10 @@ public class SocketIOChannel {
 				socket.emit("subscribe", object, callback);
 			}
 
+			if(Config.getInstance().isVerbose()) {
+				Logger.getGlobal().info("Subscribe to Echo channel \"" + name +"\".");
+			}
+
 		} catch (Exception e) {
 			throw new Exception("Cannot subscribe to channel '" + name + "' : " + e.getMessage());
 		}
@@ -110,6 +115,10 @@ public class SocketIOChannel {
 				socket.emit("unsubscribe", object);
 			} else {
 				socket.emit("unsubscribe", object, callback);
+			}
+
+			if(Config.getInstance().isVerbose()) {
+				Logger.getGlobal().info("Unsubscribe from Echo channel \"" + name +"\".");
 			}
 
 		} catch (Exception e) {
@@ -178,6 +187,9 @@ public class SocketIOChannel {
 		}
 
 		eventsCallbacks.get(event).add(callback);
+		if(Config.getInstance().isVerbose()) {
+			Logger.getGlobal().info("Added callback on Echo channel \"" + name +"\" for event \"" + event + "\".");
+		}
 	}
 
 	/**
@@ -185,6 +197,10 @@ public class SocketIOChannel {
 	 */
 	public void unbind() {
 		Iterator<String> iterator = eventsCallbacks.keySet().iterator();
+
+		if(Config.getInstance().isVerbose()) {
+			Logger.getGlobal().info("Unbound callbacks for Echo channel \"" + name +"\".");
+		}
 
 		while (iterator.hasNext()) {
 			socket.off(iterator.next());
