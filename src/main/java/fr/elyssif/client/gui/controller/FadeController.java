@@ -42,7 +42,7 @@ public abstract class FadeController extends Controller {
 		nextTransition.setInterpolator(Interpolator.EASE_IN);
 		nextTransition.setFromValue(1);
 		nextTransition.setToValue(0);
-		nextTransition.setOnFinished((e) -> getNextController().show(true, this));
+		nextTransition.setOnFinished((e) -> onNext());
 
 		fadePane.opacityProperty().set(0);
 	}
@@ -76,6 +76,14 @@ public abstract class FadeController extends Controller {
 	public void showNext(Controller controller, boolean transition) {
 		setNextController(controller);
 		nextTransition.play();
+	}
+
+	/**
+	 * Executed when the next transition is over
+	 * and the next controller is shown.
+	 */
+	protected void onNext() {
+		getNextController().show(true, this);
 	}
 
 	/**

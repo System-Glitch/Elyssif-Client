@@ -121,7 +121,7 @@ public final class LookupController extends Controller {
 	}
 
 	@FXML
-	private void cancel() {
+	public void cancel() {
 		selected = null;
 		if(callback != null) {
 			callback.run();

@@ -26,6 +26,7 @@ import fr.elyssif.client.security.Hash;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 
@@ -44,6 +45,7 @@ public final class SendController extends EncryptionController implements Lockab
 	@FXML private JFXButton browseButton;
 	@FXML private JFXButton recipientButton;
 
+	private LookupModal<User> modal;
 	private java.io.File selectedFile;
 	private User selectedUser;
 	private File fileModel;
@@ -52,6 +54,8 @@ public final class SendController extends EncryptionController implements Lockab
 		if(Config.getInstance().isVerbose())
 			Logger.getGlobal().info("Loading send controller.");
 		super.initialize(location, resources);
+
+		initInputKeyListeners();
 	}
 
 	@Override
@@ -59,6 +63,28 @@ public final class SendController extends EncryptionController implements Lockab
 		super.show(transition, backController);
 		resetForm();
 		resetValidation();
+	}
+
+	@Override
+	protected void onNext() {
+		super.onNext();
+		if(modal != null) {
+			modal.closeDialog();
+		}
+	}
+
+	private void initInputKeyListeners() {
+		fileInput.setOnKeyPressed(e -> {
+			if(e.getCode().equals(KeyCode.ENTER)) {
+				browseClicked();
+			}
+		});
+
+		recipientInput.setOnKeyPressed(e -> {
+			if(e.getCode().equals(KeyCode.ENTER)) {
+				recipientClicked();
+			}
+		});
 	}
 
 	@FXML
@@ -75,7 +101,7 @@ public final class SendController extends EncryptionController implements Lockab
 
 	@FXML
 	private void recipientClicked() {
-		LookupModal<User> modal = new LookupModal<User>(new UserRepository(), getBundle());
+		modal = new LookupModal<User>(new UserRepository(), getBundle());
 		modal.setTitle("recipient");
 		modal.setHeader("lookup-recipient");
 		modal.setListFactory(new UserListFactory());

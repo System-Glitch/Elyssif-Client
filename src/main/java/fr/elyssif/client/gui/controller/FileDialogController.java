@@ -41,6 +41,7 @@ public final class FileDialogController extends Controller {
 	@FXML private JFXButton decryptButton;
 	@FXML private JFXButton deleteButton;
 
+	private JFXDialog confirmDialog;
 	private JFXDialog parentDialog;
 	private File file;
 
@@ -126,6 +127,19 @@ public final class FileDialogController extends Controller {
 		sideMenuController.setCurrentController(receiveViewController);
 	}
 
+	/**
+	 * Close the dialog.
+	 */
+	public void close() {
+		if(confirmDialog != null) {
+			confirmDialog.close();
+		}
+
+		if(parentDialog != null) {
+			parentDialog.close();
+		}
+	}
+
 	@FXML
 	private void deleteClicked() {
 		openConfirmDialog();
@@ -134,8 +148,8 @@ public final class FileDialogController extends Controller {
 	private void openConfirmDialog() {
 		parentDialog.setOverlayClose(false);
 
-		final JFXDialog dialog = new JFXDialog();
-		dialog.setDialogContainer((StackPane) getPane().getParent());
+		confirmDialog = new JFXDialog();
+		confirmDialog.setDialogContainer((StackPane) getPane().getParent());
 
 		JFXDialogLayout content = new JFXDialogLayout();
 		Label header = new Label(getBundle().getString("confirm"), new ImageView("view/img/warning.png"));
@@ -149,13 +163,13 @@ public final class FileDialogController extends Controller {
 		JFXButton cancelButton = new JFXButton(getBundle().getString("cancel"));
 		cancelButton.setMaxHeight(Double.MAX_VALUE);
 		cancelButton.setOnAction(e -> {
-			dialog.close();
+			confirmDialog.close();
 		});
 
 		JFXButton acceptButton = new JFXButton(getBundle().getString("yes"));
 		acceptButton.getStyleClass().add("red-A700");
 		acceptButton.setOnAction(e -> {
-			deleteFile(dialog, acceptButton, cancelButton);
+			deleteFile(confirmDialog, acceptButton, cancelButton);
 		});
 		ImageView image = new ImageView("view/img/delete.png");
 		image.setFitWidth(24);
@@ -165,15 +179,15 @@ public final class FileDialogController extends Controller {
 
 		content.setActions(cancelButton, acceptButton);
 
-		dialog.setContent(content);
-		dialog.setTransitionType(JFXDialog.DialogTransition.CENTER);
-		dialog.setOverlayClose(false);
+		confirmDialog.setContent(content);
+		confirmDialog.setTransitionType(JFXDialog.DialogTransition.CENTER);
+		confirmDialog.setOverlayClose(false);
 
-		dialog.setOnDialogClosed(event -> {
+		confirmDialog.setOnDialogClosed(event -> {
 			parentDialog.setOverlayClose(true);
 		});
 
-		dialog.show();
+		confirmDialog.show();
 	}
 
 	private void deleteFile(JFXDialog dialog, JFXButton acceptButton, JFXButton cancelButton) {
