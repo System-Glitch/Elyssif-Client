@@ -1,5 +1,7 @@
 package fr.elyssif.client.gui.controller;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -63,6 +65,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 
 	@FXML private JFXSpinner hashSpinner;
 
+	@FXML private JFXTextField addressLabel;
 	@FXML private Label paymentPriceLabel;
 	@FXML private Label paidLabel;
 	@FXML private Label unconfirmedLabel;
@@ -87,6 +90,14 @@ public final class ReceiveController extends EncryptionController implements Loc
 		fileInput.setOnKeyPressed(e -> {
 			if(e.getCode().equals(KeyCode.ENTER)) {
 				browseClicked();
+			}
+		});
+
+		addressLabel.focusedProperty().addListener((o, oldVal, newVal) -> {
+			if(newVal.booleanValue()) {
+				Platform.runLater(() -> addressLabel.selectAll());
+				var selection = new StringSelection(addressLabel.getText());
+				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, selection);
 			}
 		});
 	}
@@ -284,6 +295,8 @@ public final class ReceiveController extends EncryptionController implements Loc
 		priceLabel.setManaged(visible);
 		priceLabelStatic.setVisible(visible);
 		priceLabelStatic.setManaged(visible);
+
+		addressLabel.setText(fileModel.getAddress().get());
 	}
 
 	private void showFileFound() {
