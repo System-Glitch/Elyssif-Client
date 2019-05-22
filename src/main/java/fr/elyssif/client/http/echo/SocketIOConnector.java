@@ -63,6 +63,10 @@ public class SocketIOConnector {
 				socket.on(Socket.EVENT_CONNECT_ERROR, error);
 			}
 
+			socket.on(EVENT_SUBSCRIPTION_ERROR, o -> {
+				this.leave(String.valueOf(o[0]));
+			});
+
 			if (subscriptionError != null) {
 				socket.on(EVENT_SUBSCRIPTION_ERROR, subscriptionError);
 			}
