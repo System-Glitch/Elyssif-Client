@@ -51,20 +51,21 @@ public final class BitcoinFormatter {
 	 * @return formatted amount
 	 */
 	public String format(int mode) {
+		double absAmount = Math.abs(amount);
 		switch(mode) {
 		case MODE_AUTO:
-			return format(amount < 1e-4 ? MODE_SATOSHIS : MODE_BTC);
+			return format(absAmount < 1e-4 ? MODE_SATOSHIS : MODE_BTC);
 		case MODE_SATOSHIS:
 			String unit = UNIT_SAT;
 
-			if(amount > 1e-8) {
+			if(absAmount > 1e-8) {
 				unit += 's';
 			}
 
-			return (int)(amount * 1e8) + " " + unit;
+			return Double.valueOf(amount * 1e8).intValue() + " " + unit;
 		case MODE_BTC:
 			DecimalFormat df = new DecimalFormat("#.########");
-			df.setRoundingMode(RoundingMode.CEILING);
+			df.setRoundingMode(RoundingMode.HALF_DOWN);
 			return df.format(amount) + " " + UNIT_BTC;
 		default: throw new IllegalArgumentException("Invalid format mode.");
 		}

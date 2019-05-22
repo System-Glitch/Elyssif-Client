@@ -31,6 +31,8 @@ import fr.elyssif.client.http.echo.channel.SocketIOPrivateChannel;
 import fr.elyssif.client.security.Crypter;
 import fr.elyssif.client.security.Hash;
 import javafx.animation.FadeTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
@@ -214,15 +216,6 @@ public final class ReceiveController extends EncryptionController implements Loc
 		paidLabel.textProperty().bind(Bindings.createStringBinding(() -> new BitcoinFormatter(paymentState.getConfirmed().get()).format(), paymentState.getConfirmed()));
 		unconfirmedLabel.textProperty().bind(Bindings.createStringBinding(() -> new BitcoinFormatter(paymentState.getPending().get()).format(), paymentState.getPending()));
 
-		paymentState.getPending().addListener((e, o, n) -> {
-			updateRemaining();
-		});
-
-		paymentState.getConfirmed().addListener((e, o, n) -> {
-			updateRemaining();
-			updateSaveButton();
-		});
-
 		paymentPriceLabel.setText(new BitcoinFormatter(fileModel.getPrice().get()).format());
 		updateRemaining();
 		updateSaveButton();
@@ -243,13 +236,21 @@ public final class ReceiveController extends EncryptionController implements Loc
 					double confirmed = ((Number) obj.get("confirmed")).doubleValue();
 					double pending = ((Number) obj.get("pending")).doubleValue();
 
+					if(paymentState.getPending().get() != pending) {
+						ViewUtils.blinkUpdateLabel(unconfirmedLabel, () -> paymentState.setPending(pending));
+					}
+
 					if(paymentState.getConfirmed().get() != confirmed) {
 						ViewUtils.blinkUpdateLabel(paidLabel, () -> paymentState.setConfirmed(confirmed));
 					}
 
-					if(paymentState.getPending().get() != pending) {
-						ViewUtils.blinkUpdateLabel(unconfirmedLabel, () -> paymentState.setPending(pending));
-					}
+					// Update remaining after blink animation finished
+					var tm = new Timeline();
+					tm.getKeyFrames().add(new KeyFrame(Duration.millis(500), e -> {
+						updateRemaining();
+						updateSaveButton();
+					}));
+					tm.play();
 
 				} catch (JSONException e) {
 					Logger.getGlobal().log(Level.SEVERE, "Couldn't update payment state.", e);
