@@ -55,10 +55,11 @@
                                     </ImageView>
                                  </graphic>
                               </Label>
-                              <ImageView fitHeight="125.0" fitWidth="125.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="125.0" fitWidth="125.0" pickOnBounds="true" preserveRatio="true" fx:id="qrImageView" >
                                  <image>
-                                    <Image url="@img/qr.png" />
-                                 </image></ImageView>
+                                    <Image url="@img/qr.png"/>
+                                 </image>
+                              </ImageView>
                               <JFXTextField fx:id="addressLabel" alignment="CENTER" editable="false" />
                               <GridPane hgap="15.0">
                                 <columnConstraints>
