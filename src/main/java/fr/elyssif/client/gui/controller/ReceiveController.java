@@ -26,6 +26,7 @@ import fr.elyssif.client.gui.model.File;
 import fr.elyssif.client.gui.model.PaymentState;
 import fr.elyssif.client.gui.model.User;
 import fr.elyssif.client.gui.view.BitcoinFormatter;
+import fr.elyssif.client.gui.view.QRCode;
 import fr.elyssif.client.gui.view.ViewUtils;
 import fr.elyssif.client.http.echo.channel.SocketIOPrivateChannel;
 import fr.elyssif.client.security.Crypter;
@@ -70,6 +71,7 @@ public final class ReceiveController extends EncryptionController {
 
 	@FXML private JFXSpinner hashSpinner;
 
+	@FXML private ImageView qrImageView;
 	@FXML private JFXTextField addressLabel;
 	@FXML private Label paymentPriceLabel;
 	@FXML private Label paidLabel;
@@ -319,7 +321,17 @@ public final class ReceiveController extends EncryptionController {
 		priceLabelStatic.setVisible(visible);
 		priceLabelStatic.setManaged(visible);
 
-		addressLabel.setText(fileModel.getAddress().get());
+		var address = fileModel.getAddress().get();
+		if(address != null) {
+			var qrCode = new QRCode("bitcoin:" + address + "?amount=" + fileModel.getPrice().get(), 300).make();
+			if(qrCode != null) {
+				qrImageView.setImage(qrCode);
+			} else {
+				SnackbarController.getInstance().message(getBundle().getString("qrcode-error"), SnackbarMessageType.ERROR, 4000);
+			}
+
+			addressLabel.setText(address);
+		}
 	}
 
 	private void showFileFound() {
