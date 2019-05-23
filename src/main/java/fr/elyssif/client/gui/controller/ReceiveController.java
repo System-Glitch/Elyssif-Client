@@ -323,7 +323,7 @@ public final class ReceiveController extends EncryptionController {
 
 		var address = fileModel.getAddress().get();
 		if(address != null) {
-			var qrCode = new QRCode("bitcoin:" + address + "?amount=" + fileModel.getPrice().get(), 125).make();
+			var qrCode = new QRCode("bitcoin:" + address + "?amount=" + fileModel.getPrice().get(), 300).make();
 			if(qrCode != null) {
 				qrImageView.setImage(qrCode);
 			} else {

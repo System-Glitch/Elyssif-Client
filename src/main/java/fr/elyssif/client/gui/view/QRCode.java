@@ -1,13 +1,15 @@
 package fr.elyssif.client.gui.view;
 import java.awt.image.BufferedImage;
+import java.util.EnumMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.WritableImage;
@@ -84,7 +86,9 @@ public final class QRCode {
 
 	private BitMatrix generateMatrix(final String data, final int size) {
 		try {
-			return new QRCodeWriter().encode(data, BarcodeFormat.QR_CODE, size, size);
+			var hints = new EnumMap<EncodeHintType, Object>(EncodeHintType.class);
+			hints.put(EncodeHintType.MARGIN, 0);
+			return new MultiFormatWriter().encode(data, BarcodeFormat.QR_CODE, size, size, hints);
 		} catch (WriterException e) {
 			Logger.getGlobal().log(Level.SEVERE, "message", e);
 		}
