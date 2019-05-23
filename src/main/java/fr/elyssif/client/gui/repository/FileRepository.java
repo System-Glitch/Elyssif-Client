@@ -58,6 +58,29 @@ public class FileRepository extends Repository<File> {
 	}
 
 	/**
+	 * Get the private key for the given file.
+	 * The result is stored in the given file instance.
+	 * @param file
+	 * @param callback the callback executed on success.
+	 * Wrapped data is of type ModelCallbackData.
+	 * @param failCallback the callback executed on failure, nullable.
+	 * Wrapped data is of type FailCallbackData.
+	 */
+	public void getPrivateKey(File file, RestCallback callback, RestCallback failCallback) {
+		request(file.getId().get() + "/key", HttpMethod.GET, data -> {
+
+			var element = ((JsonCallbackData) data).getElement();
+			if(element != null && element.isJsonPrimitive()) {
+				file.setPrivateKey(element.getAsString());
+				callback.run(new ModelCallbackData<File>(data.getResponse(), file));
+			} else {
+				handleMalformedResponse(data.getResponse(), failCallback, "string");
+			}
+
+		}, failCallback);
+	}
+
+	/**
 	 * Check a file by using its hash and hash ciphered.
 	 * On success, the given model is updated with the current
 	 * date for the fields <code>updatedAt</code> and <code>decipheredAt</code>

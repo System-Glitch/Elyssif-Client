@@ -37,8 +37,10 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -49,7 +51,7 @@ import javafx.util.Duration;
  * @author Jérémy LAMBERT
  *
  */
-public final class ReceiveController extends EncryptionController implements Lockable, Validatable {
+public final class ReceiveController extends EncryptionController {
 
 	@FXML private JFXTextField fileInput;
 	@FXML private JFXButton browseButton;
@@ -57,6 +59,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 	@FXML private VBox form;
 	@FXML private VBox foundContainer;
 	@FXML private VBox paymentPane;
+	@FXML private BorderPane foundButtonsContainer;
 
 	@FXML private Label fileNameLabel;
 	@FXML private Label fromLabel;
@@ -85,6 +88,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 			Logger.getGlobal().info("Loading receive controller.");
 		super.initialize(location, resources);
 
+		getSpinner().prefWidthProperty().bind(form.widthProperty());
 		initInputKeyListeners();
 	}
 
@@ -141,19 +145,37 @@ public final class ReceiveController extends EncryptionController implements Loc
 
 	@FXML
 	private void saveClicked() {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle(getBundle().getString("save-decrypt"));
-		java.io.File dest = fileChooser.showSaveDialog(getPane().getScene().getWindow());
-		if(dest != null) {
-			if(dest.getAbsolutePath().equals(selectedFile.getAbsolutePath())) {
-				SnackbarController.getInstance().message(getBundle().getString("invalid-file"), SnackbarMessageType.ERROR, 4000);
-			} else {
-				setDestinationFile(dest);
-				setLocked(true);
-				showForm();
-				playAnimation();
+		foundButtonsContainer.setDisable(true);
+		addressLabel.setDisable(true);
+
+		getFileRepository().getPrivateKey(fileModel, data -> {
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle(getBundle().getString("save-decrypt"));
+			java.io.File dest = fileChooser.showSaveDialog(getPane().getScene().getWindow());
+
+			foundButtonsContainer.setDisable(false);
+			addressLabel.setDisable(false);
+
+			if(dest != null) {
+				if(dest.getAbsolutePath().equals(selectedFile.getAbsolutePath())) {
+					SnackbarController.getInstance().message(getBundle().getString("invalid-file"), SnackbarMessageType.ERROR, 4000);
+				} else {
+					setDestinationFile(dest);
+					setLocked(true);
+					showForm();
+					playAnimation();
+				}
 			}
-		}
+		}, errorData -> {
+			if(errorData.getStatus() == 403) {
+				SnackbarController.getInstance().message(getBundle().getString("forbidden"), SnackbarMessageType.ERROR, 4000);
+			} else {
+				SnackbarController.getInstance().message(getBundle().getString(((FailCallbackData) errorData).getMessage()), SnackbarMessageType.ERROR, 4000);
+			}
+
+			foundButtonsContainer.setDisable(false);
+			addressLabel.setDisable(false);
+		});
 	}
 
 
@@ -345,6 +367,7 @@ public final class ReceiveController extends EncryptionController implements Loc
 		crypter.decrypt(fileModel.getPrivateKey().get(), getDestinationFile(), progress -> {
 			Platform.runLater(() -> setProgress(progress));
 		}, () -> {
+			getSpinner().setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
 			Hash.sha256(getDestinationFile(), digest -> {
 				fileModel.setHash(Hash.toHex(digest));
 				fileModel.setHashCiphered(hashCiphered);

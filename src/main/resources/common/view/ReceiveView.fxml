@@ -21,7 +21,7 @@
    <children>
       <StackPane fx:id="fadePane">
          <children>
-            <JFXSpinner fx:id="spinner" opacity="0.0" visible="false" />
+            <JFXSpinner fx:id="spinner" maxWidth="-Infinity" opacity="0.0" prefWidth="200.0" visible="false" />
             <VBox fx:id="foundContainer" alignment="CENTER" fillWidth="false" opacity="0.0" spacing="15.0">
                <children>
                   <TilePane alignment="CENTER" prefColumns="2" prefRows="1">
@@ -59,7 +59,7 @@
                                  <image>
                                     <Image url="@img/qr.png" />
                                  </image></ImageView>
-                              <JFXTextField alignment="CENTER" editable="false" fx:id="addressLabel"/>
+                              <JFXTextField fx:id="addressLabel" alignment="CENTER" editable="false" />
                               <GridPane hgap="15.0">
                                 <columnConstraints>
                                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
@@ -86,7 +86,7 @@
                         </VBox>
                      </children>
                   </TilePane>
-                  <BorderPane minWidth="200.0">
+                  <BorderPane fx:id="foundButtonsContainer" minWidth="200.0">
                      <right>
                         <JFXButton fx:id="saveButton" disable="true" onAction="#saveClicked" styleClass="green-A700" text="%save" BorderPane.alignment="CENTER">
                            <graphic>
