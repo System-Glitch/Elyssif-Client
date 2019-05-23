@@ -35,7 +35,7 @@ import javafx.stage.FileChooser;
  * @author Jérémy LAMBERT
  *
  */
-public final class SendController extends EncryptionController implements Lockable, Validatable {
+public final class SendController extends EncryptionController {
 
 	@FXML private JFXTextField nameInput;
 	@FXML private JFXNumberField priceInput;

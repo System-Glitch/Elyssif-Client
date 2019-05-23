@@ -92,10 +92,12 @@ public final class LoginController extends FadeController implements Lockable, V
 		submitButton.defaultButtonProperty().bind(getPane().disabledProperty().not());
 	}
 
+	@Override
 	public void setLocked(boolean locked) {
 		disableProperty.set(locked);
 	}
 
+	@Override
 	public void setupValidators() {
 		RequiredFieldValidator requiredValidator = new RequiredFieldValidator(getBundle().getString("required"));
 		StringMaxLengthValidator maxLengthValidator = new StringMaxLengthValidator(getBundle().getString("max-length").replace("%LENGTH%", "255"), 255);
@@ -110,26 +112,31 @@ public final class LoginController extends FadeController implements Lockable, V
 		setupServerValidators();
 	}
 
+	@Override
 	public void setupServerValidators() {
 		emailField.getValidators().add(createServerValidator("email"));
 		passwordField.getValidators().add(createServerValidator("password"));
 	}
 
+	@Override
 	public boolean validateAll() {
 		boolean ok = emailField.validate();
 		ok = passwordField.validate() && ok;
 		return ok;
 	}
 
+	@Override
 	public void resetValidation() {
 		emailField.resetValidation();
 		passwordField.resetValidation();
 	}
 
+	@Override
 	public HashMap<String, ServerValidator> getServerValidators() {
 		return serverValidators;
 	}
 
+	@Override
 	public void resetForm() {
 		emailField.setText(null);
 		passwordField.setText(null);

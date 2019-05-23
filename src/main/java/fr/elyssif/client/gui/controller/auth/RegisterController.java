@@ -93,6 +93,7 @@ public final class RegisterController extends FadeController implements Lockable
 			submit();
 	}
 
+	@Override
 	public void bindControls() {
 		emailField.disableProperty().bind(disableProperty);
 		nameField.disableProperty().bind(disableProperty);
@@ -106,10 +107,12 @@ public final class RegisterController extends FadeController implements Lockable
 		submitButton.defaultButtonProperty().bind(getPane().disabledProperty().not());
 	}
 
+	@Override
 	public void setLocked(boolean locked) {
 		disableProperty.set(locked);
 	}
 
+	@Override
 	public void setupValidators() {
 		RequiredFieldValidator requiredValidator = new RequiredFieldValidator(getBundle().getString("required"));
 		StringMaxLengthValidator maxLengthValidator = new StringMaxLengthValidator(getBundle().getString("max-length").replace("%LENGTH%", "255"), 255);
@@ -135,6 +138,7 @@ public final class RegisterController extends FadeController implements Lockable
 		setupServerValidators();
 	}
 
+	@Override
 	public void setupServerValidators() {
 		emailField.getValidators().add(createServerValidator("email"));
 		nameField.getValidators().add(createServerValidator("name"));
@@ -142,6 +146,7 @@ public final class RegisterController extends FadeController implements Lockable
 		passwordConfirmationField.getValidators().add(createServerValidator("password_confirmation"));
 	}
 
+	@Override
 	public boolean validateAll() {
 		boolean ok = emailField.validate();
 		ok = nameField.validate() && ok;
@@ -150,6 +155,7 @@ public final class RegisterController extends FadeController implements Lockable
 		return ok;
 	}
 
+	@Override
 	public void resetValidation() {
 		emailField.resetValidation();
 		nameField.resetValidation();
@@ -157,10 +163,12 @@ public final class RegisterController extends FadeController implements Lockable
 		passwordConfirmationField.resetValidation();
 	}
 
+	@Override
 	public HashMap<String, ServerValidator> getServerValidators() {
 		return serverValidators;
 	}
 
+	@Override
 	public void resetForm() {
 		emailField.setText(null);
 		nameField.setText(null);

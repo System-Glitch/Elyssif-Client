@@ -4,6 +4,7 @@ import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.util.Duration;
 
@@ -45,6 +46,22 @@ public abstract class ViewUtils {
 		ft.setFromValue(1.0);
 		ft.setToValue(0);
 		return ft;
+	}
+
+	/**
+	 * Fade-out a label before updating its value through the
+	 * given callback.
+	 * @param label
+	 * @param callback
+	 */
+	public static void blinkUpdateLabel(Label label, Runnable callback) {
+		var fot = ViewUtils.createFadeOutTransition(label, Duration.millis(250));
+		var fit = ViewUtils.createFadeInTransition(label, Duration.millis(250));
+		fot.setOnFinished(e -> {
+			callback.run();
+			fit.play();
+		});
+		fot.play();
 	}
 
 	/**

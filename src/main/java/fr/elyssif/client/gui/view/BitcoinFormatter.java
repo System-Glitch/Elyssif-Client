@@ -1,5 +1,8 @@
 package fr.elyssif.client.gui.view;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 /**
  * Text formatter for Bitcoin amounts.
  * @author Jérémy LAMBERT
@@ -40,7 +43,7 @@ public final class BitcoinFormatter {
 	public String format() {
 		return format(MODE_AUTO);
 	}
-	
+
 	/**
 	 * Format the amount, automatically selecting
 	 * the most appropriated unit (Sat or BTC).
@@ -48,21 +51,24 @@ public final class BitcoinFormatter {
 	 * @return formatted amount
 	 */
 	public String format(int mode) {
+		double absAmount = Math.abs(amount);
 		switch(mode) {
 		case MODE_AUTO:
-			return format(amount < 1e-4 ? MODE_SATOSHIS : MODE_BTC);
+			return format(absAmount < 1e-4 ? MODE_SATOSHIS : MODE_BTC);
 		case MODE_SATOSHIS:
 			String unit = UNIT_SAT;
 
-			if(amount > 1e-8) {
+			if(absAmount > 1e-8) {
 				unit += 's';
 			}
 
-			return (int)(amount * 1e8) + " " + unit;
+			return Double.valueOf(amount * 1e8).intValue() + " " + unit;
 		case MODE_BTC:
-			return (amount * 1) + " " + UNIT_BTC;
+			DecimalFormat df = new DecimalFormat("#.########");
+			df.setRoundingMode(RoundingMode.HALF_DOWN);
+			return df.format(amount) + " " + UNIT_BTC;
 		default: throw new IllegalArgumentException("Invalid format mode.");
-		}		
+		}
 	}
 
 	/**
@@ -83,7 +89,7 @@ public final class BitcoinFormatter {
 	}
 
 	private void checkAmount(double amount) {
-		if(amount < 1e-8) throw new IllegalArgumentException("Bitcoin amount must be at least one Satoshi, " + amount + " BTC given.");
+		if(amount < 1e-8 && amount > 0) throw new IllegalArgumentException("Bitcoin amount must be at least one Satoshi, " + amount + " BTC given.");
 	}	
 
 }

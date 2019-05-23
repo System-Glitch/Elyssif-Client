@@ -36,6 +36,7 @@ public abstract class Controller implements Initializable {
 		if(pane != null) {
 			pane.setDisable(true);
 			pane.setVisible(false);
+			pane.managedProperty().bind(pane.visibleProperty());
 		}
 	}
 

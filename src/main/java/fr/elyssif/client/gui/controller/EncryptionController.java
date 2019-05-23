@@ -191,4 +191,8 @@ public abstract class EncryptionController extends FadeController implements Loc
 		return serverValidators;
 	}
 
+	protected JFXSpinner getSpinner() {
+		return spinner;
+	}
+
 }

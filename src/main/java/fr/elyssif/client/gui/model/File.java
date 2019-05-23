@@ -14,6 +14,7 @@ public class File extends Model<File> {
 	private SimpleStringProperty name;
 	private SimpleStringProperty publicKey;
 	private SimpleStringProperty privateKey;
+	private SimpleStringProperty address;
 	private SimpleStringProperty hash;
 	private SimpleStringProperty hashCiphered;
 	private SimpleObjectProperty<Date> cipheredAt;
@@ -22,7 +23,7 @@ public class File extends Model<File> {
 
 	private SimpleIntegerProperty senderId;
 	private SimpleIntegerProperty recipientId;
-	
+
 	private SimpleObjectProperty<User> sender;
 	private SimpleObjectProperty<User> recipient;
 
@@ -42,6 +43,7 @@ public class File extends Model<File> {
 		name         = new SimpleStringProperty();
 		publicKey    = new SimpleStringProperty();
 		privateKey   = new SimpleStringProperty();
+		address      = new SimpleStringProperty();
 		hash         = new SimpleStringProperty();
 		hashCiphered = new SimpleStringProperty();
 		cipheredAt   = new SimpleObjectProperty<Date>();
@@ -85,6 +87,14 @@ public class File extends Model<File> {
 
 	public final void setPrivateKey(String privateKey) {
 		this.privateKey.set(privateKey);
+	}
+
+	public final SimpleStringProperty getAddress() {
+		return address;
+	}
+
+	public final void setAddress(String address) {
+		this.address.set(address);
 	}
 
 	public final SimpleStringProperty getHash() {

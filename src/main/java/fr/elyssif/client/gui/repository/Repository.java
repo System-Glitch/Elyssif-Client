@@ -361,7 +361,7 @@ public abstract class Repository<T extends Model<T>> {
 			if(response.getStatus() == 401 && authenticator != null) { // Unauthenticated
 				authenticator.logout(new LogoutCallback());
 			} else if(!response.isSuccessful() && !response.isInvalid()) {
-				Logger.getGlobal().warning("Repository request failed: " + method.name() + " " + response.getStatus() + " " + failData.getMessage());
+				Logger.getGlobal().warning("Repository request failed: " + method.name() + " " + response.getStatus() + " " + failData != null ? failData.getMessage() : "");
 			}
 
 		});
