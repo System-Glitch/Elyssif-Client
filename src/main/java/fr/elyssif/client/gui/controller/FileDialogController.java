@@ -198,10 +198,15 @@ public final class FileDialogController extends Controller {
 				dialog.close();
 				parentDialog.close();
 				((HomeController) MainController.getInstance().getController("app").getController("container").getController("home")).removeFile(file);
-			} else if(data.getStatus() == 403) {
+			}
+
+			acceptButton.setDisable(false);
+			cancelButton.setDisable(false);
+		}, errorData -> {
+			if(errorData.getStatus() == 403) {
 				SnackbarController.getInstance().message(getBundle().getString("forbidden"), SnackbarMessageType.ERROR);
 			} else {
-				SnackbarController.getInstance().message(getBundle().getString("error") + data.getResponse().getRawBody(), SnackbarMessageType.ERROR);
+				SnackbarController.getInstance().message(getBundle().getString("error") + errorData.getResponse().getRawBody(), SnackbarMessageType.ERROR);
 			}
 			acceptButton.setDisable(false);
 			cancelButton.setDisable(false);
