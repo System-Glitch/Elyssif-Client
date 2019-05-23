@@ -102,7 +102,7 @@ public final class FileDialogController extends Controller {
 		receivedLabel.setText(receivedDate != null ? format.format(receivedDate) : bundle.getString("pending"));
 
 		decryptButton.setVisible(mode == FileDialog.MODE_RECEIVE);
-		deleteButton.setVisible(mode == FileDialog.MODE_SEND);
+		deleteButton.setVisible(mode == FileDialog.MODE_SEND && (price <= 0 || receivedDate == null));
 	}
 
 	/**
@@ -204,7 +204,14 @@ public final class FileDialogController extends Controller {
 			cancelButton.setDisable(false);
 		}, errorData -> {
 			if(errorData.getStatus() == 403) {
-				SnackbarController.getInstance().message(getBundle().getString("forbidden"), SnackbarMessageType.ERROR);
+				var message = getBundle().getString("forbidden");
+				var body = errorData.getResponse().getRawBody();
+
+				if(body != null && !body.isEmpty()) {
+					message += "\n" + (getBundle().containsKey(body) ? getBundle().getString(body) : body);
+				}
+
+				SnackbarController.getInstance().message(message, SnackbarMessageType.ERROR);
 			} else {
 				SnackbarController.getInstance().message(getBundle().getString("error") + errorData.getResponse().getRawBody(), SnackbarMessageType.ERROR);
 			}
