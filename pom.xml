@@ -162,17 +162,17 @@
 		
 		<!-- https://mvnrepository.com/artifact/org.openjfx/javafx-swing -->
 		<dependency>
-		    <groupId>org.openjfx</groupId>
-		    <artifactId>javafx-swing</artifactId>
-   			<version>11</version>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-swing</artifactId>
+			<version>11</version>
 		</dependency>
 		<dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-swing</artifactId>
-            <version>11</version>
-            <classifier>javadoc</classifier>
-            <scope>provided</scope>
-        </dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-swing</artifactId>
+			<version>11</version>
+			<classifier>javadoc</classifier>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.jfoenix/jfoenix -->
 		<dependency>
