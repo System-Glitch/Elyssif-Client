@@ -31,7 +31,7 @@ public class JFXNumberField extends JFXTextField {
 	}
 
 	private void forceNumbers() {
-		converter = new NumberStringConverter("###.#####");
+		converter = new NumberStringConverter("###.########");
 		setTextFormatter(new TextFormatter<>(converter));
 	}
 
