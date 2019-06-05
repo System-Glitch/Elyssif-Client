@@ -36,7 +36,7 @@
 
 .jfx-text-field:error .label, .jfx-password-field:error .label {
 	-fx-font-weight: BOLD;
-	-fx-font-fill: -red-700;
+	-fx-text-fill: -red-700;
 	-fx-font-size: 12px;
 }
 

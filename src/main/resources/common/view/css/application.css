@@ -108,6 +108,18 @@
 	-fx-font-size: 18px;
 }
 
+.text-error {
+	-fx-font-weight: BOLD;
+	-fx-text-fill: -red-700;
+	-fx-font-size: 12px;
+}
+
+.text-notice {
+	-fx-font-weight: BOLD;
+	-fx-text-fill: -blue-700;
+	-fx-font-size: 12px;
+}
+
 /* ------------------------------ */
 /* NAVIGATION                     */
 /* ------------------------------ */

@@ -83,6 +83,7 @@ public final class SettingsController extends FadeController implements Lockable
 			final String previousEmail = user.getEmail().get();
 			final String previousName = user.getName().get();
 			final String previousAddress = user.getAddress().get();
+			final boolean hasAddress = addressField.getText() != null && !addressField.getText().isEmpty();
 
 			user.setEmail(emailField.getText());
 			user.setName(nameField.getText());
@@ -90,6 +91,9 @@ public final class SettingsController extends FadeController implements Lockable
 
 			userRepository.update(user, data -> {
 				setLocked(false);
+				if(!hasAddress) {
+					user.setAddress(null);
+				}
 				SnackbarController.getInstance().message(getBundle().getString("change-success"), SnackbarMessageType.SUCCESS, 4000);
 			}, errorData -> {
 				setLocked(false);
@@ -183,6 +187,10 @@ public final class SettingsController extends FadeController implements Lockable
 	public void setupServerValidators() {
 		emailField.getValidators().add(createServerValidator("email"));
 		nameField.getValidators().add(createServerValidator("name"));
+
+		// Bitcoin address is only validated server-side so validaton
+		// always match our node Bitcoin version, in case of new BIP implementations.
+		// Removes the need for a client update in such a scenario.
 		addressField.getValidators().add(createServerValidator("address"));
 		passwordField.getValidators().add(createServerValidator("old_password"));
 		newPasswordField.getValidators().add(createServerValidator("password"));

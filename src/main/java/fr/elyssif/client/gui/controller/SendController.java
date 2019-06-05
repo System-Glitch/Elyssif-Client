@@ -25,6 +25,7 @@ import fr.elyssif.client.security.Crypter;
 import fr.elyssif.client.security.Hash;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
@@ -44,6 +45,8 @@ public final class SendController extends EncryptionController {
 
 	@FXML private JFXButton browseButton;
 	@FXML private JFXButton recipientButton;
+
+	@FXML private Label priceInputDisabledNotice;
 
 	private LookupModal<User> modal;
 	private java.io.File selectedFile;
@@ -250,6 +253,18 @@ public final class SendController extends EncryptionController {
 		priceInput.setText(null);
 		recipientInput.setText(null);
 		selectedFile = null;
+
+		if(MainController.getInstance().getAuthenticator().getUser().getAddress().get() == null) {
+			priceInput.setManaged(false);
+			priceInput.setVisible(false);
+			priceInputDisabledNotice.setManaged(true);
+			priceInputDisabledNotice.setVisible(true);
+		} else {
+			priceInput.setManaged(true);
+			priceInput.setVisible(true);
+			priceInputDisabledNotice.setManaged(false);
+			priceInputDisabledNotice.setVisible(false);
+		}
 	}
 
 }
