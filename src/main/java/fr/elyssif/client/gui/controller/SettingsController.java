@@ -23,10 +23,12 @@ import fr.elyssif.client.gui.validation.StringMaxLengthValidator;
 import fr.elyssif.client.gui.validation.StringMinLengthValidator;
 import fr.elyssif.client.gui.validation.TextMatchValidator;
 import fr.elyssif.client.gui.view.Language;
+import fr.elyssif.client.gui.view.ViewUtils;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.layout.StackPane;
 
 /**
  * Controller for the settings view
@@ -77,32 +79,45 @@ public final class SettingsController extends FadeController implements Lockable
 	@FXML
 	private void submit() {
 		if(validateAll()) {
-			setLocked(true);
 
 			final User user = MainController.getInstance().getAuthenticator().getUser();
-			final String previousEmail = user.getEmail().get();
-			final String previousName = user.getName().get();
+
 			final String previousAddress = user.getAddress().get();
 			final boolean hasAddress = addressField.getText() != null && !addressField.getText().isEmpty();
 
-			user.setEmail(emailField.getText());
-			user.setName(nameField.getText());
-			user.setAddress(addressField.getText());
-
-			userRepository.update(user, data -> {
-				setLocked(false);
-				if(!hasAddress) {
-					user.setAddress(null);
-				}
-				SnackbarController.getInstance().message(getBundle().getString("change-success"), SnackbarMessageType.SUCCESS, 4000);
-			}, errorData -> {
-				setLocked(false);
-				user.setEmail(previousEmail);
-				user.setName(previousName);
-				user.setAddress(previousAddress);
-				handleValidationErrors(((FormCallbackData) errorData).getValidationErrors());
-			}, "email", "name", "address");
+			if(previousAddress != null && !previousAddress.isEmpty() && !hasAddress) {
+				ViewUtils.buildConfirmDialog((StackPane) getPane().getParent(), getBundle(), "address-change-notice", false, e -> {
+					submitUpdate(user, hasAddress);
+				}, true).show();
+			} else {
+				submitUpdate(user, hasAddress);
+			}
 		}
+	}
+
+	private void submitUpdate(User user, boolean hasAddress) {
+		setLocked(true);
+		final String previousEmail = user.getEmail().get();
+		final String previousName = user.getName().get();
+		final String previousAddress = user.getAddress().get();
+
+		user.setEmail(emailField.getText());
+		user.setName(nameField.getText());
+		user.setAddress(addressField.getText());
+
+		userRepository.update(user, data -> {
+			setLocked(false);
+			if(!hasAddress) {
+				user.setAddress(null);
+			}
+			SnackbarController.getInstance().message(getBundle().getString("change-success"), SnackbarMessageType.SUCCESS, 4000);
+		}, errorData -> {
+			setLocked(false);
+			user.setEmail(previousEmail);
+			user.setName(previousName);
+			user.setAddress(previousAddress);
+			handleValidationErrors(((FormCallbackData) errorData).getValidationErrors());
+		}, "email", "name", "address");
 	}
 
 	@FXML
