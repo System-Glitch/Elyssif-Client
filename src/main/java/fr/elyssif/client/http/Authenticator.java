@@ -75,7 +75,6 @@ public final class Authenticator {
 
 		SocketIOConnector.setExiting(false);
 		echo.connect(messageSuccess -> {
-			// TODO on connect
 			notificationCenter = new NotificationCenter(echo);
 			notificationCenter.listen("user." + user.getId().get(), "UserNotification");
 		}, messageError -> Logger.getGlobal().info("Error"),

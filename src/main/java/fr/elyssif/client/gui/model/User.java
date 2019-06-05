@@ -11,6 +11,7 @@ public final class User extends Model<User> {
 
 	private SimpleStringProperty email;
 	private SimpleStringProperty name;
+	private SimpleStringProperty address;
 
 	private SimpleObjectProperty<Date> emailVerifiedAt;
 
@@ -29,6 +30,7 @@ public final class User extends Model<User> {
 		super(id);
 		email = new SimpleStringProperty();
 		name = new SimpleStringProperty();
+		address = new SimpleStringProperty();
 		emailVerifiedAt = new SimpleObjectProperty<Date>();
 	}
 
@@ -56,6 +58,14 @@ public final class User extends Model<User> {
 
 	public final void setName(String name) {
 		this.name.set(name);
+	}
+
+	public final SimpleStringProperty getAddress() {
+		return address;
+	}
+
+	public final void setAddress(String address) {
+		this.address.set(address);
 	}
 
 	public final SimpleObjectProperty<Date> getEmailVerifiedAt() {

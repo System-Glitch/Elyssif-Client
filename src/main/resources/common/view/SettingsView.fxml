@@ -10,7 +10,6 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
 <FlowPane fx:id="pane" alignment="CENTER" columnHalignment="CENTER" styleClass="white" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.SettingsController">
@@ -31,7 +30,7 @@
                      <children>
                         <JFXTextField fx:id="emailField" labelFloat="true" prefWidth="180.0" promptText="%email" />
                         <JFXTextField fx:id="nameField" labelFloat="true" prefWidth="180.0" promptText="%name" />
-                        <Pane VBox.vgrow="ALWAYS" />
+                        <JFXTextField fx:id="addressField" labelFloat="true" layoutX="10.0" layoutY="71.0" prefWidth="180.0" promptText="%address" />
                         <JFXButton fx:id="submitButton" onAction="#submit" styleClass="green-A700" text="%save">
                            <graphic>
                               <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">

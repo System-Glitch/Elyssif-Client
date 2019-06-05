@@ -37,6 +37,7 @@ public final class SettingsController extends FadeController implements Lockable
 
 	@FXML private JFXTextField emailField;
 	@FXML private JFXTextField nameField;
+	@FXML private JFXTextField addressField;
 
 	@FXML private JFXPasswordField passwordField;
 	@FXML private JFXPasswordField newPasswordField;
@@ -81,9 +82,11 @@ public final class SettingsController extends FadeController implements Lockable
 			final User user = MainController.getInstance().getAuthenticator().getUser();
 			final String previousEmail = user.getEmail().get();
 			final String previousName = user.getName().get();
+			final String previousAddress = user.getAddress().get();
 
 			user.setEmail(emailField.getText());
 			user.setName(nameField.getText());
+			user.setAddress(addressField.getText());
 
 			userRepository.update(user, data -> {
 				setLocked(false);
@@ -92,8 +95,9 @@ public final class SettingsController extends FadeController implements Lockable
 				setLocked(false);
 				user.setEmail(previousEmail);
 				user.setName(previousName);
+				user.setAddress(previousAddress);
 				handleValidationErrors(((FormCallbackData) errorData).getValidationErrors());
-			}, "email", "name");
+			}, "email", "name", "address");
 		}
 	}
 
@@ -154,6 +158,7 @@ public final class SettingsController extends FadeController implements Lockable
 		emailField.getValidators().add(maxLengthValidator);
 		nameField.getValidators().add(requiredValidator);
 		nameField.getValidators().add(maxLengthValidator);
+		addressField.getValidators().add(maxLengthValidator);
 
 		passwordField.getValidators().add(requiredValidator);
 		newPasswordField.getValidators().add(requiredValidator);
@@ -166,6 +171,7 @@ public final class SettingsController extends FadeController implements Lockable
 
 		ValidationUtils.setValidationListener(emailField);
 		ValidationUtils.setValidationListener(nameField);
+		ValidationUtils.setValidationListener(addressField);
 		ValidationUtils.setValidationListener(passwordField);
 		ValidationUtils.setValidationListener(newPasswordField);
 		ValidationUtils.setValidationListener(passwordConfirmationField);
@@ -177,6 +183,7 @@ public final class SettingsController extends FadeController implements Lockable
 	public void setupServerValidators() {
 		emailField.getValidators().add(createServerValidator("email"));
 		nameField.getValidators().add(createServerValidator("name"));
+		addressField.getValidators().add(createServerValidator("address"));
 		passwordField.getValidators().add(createServerValidator("old_password"));
 		newPasswordField.getValidators().add(createServerValidator("password"));
 		passwordConfirmationField.getValidators().add(createServerValidator("password_confirmation"));
@@ -186,6 +193,7 @@ public final class SettingsController extends FadeController implements Lockable
 	public boolean validateAll() {
 		boolean ok = emailField.validate();
 		ok = nameField.validate() && ok;
+		ok = addressField.validate() && ok;
 		return ok;
 	}
 
@@ -200,6 +208,7 @@ public final class SettingsController extends FadeController implements Lockable
 	public void resetValidation() {
 		emailField.resetValidation();
 		nameField.resetValidation();
+		addressField.resetValidation();
 		passwordField.resetValidation();
 		newPasswordField.resetValidation();
 		passwordConfirmationField.resetValidation();
@@ -210,6 +219,7 @@ public final class SettingsController extends FadeController implements Lockable
 		final User user = MainController.getInstance().getAuthenticator().getUser();
 		emailField.setText(user.getEmail().get());
 		nameField.setText(user.getName().get());
+		addressField.setText(user.getAddress().get());
 
 		passwordField.setText(null);
 		newPasswordField.setText(null);
@@ -220,6 +230,7 @@ public final class SettingsController extends FadeController implements Lockable
 	public void bindControls() {
 		emailField.disableProperty().bind(disableProperty);
 		nameField.disableProperty().bind(disableProperty);
+		addressField.disableProperty().bind(disableProperty);
 		passwordField.disableProperty().bind(disableProperty);
 		newPasswordField.disableProperty().bind(disableProperty);
 		passwordConfirmationField.disableProperty().bind(disableProperty);
