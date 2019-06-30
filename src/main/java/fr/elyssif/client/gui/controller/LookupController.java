@@ -125,7 +125,7 @@ public final class LookupController extends Controller {
 				searchTimer.cancel();
 			}
 
-			searchTimer = new Timer();
+			searchTimer = new Timer(true);
 			searchTimer.schedule(new TimerTask() {
 
 				@Override
@@ -138,6 +138,8 @@ public final class LookupController extends Controller {
 								list.add(model);
 							}
 						}
+
+						searchTimer.cancel();
 					}, errorData -> SnackbarController.getInstance().message(getBundle().getString(((FailCallbackData) errorData).getFullMessage()), SnackbarMessageType.ERROR));
 				}
 
