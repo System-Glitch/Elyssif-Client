@@ -47,9 +47,10 @@ public class NotificationCenter {
 							}
 						}
 						new Notification("Elyssif", message, MainController.getInstance().getWindow()).show();
+						// TODO auto refresh file list if visible
 					} catch (JSONException e) {
 						Logger.getGlobal().log(Level.SEVERE , "Error while reading notification.", e);
-					}						
+					}
 				}
 			}
 		});
