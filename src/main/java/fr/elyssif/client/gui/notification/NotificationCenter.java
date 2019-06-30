@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import fr.elyssif.client.gui.controller.HomeController;
 import fr.elyssif.client.gui.controller.MainController;
 import fr.elyssif.client.http.echo.Echo;
 import fr.elyssif.client.http.echo.channel.SocketIOPrivateChannel;
@@ -47,7 +48,7 @@ public class NotificationCenter {
 							}
 						}
 						new Notification("Elyssif", message, MainController.getInstance().getWindow()).show();
-						// TODO auto refresh file list if visible
+						((HomeController) MainController.getInstance().getController("app").getController("container").getController("home")).refresh();
 					} catch (JSONException e) {
 						Logger.getGlobal().log(Level.SEVERE , "Error while reading notification.", e);
 					}

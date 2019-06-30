@@ -101,8 +101,11 @@ public final class HomeController extends FadeController {
 		}
 	}
 
-	protected void refresh() {
-		if(repository != null) {
+	/**
+	 * Refresh the sent and received file lists.
+	 */
+	public void refresh() {
+		if(repository != null && getPane().isManaged()) {
 			refreshSent();
 			refreshReceived();
 		}
