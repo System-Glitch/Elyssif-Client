@@ -117,6 +117,18 @@ public final class SettingsController extends FadeController implements Lockable
 			user.setName(previousName);
 			user.setAddress(previousAddress);
 			handleValidationErrors(((FormCallbackData) errorData).getValidationErrors());
+		}, failData -> {
+			setLocked(false);
+			user.setEmail(previousEmail);
+			user.setName(previousName);
+			user.setAddress(previousAddress);
+
+			if(failData.getStatus() == 403) {
+				addressField.setText(previousAddress);
+				ViewUtils.buildErrorDialog((StackPane) getPane().getParent(), getBundle(), failData.getResponse().getJsonElement().getAsJsonObject().get("error").getAsString()).show();
+			} else {
+				SnackbarController.getInstance().message(getBundle().getString("server-error") + ": " + failData.getStatus(), SnackbarMessageType.ERROR, 4000);
+			}
 		}, "email", "name", "address");
 	}
 

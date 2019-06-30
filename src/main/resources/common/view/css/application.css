@@ -88,7 +88,11 @@
 	-fx-background-color: -orange-400;
 }
 
-.dialog-warning .jfx-layout-body {
+.dialog-error .jfx-layout-heading {
+	-fx-background-color: -red-A700;
+}
+
+.dialog-warning .jfx-layout-body, .dialog-error .jfx-layout-body {
 	-fx-padding: 24 24 24 24;
 }
 

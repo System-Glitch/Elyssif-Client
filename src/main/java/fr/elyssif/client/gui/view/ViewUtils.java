@@ -141,4 +141,39 @@ public abstract class ViewUtils {
 		return confirmDialog;
 	}
 
+	/**
+	 * Build an error dialog. The dialog is not yet shown.
+	 * @param container
+	 * @param bundle
+	 * @param message
+	 * @return errorDialog
+	 */
+	public static JFXDialog buildErrorDialog(StackPane container, ResourceBundle bundle, String message) {
+		var errorDialog = new JFXDialog();
+		errorDialog.setDialogContainer(container);
+
+		JFXDialogLayout content = new JFXDialogLayout();
+		Label header = new Label(bundle.getString("error-header"), new ImageView("view/img/warning.png"));
+		header.getStyleClass().add("text-white");
+		content.setHeading(header);
+		Label body = new Label(message);
+		body.getStyleClass().add("text-md");
+		content.setBody(body);
+		content.getStyleClass().add("dialog-error");
+
+		JFXButton acceptButton = new JFXButton(bundle.getString("ok"));
+		acceptButton.getStyleClass().add("blue-700");
+		acceptButton.setOnAction(e -> {
+			errorDialog.close();
+		});
+
+		content.setActions(acceptButton);
+
+		errorDialog.setContent(content);
+		errorDialog.setTransitionType(JFXDialog.DialogTransition.CENTER);
+		errorDialog.setOverlayClose(false);
+
+		return errorDialog;
+	}
+
 }
