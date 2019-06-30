@@ -3,7 +3,6 @@ package fr.elyssif.client.gui.notification;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.elyssif.client.gui.controller.MainController;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -15,6 +14,7 @@ import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.Window;
 import javafx.util.Duration;
 
 /**
@@ -27,18 +27,21 @@ public class Notification {
 	private String title;
 	private String message;
 
+	private Window ownerWindow;
 	private Stage stage;
 	private AnchorPane rootLayout;
 	private NotificationController controller;
 
 	/**
-	 * Create a new notification. Doesn't show it.
+	 * Create a new notification. Call <code>show</code> to show it.
 	 * @param title
 	 * @param message
+	 * @param ownerWindow
 	 */
-	public Notification(String title, String message) {
+	public Notification(String title, String message, Window ownerWindow) {
 		this.title = title;
 		this.message = message;
+		this.ownerWindow = ownerWindow;
 		Platform.runLater(() -> init());
 	}
 
@@ -56,7 +59,7 @@ public class Notification {
 			stage.setResizable(false);
 			stage.setAlwaysOnTop(true);
 			stage.initModality(Modality.NONE);
-			stage.initOwner(MainController.getInstance().getPane().getScene().getWindow());
+			stage.initOwner(ownerWindow);
 
 			controller.setTitle(title);
 			controller.setMessage(message);

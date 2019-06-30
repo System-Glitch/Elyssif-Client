@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.Pane;
+import javafx.stage.Window;
 
 /**
  * Super-class for controllers. Handles sliding transitions and back buttons.
@@ -81,8 +82,16 @@ public abstract class Controller implements Initializable {
 	 * Get the main pane for this controller.
 	 * @return the root pane of the view controlled by this controller
 	 */
-	public final Pane getPane() {
+	protected final Pane getPane() {
 		return pane;
+	}
+
+	/**
+	 * Get the parent window.
+	 * @return the parent window
+	 */
+	public Window getWindow() {
+		return getPane().getScene().getWindow();
 	}
 
 	/**

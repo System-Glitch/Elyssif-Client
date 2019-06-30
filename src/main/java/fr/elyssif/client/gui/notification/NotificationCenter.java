@@ -46,7 +46,7 @@ public class NotificationCenter {
 								message = message.replace("%PLACEHOLDER%", obj.has("value") ? (String) obj.get("value") : "");								
 							}
 						}
-						new Notification("Elyssif", message).show();
+						new Notification("Elyssif", message, MainController.getInstance().getWindow()).show();
 					} catch (JSONException e) {
 						Logger.getGlobal().log(Level.SEVERE , "Error while reading notification.", e);
 					}						
