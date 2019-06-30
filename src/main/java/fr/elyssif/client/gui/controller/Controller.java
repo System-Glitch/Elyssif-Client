@@ -81,7 +81,7 @@ public abstract class Controller implements Initializable {
 	 * Get the main pane for this controller.
 	 * @return the root pane of the view controlled by this controller
 	 */
-	protected final Pane getPane() {
+	public final Pane getPane() {
 		return pane;
 	}
 

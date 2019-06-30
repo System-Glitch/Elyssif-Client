@@ -1,0 +1,19 @@
+.label {
+	-fx-font-family: 'Roboto Light';
+	-fx-font-size: 14px;
+}
+
+.title {
+	-fx-font-family: 'Roboto Medium';
+	-fx-font-size: 15px;
+}
+
+.dismiss-btn {
+	-fx-font-size: 18px;
+	-fx-padding: 0 5;
+}
+
+.notification-bg {
+	-fx-background: #f4f4f4;
+	-fx-background-radius: 10px;
+}

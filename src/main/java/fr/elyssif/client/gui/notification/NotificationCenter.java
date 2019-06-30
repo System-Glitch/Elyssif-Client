@@ -1,6 +1,5 @@
 package fr.elyssif.client.gui.notification;
 
-import java.awt.TrayIcon.MessageType;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,7 +46,7 @@ public class NotificationCenter {
 								message = message.replace("%PLACEHOLDER%", obj.has("value") ? (String) obj.get("value") : "");								
 							}
 						}
-						new Notification("Elyssif", message, MessageType.NONE).show();
+						new Notification("Elyssif", message).show();
 					} catch (JSONException e) {
 						Logger.getGlobal().log(Level.SEVERE , "Error while reading notification.", e);
 					}						
@@ -55,5 +54,4 @@ public class NotificationCenter {
 			}
 		});
 	}
-
 }
