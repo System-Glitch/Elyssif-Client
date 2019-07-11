@@ -24,7 +24,6 @@ public class UserRepository extends Repository<User> {
 	 * Wrapped data is of type FormCallbackData.
 	 * @param failCallback the callback executed on failure, nullable.
 	 * Wrapped data is of type FailCallbackData.
-	 * @param fields the fields to update (in snake case)
 	 * @throws IllegalArgumentException thrown if no field is provided
 	 */
 	public void updatePassword(String currentPassword, String newPassword, String confirmation, RestCallback callback, RestCallback formCallback, RestCallback failCallback) {

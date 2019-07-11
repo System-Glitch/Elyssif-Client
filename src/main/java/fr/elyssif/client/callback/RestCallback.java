@@ -12,7 +12,7 @@ public interface RestCallback {
 
 	/**
 	 * Execute the callback.
-	 * @param info the data resulting from the REST call.
+	 * @param data the data resulting from the REST call.
 	 */
 	void run(RestCallbackData data);
 	
