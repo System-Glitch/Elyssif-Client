@@ -4,7 +4,7 @@ package fr.elyssif.client.callback;
  * Callback for the asynchronous hash calculation.
  * @author Jérémy LAMBERT
  *
- * @see Hash
+ * @see fr.elyssif.client.security.Hash
  */
 @FunctionalInterface
 public interface HashCallback {

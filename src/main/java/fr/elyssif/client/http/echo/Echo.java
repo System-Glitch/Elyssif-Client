@@ -35,7 +35,7 @@ public final class Echo {
 	 *
 	 * @param success success callback
 	 * @param error error callback
-	 * @param subcriptionError callback
+	 * @param subscriptionError callback
 	 */
 	public void connect(Emitter.Listener success, Emitter.Listener error, Emitter.Listener subscriptionError) {
 		connector.connect(success, error, subscriptionError);

@@ -14,17 +14,11 @@ public class JFXNumberField extends JFXTextField {
 
 	private NumberStringConverter converter;
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public JFXNumberField() {
 		super();
 		forceNumbers();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public JFXNumberField(String text) {
 		super(text);
 		forceNumbers();
