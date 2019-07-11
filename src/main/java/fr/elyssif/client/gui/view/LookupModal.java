@@ -117,4 +117,13 @@ public class LookupModal<T extends Model<T>> {
 		}
 	}
 
+	/**
+	 * Close the dialog if open.
+	 */
+	public void closeDialog() {
+		if(controller != null) {
+			controller.cancel();
+		}			
+	}
+
 }

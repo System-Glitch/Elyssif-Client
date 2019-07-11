@@ -35,7 +35,7 @@ public final class SnackbarController {
 	 * @param type
 	 */
 	public final void message(String message, SnackbarMessageType type) {
-		message(message, type, 1500);
+		message(message, type, 4000);
 	}
 	
 	/**

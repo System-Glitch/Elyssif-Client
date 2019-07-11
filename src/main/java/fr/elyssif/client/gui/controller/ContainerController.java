@@ -17,5 +17,5 @@ public abstract class ContainerController extends Controller {
 		getPane().setDisable(false);
 		getPane().setVisible(true);
 	}
-	
+
 }

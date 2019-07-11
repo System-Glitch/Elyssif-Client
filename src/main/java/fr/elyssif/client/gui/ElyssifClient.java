@@ -11,6 +11,8 @@ import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.controller.MainController;
 import fr.elyssif.client.gui.view.ViewUtils;
 import fr.elyssif.client.http.RestRequest;
+import fr.elyssif.client.http.echo.Echo;
+import fr.elyssif.client.http.echo.SocketIOConnector;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -30,6 +32,8 @@ public final class ElyssifClient extends Application {
 
 	private static final int DEFAULT_WIDTH = 1050;
 	private static final int DEFAULT_HEIGHT = 635;
+
+	private ResourceBundle resourcesBundle;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -54,6 +58,12 @@ public final class ElyssifClient extends Application {
 				public void handle(WindowEvent event) {
 					if(!MainController.getInstance().canExit()) {
 						event.consume();
+					} else {
+						Echo echo = MainController.getInstance().getAuthenticator().getEcho();
+						if(echo != null) {
+							SocketIOConnector.setExiting(true);
+							echo.disconnect();
+						}
 					}
 				}
 			});
@@ -88,7 +98,8 @@ public final class ElyssifClient extends Application {
 		Locale locale = getLocale();
 		Logger.getGlobal().info("Language: " + locale.getLanguage());
 
-		loader.setResources(ResourceBundle.getBundle("bundles.lang", locale));
+		resourcesBundle = ResourceBundle.getBundle("bundles.lang", locale);
+		loader.setResources(resourcesBundle);
 		RestRequest.setGlobalLocale(locale);
 	}
 

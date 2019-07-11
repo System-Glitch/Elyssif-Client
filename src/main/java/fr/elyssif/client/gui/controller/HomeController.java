@@ -38,6 +38,8 @@ public final class HomeController extends FadeController {
 	private FileRepository repository;
 	private RestCallback failCallback;
 
+	private FileDialog dialog;
+
 	private ObservableList<File> sentList;
 	private ObservableList<File> receivedList;
 
@@ -64,7 +66,7 @@ public final class HomeController extends FadeController {
 		factory.make(sentListView, sentList, event -> {
 			File file = sentListView.getSelectionModel().getSelectedItem();
 			if (event.getClickCount() == 2 && file != null) {
-				var dialog = new FileDialog(file, repository, getBundle());
+				dialog = new FileDialog(file, repository, getBundle());
 				dialog.showDialog((StackPane) MainController.getInstance().getPane(), FileDialog.MODE_SEND);
 			}
 		});
@@ -74,7 +76,7 @@ public final class HomeController extends FadeController {
 		factory.make(receivedListView, receivedList, event -> {
 			File file = receivedListView.getSelectionModel().getSelectedItem();
 			if (event.getClickCount() == 2 && file != null) {
-				var dialog = new FileDialog(file, repository, getBundle());
+				dialog = new FileDialog(file, repository, getBundle());
 				dialog.showDialog((StackPane) MainController.getInstance().getPane(), FileDialog.MODE_RECEIVE);
 			}
 		});
@@ -91,8 +93,19 @@ public final class HomeController extends FadeController {
 		refresh();
 	}
 
-	protected void refresh() {
-		if(repository != null) {
+	@Override
+	protected void onNext() {
+		super.onNext();
+		if(dialog != null) {
+			dialog.closeDialog();
+		}
+	}
+
+	/**
+	 * Refresh the sent and received file lists.
+	 */
+	public void refresh() {
+		if(repository != null && getPane().isManaged()) {
 			refreshSent();
 			refreshReceived();
 		}
@@ -100,31 +113,31 @@ public final class HomeController extends FadeController {
 
 	private void refreshSent() {
 		repository.getSent(sentPaginateController.getPage(), data -> {
-				@SuppressWarnings("unchecked")
-				var paginator = ((PaginateCallbackData<File>) data).getPaginator();
-				sentList.clear();
+			@SuppressWarnings("unchecked")
+			var paginator = ((PaginateCallbackData<File>) data).getPaginator();
+			sentList.clear();
 
-				for(Model<?> model : paginator.getItems()) {
-					sentList.add((File) model);
-				}
+			for(Model<?> model : paginator.getItems()) {
+				sentList.add((File) model);
+			}
 
-				sentListView.scrollTo(0);
-				sentPaginateController.setPaginator(paginator);
+			sentListView.scrollTo(0);
+			sentPaginateController.setPaginator(paginator);
 		}, failCallback);
 	}
 
 	private void refreshReceived() {
 		repository.getReceived(receivedPaginateController.getPage(), data -> {
-				@SuppressWarnings("unchecked")
-				var paginator = ((PaginateCallbackData<File>) data).getPaginator();
-				receivedList.clear();
+			@SuppressWarnings("unchecked")
+			var paginator = ((PaginateCallbackData<File>) data).getPaginator();
+			receivedList.clear();
 
-				for(Model<?> model : paginator.getItems()) {
-					receivedList.add((File) model);
-				}
+			for(Model<?> model : paginator.getItems()) {
+				receivedList.add((File) model);
+			}
 
-				receivedListView.scrollTo(0);
-				receivedPaginateController.setPaginator(paginator);
+			receivedListView.scrollTo(0);
+			receivedPaginateController.setPaginator(paginator);
 		}, failCallback);
 	}
 

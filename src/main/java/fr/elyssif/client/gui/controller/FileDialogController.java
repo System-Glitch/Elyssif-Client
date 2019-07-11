@@ -8,17 +8,17 @@ import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
-import com.jfoenix.controls.JFXDialogLayout;
 
 import fr.elyssif.client.Config;
 import fr.elyssif.client.gui.controller.SnackbarController.SnackbarMessageType;
 import fr.elyssif.client.gui.model.File;
 import fr.elyssif.client.gui.model.User;
 import fr.elyssif.client.gui.repository.FileRepository;
+import fr.elyssif.client.gui.view.BitcoinFormatter;
 import fr.elyssif.client.gui.view.FileDialog;
+import fr.elyssif.client.gui.view.ViewUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 
 /**
@@ -33,12 +33,14 @@ public final class FileDialogController extends Controller {
 	@FXML private Label title;
 	@FXML private Label fromLabel;
 	@FXML private Label toLabel;
+	@FXML private Label priceLabel;
 	@FXML private Label sentLabel;
 	@FXML private Label receivedLabel;
 
 	@FXML private JFXButton decryptButton;
 	@FXML private JFXButton deleteButton;
 
+	private JFXDialog confirmDialog;
 	private JFXDialog parentDialog;
 	private File file;
 
@@ -88,6 +90,9 @@ public final class FileDialogController extends Controller {
 		User recipient = mode == FileDialog.MODE_SEND ? file.getRecipient().get() : MainController.getInstance().getAuthenticator().getUser();
 		toLabel.setText(recipient.getName().get() + " (" + recipient.getEmail().get() + ")");
 
+		double price = file.getPrice().get();
+		priceLabel.setText(price > 0 ? new BitcoinFormatter(price).format() : bundle.getString("free"));
+
 		Date sentDate = file.getCipheredAt().get();
 		Date receivedDate = file.getDecipheredAt().get();
 		SimpleDateFormat format = new SimpleDateFormat(bundle.getString("date-format"));
@@ -96,7 +101,7 @@ public final class FileDialogController extends Controller {
 		receivedLabel.setText(receivedDate != null ? format.format(receivedDate) : bundle.getString("pending"));
 
 		decryptButton.setVisible(mode == FileDialog.MODE_RECEIVE);
-		deleteButton.setVisible(mode == FileDialog.MODE_SEND);
+		deleteButton.setVisible(mode == FileDialog.MODE_SEND && (price <= 0 || receivedDate == null));
 	}
 
 	/**
@@ -121,6 +126,19 @@ public final class FileDialogController extends Controller {
 		sideMenuController.setCurrentController(receiveViewController);
 	}
 
+	/**
+	 * Close the dialog.
+	 */
+	public void close() {
+		if(confirmDialog != null) {
+			confirmDialog.close();
+		}
+
+		if(parentDialog != null) {
+			parentDialog.close();
+		}
+	}
+
 	@FXML
 	private void deleteClicked() {
 		openConfirmDialog();
@@ -129,63 +147,37 @@ public final class FileDialogController extends Controller {
 	private void openConfirmDialog() {
 		parentDialog.setOverlayClose(false);
 
-		final JFXDialog dialog = new JFXDialog();
-		dialog.setDialogContainer((StackPane) getPane().getParent());
+		confirmDialog = ViewUtils.buildConfirmDialog((StackPane) getPane().getParent(), getBundle(), "file-delete-notice", true, e -> {
+			deleteFile(confirmDialog);
+		}, false);
 
-		JFXDialogLayout content = new JFXDialogLayout();
-		Label header = new Label(getBundle().getString("confirm"), new ImageView("view/img/warning.png"));
-		header.getStyleClass().add("text-white");
-		content.setHeading(header);
-		Label body = new Label(getBundle().getString("file-delete-notice").replace("\\n", "\n"));
-		body.getStyleClass().add("text-md");
-		content.setBody(body);
-		content.getStyleClass().add("dialog-warning");
-
-		JFXButton cancelButton = new JFXButton(getBundle().getString("cancel"));
-		cancelButton.setMaxHeight(Double.MAX_VALUE);
-		cancelButton.setOnAction(e -> {
-			dialog.close();
-		});
-
-		JFXButton acceptButton = new JFXButton(getBundle().getString("yes"));
-		acceptButton.getStyleClass().add("red-A700");
-		acceptButton.setOnAction(e -> {
-			deleteFile(dialog, acceptButton, cancelButton);
-		});
-		ImageView image = new ImageView("view/img/delete.png");
-		image.setFitWidth(24);
-		image.setFitHeight(24);
-		acceptButton.setGraphic(image);
-
-
-		content.setActions(cancelButton, acceptButton);
-
-		dialog.setContent(content);
-		dialog.setTransitionType(JFXDialog.DialogTransition.CENTER);
-		dialog.setOverlayClose(false);
-
-		dialog.setOnDialogClosed(event -> {
-			parentDialog.setOverlayClose(true);
-		});
-
-		dialog.show();
+		confirmDialog.show();
 	}
 
-	private void deleteFile(JFXDialog dialog, JFXButton acceptButton, JFXButton cancelButton) {
-		acceptButton.setDisable(true);
-		cancelButton.setDisable(true);
+	private void deleteFile(JFXDialog dialog) {
+		dialog.setDisable(true);
 		repository.destroy(file, data -> {
 			if(data.getStatus() == 204) {
 				dialog.close();
 				parentDialog.close();
 				((HomeController) MainController.getInstance().getController("app").getController("container").getController("home")).removeFile(file);
-			} else if(data.getStatus() == 403) {
-				SnackbarController.getInstance().message(getBundle().getString("forbidden"), SnackbarMessageType.ERROR);
-			} else {
-				SnackbarController.getInstance().message(getBundle().getString("error") + data.getResponse().getRawBody(), SnackbarMessageType.ERROR);
 			}
-			acceptButton.setDisable(false);
-			cancelButton.setDisable(false);
+
+			dialog.setDisable(false);
+		}, errorData -> {
+			if(errorData.getStatus() == 403) {
+				var message = getBundle().getString("forbidden");
+				var body = errorData.getResponse().getRawBody();
+
+				if(body != null && !body.isEmpty()) {
+					message += "\n" + (getBundle().containsKey(body) ? getBundle().getString(body) : body);
+				}
+
+				SnackbarController.getInstance().message(message, SnackbarMessageType.ERROR);
+			} else {
+				SnackbarController.getInstance().message(getBundle().getString("error") + errorData.getResponse().getRawBody(), SnackbarMessageType.ERROR);
+			}
+			dialog.setDisable(false);
 		});
 	}
 

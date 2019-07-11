@@ -159,6 +159,20 @@
 			<classifier>javadoc</classifier>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.openjfx/javafx-swing -->
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-swing</artifactId>
+			<version>11</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-swing</artifactId>
+			<version>11</version>
+			<classifier>javadoc</classifier>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.jfoenix/jfoenix -->
 		<dependency>
@@ -252,6 +266,25 @@
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk15on</artifactId>
 			<version>1.61</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/io.socket/socket.io-client -->
+		<dependency>
+		    <groupId>io.socket</groupId>
+		    <artifactId>socket.io-client</artifactId>
+		    <version>1.0.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.zxing/core -->
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>core</artifactId>
+			<version>3.4.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.zxing/javase -->
+		<dependency>
+		    <groupId>com.google.zxing</groupId>
+		    <artifactId>javase</artifactId>
+		    <version>3.4.0</version>
 		</dependency>
 
 	</dependencies>

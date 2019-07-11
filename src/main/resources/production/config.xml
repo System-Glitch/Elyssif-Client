@@ -2,6 +2,7 @@
 <Config>
 	<Environment>production</Environment>
 	<Host>https://elyssif.fr</Host>
+	<SocketHost>https://elyssif.fr:6001</SocketHost>
 	<Locale>en</Locale>
 	<Verbose>false</Verbose>
 	<Token></Token>

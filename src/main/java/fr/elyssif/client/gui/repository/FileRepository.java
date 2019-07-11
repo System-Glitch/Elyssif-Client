@@ -4,12 +4,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import fr.elyssif.client.callback.FailCallbackData;
 import fr.elyssif.client.callback.FormCallbackData;
 import fr.elyssif.client.callback.JsonCallbackData;
 import fr.elyssif.client.callback.ModelCallbackData;
+import fr.elyssif.client.callback.PaymentStateCallbackData;
 import fr.elyssif.client.callback.RestCallback;
 import fr.elyssif.client.gui.model.File;
+import fr.elyssif.client.gui.model.PaymentState;
 import fr.elyssif.client.http.HttpMethod;
 
 /**
@@ -47,6 +52,29 @@ public class FileRepository extends Repository<File> {
 				} else {
 					handleMalformedResponse(data.getResponse(), failCallback, "JSON object");
 				}
+			}
+
+		}, failCallback);
+	}
+
+	/**
+	 * Get the private key for the given file.
+	 * The result is stored in the given file instance.
+	 * @param file
+	 * @param callback the callback executed on success.
+	 * Wrapped data is of type ModelCallbackData.
+	 * @param failCallback the callback executed on failure, nullable.
+	 * Wrapped data is of type FailCallbackData.
+	 */
+	public void getPrivateKey(File file, RestCallback callback, RestCallback failCallback) {
+		request(file.getId().get() + "/key", HttpMethod.GET, data -> {
+
+			var element = ((JsonCallbackData) data).getElement();
+			if(element != null && element.isJsonPrimitive()) {
+				file.setPrivateKey(element.getAsString());
+				callback.run(new ModelCallbackData<File>(data.getResponse(), file));
+			} else {
+				handleMalformedResponse(data.getResponse(), failCallback, "string");
 			}
 
 		}, failCallback);
@@ -161,6 +189,43 @@ public class FileRepository extends Repository<File> {
 		var params = new HashMap<String, Integer>();
 		params.put("page", page);
 		get("received", params, callback, failCallback);
+	}
+
+	/**
+	 * Get the payment state of a file
+	 * @param file
+	 * @param callback
+	 * @param failCallback
+	 */
+	public void getPaymentState(File file, RestCallback callback, RestCallback failCallback) {
+		getPaymentState(file.getId().get(), callback, failCallback);
+	}
+
+	/**
+	 * Get the payment state of a file.
+	 * @param fileId
+	 * @param callback
+	 * @param failCallback
+	 */
+	public void getPaymentState(int fileId, RestCallback callback, RestCallback failCallback) {
+		request(String.valueOf(fileId) + "/paymentstate", HttpMethod.GET, data -> {
+			if(data instanceof JsonCallbackData) {
+				JsonCallbackData jsonData = (JsonCallbackData) data;
+				if(jsonData.getElement().isJsonObject()) {
+					JsonObject obj = jsonData.getElement().getAsJsonObject();
+
+					if(obj.has("pending") && obj.has("confirmed")) {
+						JsonElement pending = obj.get("pending");
+						JsonElement confirmed = obj.get("confirmed");
+						if(pending.isJsonPrimitive() && confirmed.isJsonPrimitive()) {
+							var paymentStateData = new PaymentStateCallbackData(data.getResponse());
+							paymentStateData.setState(new PaymentState(pending.getAsDouble(), confirmed.getAsDouble()));
+							callback.run(paymentStateData);
+						} else handleMalformedResponse(data.getResponse(), failCallback, "\"pending\" and \"confirmed\" to be double");
+					} else handleMalformedResponse(data.getResponse(), failCallback, "\"pending\" and \"confirmed\"");
+				} else handleMalformedResponse(data.getResponse(), failCallback, "JSON object");
+			} else handleMalformedResponse(data.getResponse(), failCallback, "JSON callback data");
+		}, failCallback);
 	}
 
 }

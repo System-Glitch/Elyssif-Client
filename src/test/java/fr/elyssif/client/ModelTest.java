@@ -173,6 +173,9 @@ class ModelTest {
 		user.setEmail("johndoe@example.org");
 		assertEquals("johndoe@example.org", user.getEmail().get());
 
+		user.setAddress("2NEa4pDWfPLKhcQ7y3zBLp2DCx7fTQ7krwB");
+		assertEquals("2NEa4pDWfPLKhcQ7y3zBLp2DCx7fTQ7krwB", user.getAddress().get());
+
 		Date now = new Date();
 		user.setEmailVerifiedAt(now);
 		assertEquals(now, user.getEmailVerifiedAt().get());

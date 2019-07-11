@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.validation.NumberValidator;
 import com.jfoenix.validation.RequiredFieldValidator;
 
 import fr.elyssif.client.Config;
@@ -17,13 +18,16 @@ import fr.elyssif.client.gui.model.User;
 import fr.elyssif.client.gui.repository.UserRepository;
 import fr.elyssif.client.gui.validation.StringMaxLengthValidator;
 import fr.elyssif.client.gui.validation.StringMinLengthValidator;
+import fr.elyssif.client.gui.view.JFXNumberField;
 import fr.elyssif.client.gui.view.LookupModal;
 import fr.elyssif.client.gui.view.UserListFactory;
 import fr.elyssif.client.security.Crypter;
 import fr.elyssif.client.security.Hash;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 
@@ -32,15 +36,19 @@ import javafx.stage.FileChooser;
  * @author Jérémy LAMBERT
  *
  */
-public final class SendController extends EncryptionController implements Lockable, Validatable {
+public final class SendController extends EncryptionController {
 
 	@FXML private JFXTextField nameInput;
+	@FXML private JFXNumberField priceInput;
 	@FXML private JFXTextField fileInput;
 	@FXML private JFXTextField recipientInput;
 
 	@FXML private JFXButton browseButton;
 	@FXML private JFXButton recipientButton;
 
+	@FXML private Label priceInputDisabledNotice;
+
+	private LookupModal<User> modal;
 	private java.io.File selectedFile;
 	private User selectedUser;
 	private File fileModel;
@@ -49,6 +57,8 @@ public final class SendController extends EncryptionController implements Lockab
 		if(Config.getInstance().isVerbose())
 			Logger.getGlobal().info("Loading send controller.");
 		super.initialize(location, resources);
+
+		initInputKeyListeners();
 	}
 
 	@Override
@@ -56,6 +66,28 @@ public final class SendController extends EncryptionController implements Lockab
 		super.show(transition, backController);
 		resetForm();
 		resetValidation();
+	}
+
+	@Override
+	protected void onNext() {
+		super.onNext();
+		if(modal != null) {
+			modal.closeDialog();
+		}
+	}
+
+	private void initInputKeyListeners() {
+		fileInput.setOnKeyPressed(e -> {
+			if(e.getCode().equals(KeyCode.ENTER)) {
+				browseClicked();
+			}
+		});
+
+		recipientInput.setOnKeyPressed(e -> {
+			if(e.getCode().equals(KeyCode.ENTER)) {
+				recipientClicked();
+			}
+		});
 	}
 
 	@FXML
@@ -72,7 +104,7 @@ public final class SendController extends EncryptionController implements Lockab
 
 	@FXML
 	private void recipientClicked() {
-		LookupModal<User> modal = new LookupModal<User>(new UserRepository(), getBundle());
+		modal = new LookupModal<User>(new UserRepository(), getBundle());
 		modal.setTitle("recipient");
 		modal.setHeader("lookup-recipient");
 		modal.setListFactory(new UserListFactory());
@@ -108,6 +140,10 @@ public final class SendController extends EncryptionController implements Lockab
 		fileModel = new File();
 		fileModel.setName(nameInput.getText());
 		fileModel.setRecipientId(selectedUser.getId().get());
+
+		if(priceInput.getText() != null && !priceInput.getText().isEmpty()) {
+			fileModel.setPrice(priceInput.getValue());
+		}
 
 		Hash.sha256(selectedFile, digest -> {
 			fileModel.setHash(Hash.toHex(digest));
@@ -169,13 +205,15 @@ public final class SendController extends EncryptionController implements Lockab
 
 	@Override
 	public void setupValidators() {
-		RequiredFieldValidator requiredValidator = new RequiredFieldValidator(getBundle().getString("required"));
-		StringMaxLengthValidator maxLengthValidator = new StringMaxLengthValidator(getBundle().getString("max-length").replace("%LENGTH%", "255"), 255);
-		StringMinLengthValidator minLengthValidator = new StringMinLengthValidator(getBundle().getString("min-length").replace("%LENGTH%", "3"), 3);
+		var requiredValidator = new RequiredFieldValidator(getBundle().getString("required"));
+		var maxLengthValidator = new StringMaxLengthValidator(getBundle().getString("max-length").replace("%LENGTH%", "40"), 40);
+		var minLengthValidator = new StringMinLengthValidator(getBundle().getString("min-length").replace("%LENGTH%", "3"), 3);
+		var numberValidator = new NumberValidator("must be a number", priceInput.getConverter());
 
 		nameInput.getValidators().add(requiredValidator);
 		nameInput.getValidators().add(maxLengthValidator);
 		nameInput.getValidators().add(minLengthValidator);
+		priceInput.getValidators().add(numberValidator);
 		fileInput.getValidators().add(requiredValidator);
 		recipientInput.getValidators().add(requiredValidator);
 		ValidationUtils.setValidationListener(nameInput);
@@ -187,6 +225,7 @@ public final class SendController extends EncryptionController implements Lockab
 	public void setupServerValidators() {
 		nameInput.getValidators().add(createServerValidator("name"));
 		fileInput.getValidators().add(createServerValidator("hash"));
+		priceInput.getValidators().add(createServerValidator("price"));
 		recipientInput.getValidators().add(createServerValidator("recipient_id"));
 	}
 
@@ -194,6 +233,7 @@ public final class SendController extends EncryptionController implements Lockab
 	public boolean validateAll() {
 		boolean ok = nameInput.validate();
 		ok = fileInput.validate() && ok;
+		ok = (priceInput.getText() == null || priceInput.validate()) && ok;
 		ok = recipientInput.validate() && ok;
 		return ok;
 	}
@@ -202,6 +242,7 @@ public final class SendController extends EncryptionController implements Lockab
 	public void resetValidation() {
 		nameInput.resetValidation();
 		fileInput.resetValidation();
+		priceInput.resetValidation();
 		recipientInput.resetValidation();
 	}
 
@@ -209,8 +250,21 @@ public final class SendController extends EncryptionController implements Lockab
 	public void resetForm() {
 		nameInput.setText(null);
 		fileInput.setText(null);
+		priceInput.setText(null);
 		recipientInput.setText(null);
 		selectedFile = null;
+
+		if(MainController.getInstance().getAuthenticator().getUser().getAddress().get() == null) {
+			priceInput.setManaged(false);
+			priceInput.setVisible(false);
+			priceInputDisabledNotice.setManaged(true);
+			priceInputDisabledNotice.setVisible(true);
+		} else {
+			priceInput.setManaged(true);
+			priceInput.setVisible(true);
+			priceInputDisabledNotice.setManaged(false);
+			priceInputDisabledNotice.setVisible(false);
+		}
 	}
 
 }

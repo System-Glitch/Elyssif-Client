@@ -26,10 +26,12 @@
 			<Label fx:id="fromLabel" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 			<Label minWidth="-Infinity" style="-fx-font-weight: bold;" text="%to" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
 			<Label fx:id="toLabel" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-			<Label minWidth="-Infinity" style="-fx-font-weight: bold;" text="%sent" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-			<Label fx:id="sentLabel" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-			<Label minWidth="-Infinity" style="-fx-font-weight: bold;" text="%received" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-			<Label fx:id="receivedLabel" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+			<Label minWidth="-Infinity" style="-fx-font-weight: bold;" text="%price" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+			<Label fx:id="priceLabel" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+			<Label minWidth="-Infinity" style="-fx-font-weight: bold;" text="%sent" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+			<Label fx:id="sentLabel" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+			<Label minWidth="-Infinity" style="-fx-font-weight: bold;" text="%received" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+			<Label fx:id="receivedLabel" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
 		</GridPane>
 	</body>
 	<actions>

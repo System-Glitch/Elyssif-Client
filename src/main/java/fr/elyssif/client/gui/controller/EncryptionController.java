@@ -53,7 +53,7 @@ public abstract class EncryptionController extends FadeController implements Loc
 
 	public void initialize(URL location, ResourceBundle resources) {
 		if(Config.getInstance().isVerbose())
-			Logger.getGlobal().info("Loading send controller.");
+			Logger.getGlobal().info("Loading encryption controller.");
 		super.initialize(location, resources);
 
 		disableProperty = new SimpleBooleanProperty(false);
@@ -189,6 +189,10 @@ public abstract class EncryptionController extends FadeController implements Loc
 	@Override
 	public HashMap<String, ServerValidator> getServerValidators() {
 		return serverValidators;
+	}
+
+	protected JFXSpinner getSpinner() {
+		return spinner;
 	}
 
 }

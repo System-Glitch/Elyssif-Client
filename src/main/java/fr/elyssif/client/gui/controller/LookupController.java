@@ -2,6 +2,8 @@ package fr.elyssif.client.gui.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXDialog;
@@ -29,6 +31,8 @@ import javafx.scene.control.ListCell;
  */
 public final class LookupController extends Controller {
 
+	private static final long SEARCH_DELAY = 1000;
+
 	private Repository<? extends Model<?>> repository;
 
 	@FXML private Label title;
@@ -39,6 +43,8 @@ public final class LookupController extends Controller {
 	private ObservableList<Model<?>> list;
 	private Model<?> selected;
 	private Runnable callback;
+
+	private Timer searchTimer;
 
 	public void initialize(URL location, ResourceBundle resources) {
 		if(Config.getInstance().isVerbose())
@@ -104,24 +110,46 @@ public final class LookupController extends Controller {
 
 		String search = input.getText().trim();
 
-		if(search.isEmpty()) {
+		if(search.length() > 255) {
+			search = search.substring(0, 255);
+			input.setText(search);
+			input.positionCaret(254);
+		}
+
+		if(search.length() < 3) {
 			list.clear();
 		} else {
-			repository.getWhere(search, data -> {
-				list.clear();
+			final String effectiveSearch = search;
+			// Delay search request to avoid spamming
+			if(searchTimer != null) {
+				searchTimer.cancel();
+			}
 
-				if(!input.getText().trim().isEmpty()) {
-					for(Model<?> model : ((PaginateCallbackData<?>) data).getPaginator().getItems()) {
-						list.add(model);
-					}
+			searchTimer = new Timer(true);
+			searchTimer.schedule(new TimerTask() {
+
+				@Override
+				public void run() {
+					repository.getWhere(effectiveSearch, data -> {
+						list.clear();
+
+						if(!input.getText().trim().isEmpty()) {
+							for(Model<?> model : ((PaginateCallbackData<?>) data).getPaginator().getItems()) {
+								list.add(model);
+							}
+						}
+
+						searchTimer.cancel();
+					}, errorData -> SnackbarController.getInstance().message(getBundle().getString(((FailCallbackData) errorData).getFullMessage()), SnackbarMessageType.ERROR));
 				}
-			}, errorData -> SnackbarController.getInstance().message(getBundle().getString(((FailCallbackData) errorData).getFullMessage()), SnackbarMessageType.ERROR));
+
+			}, SEARCH_DELAY);
 		}
 
 	}
 
 	@FXML
-	private void cancel() {
+	public void cancel() {
 		selected = null;
 		if(callback != null) {
 			callback.run();

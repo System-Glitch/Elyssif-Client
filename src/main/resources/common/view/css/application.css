@@ -88,7 +88,11 @@
 	-fx-background-color: -orange-400;
 }
 
-.dialog-warning .jfx-layout-body {
+.dialog-error .jfx-layout-heading {
+	-fx-background-color: -red-A700;
+}
+
+.dialog-warning .jfx-layout-body, .dialog-error .jfx-layout-body {
 	-fx-padding: 24 24 24 24;
 }
 
@@ -102,6 +106,22 @@
 
 .text-lg {
 	-fx-font-size: 16px;
+}
+
+.text-price {
+	-fx-font-size: 18px;
+}
+
+.text-error {
+	-fx-font-weight: BOLD;
+	-fx-text-fill: -red-700;
+	-fx-font-size: 12px;
+}
+
+.text-notice {
+	-fx-font-weight: BOLD;
+	-fx-text-fill: -blue-700;
+	-fx-font-size: 12px;
 }
 
 /* ------------------------------ */

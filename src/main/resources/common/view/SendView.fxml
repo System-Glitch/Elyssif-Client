@@ -3,12 +3,15 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXSpinner?>
 <?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+
+<?import fr.elyssif.client.gui.view.JFXNumberField?>
 
 <FlowPane fx:id="pane" alignment="CENTER" columnHalignment="CENTER" styleClass="white" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.elyssif.client.gui.controller.SendController">
    <children>
@@ -25,6 +28,8 @@
                   <VBox fx:id="formContainer" spacing="35.0">
                      <children>
                         <JFXTextField fx:id="nameInput" labelFloat="true" promptText="%filename" />
+                        <JFXNumberField fx:id="priceInput" labelFloat="true" promptText="%price-input" />
+                        <Label fx:id="priceInputDisabledNotice" prefWidth="200.0" styleClass="text-notice" managed="false" text="%price-disabled-notice" textAlignment="CENTER" visible="false" wrapText="true" />
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                            <children>
                               <JFXTextField fx:id="fileInput" editable="false" labelFloat="true" prefWidth="150.0" promptText="%file-encrypt" />

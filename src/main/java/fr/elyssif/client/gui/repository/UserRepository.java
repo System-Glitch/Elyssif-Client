@@ -53,6 +53,4 @@ public class UserRepository extends Repository<User> {
 		});
 	}
 
-	// TODO implement UserRepository
-
 }

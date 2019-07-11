@@ -88,4 +88,13 @@ public class FileDialog {
 		}
 	}
 
+	/**
+	 * Close the dialog if open.
+	 */
+	public void closeDialog() {
+		if(controller != null) {
+			controller.close();
+		}
+	}
+
 }

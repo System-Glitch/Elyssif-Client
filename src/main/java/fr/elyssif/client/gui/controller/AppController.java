@@ -78,6 +78,7 @@ public final class AppController extends FadeController implements Lockable {
 		sideMenuController.bind(2, containerController.getController("settings"));
 	}
 
+	@Override
 	public void bindControls() {
 		getFadePane().disableProperty().bind(disableProperty);
 		drawer.disableProperty().bind(disableProperty);
@@ -85,6 +86,7 @@ public final class AppController extends FadeController implements Lockable {
 		sideMenuController.getPane().disableProperty().bind(disableProperty);
 	}
 
+	@Override
 	public void setLocked(boolean locked) {
 		disableProperty.set(locked);
 	}

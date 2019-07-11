@@ -23,10 +23,12 @@ import fr.elyssif.client.gui.validation.StringMaxLengthValidator;
 import fr.elyssif.client.gui.validation.StringMinLengthValidator;
 import fr.elyssif.client.gui.validation.TextMatchValidator;
 import fr.elyssif.client.gui.view.Language;
+import fr.elyssif.client.gui.view.ViewUtils;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.layout.StackPane;
 
 /**
  * Controller for the settings view
@@ -37,6 +39,7 @@ public final class SettingsController extends FadeController implements Lockable
 
 	@FXML private JFXTextField emailField;
 	@FXML private JFXTextField nameField;
+	@FXML private JFXTextField addressField;
 
 	@FXML private JFXPasswordField passwordField;
 	@FXML private JFXPasswordField newPasswordField;
@@ -76,25 +79,57 @@ public final class SettingsController extends FadeController implements Lockable
 	@FXML
 	private void submit() {
 		if(validateAll()) {
-			setLocked(true);
 
 			final User user = MainController.getInstance().getAuthenticator().getUser();
-			final String previousEmail = user.getEmail().get();
-			final String previousName = user.getName().get();
 
-			user.setEmail(emailField.getText());
-			user.setName(nameField.getText());
+			final String previousAddress = user.getAddress().get();
+			final boolean hasAddress = addressField.getText() != null && !addressField.getText().isEmpty();
 
-			userRepository.update(user, data -> {
-				setLocked(false);
-				SnackbarController.getInstance().message(getBundle().getString("change-success"), SnackbarMessageType.SUCCESS, 4000);
-			}, errorData -> {
-				setLocked(false);
-				user.setEmail(previousEmail);
-				user.setName(previousName);
-				handleValidationErrors(((FormCallbackData) errorData).getValidationErrors());
-			}, "email", "name");
+			if(previousAddress != null && !previousAddress.isEmpty() && !hasAddress) {
+				ViewUtils.buildConfirmDialog((StackPane) getPane().getParent(), getBundle(), "address-change-notice", false, e -> {
+					submitUpdate(user, hasAddress);
+				}, true).show();
+			} else {
+				submitUpdate(user, hasAddress);
+			}
 		}
+	}
+
+	private void submitUpdate(User user, boolean hasAddress) {
+		setLocked(true);
+		final String previousEmail = user.getEmail().get();
+		final String previousName = user.getName().get();
+		final String previousAddress = user.getAddress().get();
+
+		user.setEmail(emailField.getText());
+		user.setName(nameField.getText());
+		user.setAddress(addressField.getText());
+
+		userRepository.update(user, data -> {
+			setLocked(false);
+			if(!hasAddress) {
+				user.setAddress(null);
+			}
+			SnackbarController.getInstance().message(getBundle().getString("change-success"), SnackbarMessageType.SUCCESS, 4000);
+		}, errorData -> {
+			setLocked(false);
+			user.setEmail(previousEmail);
+			user.setName(previousName);
+			user.setAddress(previousAddress);
+			handleValidationErrors(((FormCallbackData) errorData).getValidationErrors());
+		}, failData -> {
+			setLocked(false);
+			user.setEmail(previousEmail);
+			user.setName(previousName);
+			user.setAddress(previousAddress);
+
+			if(failData.getStatus() == 403) {
+				addressField.setText(previousAddress);
+				ViewUtils.buildErrorDialog((StackPane) getPane().getParent(), getBundle(), failData.getResponse().getJsonElement().getAsJsonObject().get("error").getAsString()).show();
+			} else {
+				SnackbarController.getInstance().message(getBundle().getString("server-error") + ": " + failData.getStatus(), SnackbarMessageType.ERROR, 4000);
+			}
+		}, "email", "name", "address");
 	}
 
 	@FXML
@@ -154,6 +189,7 @@ public final class SettingsController extends FadeController implements Lockable
 		emailField.getValidators().add(maxLengthValidator);
 		nameField.getValidators().add(requiredValidator);
 		nameField.getValidators().add(maxLengthValidator);
+		addressField.getValidators().add(maxLengthValidator);
 
 		passwordField.getValidators().add(requiredValidator);
 		newPasswordField.getValidators().add(requiredValidator);
@@ -166,6 +202,7 @@ public final class SettingsController extends FadeController implements Lockable
 
 		ValidationUtils.setValidationListener(emailField);
 		ValidationUtils.setValidationListener(nameField);
+		ValidationUtils.setValidationListener(addressField);
 		ValidationUtils.setValidationListener(passwordField);
 		ValidationUtils.setValidationListener(newPasswordField);
 		ValidationUtils.setValidationListener(passwordConfirmationField);
@@ -177,6 +214,11 @@ public final class SettingsController extends FadeController implements Lockable
 	public void setupServerValidators() {
 		emailField.getValidators().add(createServerValidator("email"));
 		nameField.getValidators().add(createServerValidator("name"));
+
+		// Bitcoin address is only validated server-side so validaton
+		// always match our node Bitcoin version, in case of new BIP implementations.
+		// Removes the need for a client update in such a scenario.
+		addressField.getValidators().add(createServerValidator("address"));
 		passwordField.getValidators().add(createServerValidator("old_password"));
 		newPasswordField.getValidators().add(createServerValidator("password"));
 		passwordConfirmationField.getValidators().add(createServerValidator("password_confirmation"));
@@ -186,6 +228,7 @@ public final class SettingsController extends FadeController implements Lockable
 	public boolean validateAll() {
 		boolean ok = emailField.validate();
 		ok = nameField.validate() && ok;
+		ok = addressField.validate() && ok;
 		return ok;
 	}
 
@@ -200,6 +243,7 @@ public final class SettingsController extends FadeController implements Lockable
 	public void resetValidation() {
 		emailField.resetValidation();
 		nameField.resetValidation();
+		addressField.resetValidation();
 		passwordField.resetValidation();
 		newPasswordField.resetValidation();
 		passwordConfirmationField.resetValidation();
@@ -210,6 +254,7 @@ public final class SettingsController extends FadeController implements Lockable
 		final User user = MainController.getInstance().getAuthenticator().getUser();
 		emailField.setText(user.getEmail().get());
 		nameField.setText(user.getName().get());
+		addressField.setText(user.getAddress().get());
 
 		passwordField.setText(null);
 		newPasswordField.setText(null);
@@ -220,6 +265,7 @@ public final class SettingsController extends FadeController implements Lockable
 	public void bindControls() {
 		emailField.disableProperty().bind(disableProperty);
 		nameField.disableProperty().bind(disableProperty);
+		addressField.disableProperty().bind(disableProperty);
 		passwordField.disableProperty().bind(disableProperty);
 		newPasswordField.disableProperty().bind(disableProperty);
 		passwordConfirmationField.disableProperty().bind(disableProperty);
