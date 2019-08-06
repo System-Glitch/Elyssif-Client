@@ -1,6 +1,6 @@
 <h1 height="256"><img align="left" width="41" height="41" src=".github/logo48.png">&nbsp;Elyssif Client</h1>
 
-**E**lyssif **L**et's **Y**ou **S**ecurely **S**end **I**mportant **F**iles
+**E**lyssif **L**ets **Y**ou **S**ecurely **S**end **I**mportant **F**iles
 
 Elyssif is a user-friendly app that allows you to send sensitive or important files via the platform of your choice without worrying about your data being stolen or sold, thanks to strong asymmetric encryption. Elyssif allows to ask for a Bitcoin payment for the recipient to decrypt the file.
 
