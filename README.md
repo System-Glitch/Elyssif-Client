@@ -2,7 +2,7 @@
 
 **E**lyssif **L**et's **Y**ou **S**ecurely **S**end **I**mportant **F**iles
 
-Elyssif is a user-friendly app that allows you to send sensitive or important files via the platform of your choice without worrying about your data being stolen or sold, thanks to strong asymmetric encryption.
+Elyssif is a user-friendly app that allows you to send sensitive or important files via the platform of your choice without worrying about your data being stolen or sold, thanks to strong asymmetric encryption. Elyssif allows to ask for a Bitcoin payment for the recipient to decrypt the file.
 
 ## Installing
 
@@ -50,6 +50,4 @@ When opening a FXML view from the project in Scene Builder, you'll notice that i
 
 *Note: You have to do this for every FXML file individually.*
 
-## Usage
-
-TODO
+### Also see the [API](https://github.com/System-Glitch/Elyssif-API)
