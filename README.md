@@ -49,7 +49,3 @@ When opening a FXML view from the project in Scene Builder, you'll notice that i
 4. Select `src/main/resources/common/bundles/lang_en.properties`
 
 *Note: You have to do this for every FXML file individually.*
-
-## Usage
-
-TODO
